@@ -1,5 +1,7 @@
 # Coreglow
 
+[![CI](https://github.com/Nexus-SvK/Coreglow/actions/workflows/ci.yml/badge.svg)](https://github.com/Nexus-SvK/Coreglow/actions/workflows/ci.yml)
+
 Lighting effects, profiles and fan control for the **Corsair iCUE Commander Core XT** on Linux, without iCUE.
 
 - `coreglowd`: user service that drives the controller (lighting at ~30 fps, fan duties for fans 1 and 2).
@@ -11,9 +13,16 @@ Profiles live in `~/.config/coreglow/config.toml` (created from `/usr/share/core
 or copied from `~/.config/ccxt/` if you used ccxt-control 0.1,
 on first run) and apply within a second of saving.
 
-## Build and install
+## Install
 
-    sudo apt install rustc cargo build-essential pkg-config
+Download the `.deb` from the [latest release](https://github.com/Nexus-SvK/Coreglow/releases/latest), then:
+
+    sudo apt install ./coreglow_*_amd64.deb
+    systemctl --user start coreglowd
+
+## Build from source
+
+    sudo apt install rustc cargo build-essential pkg-config   # Rust 1.85 or newer (else use rustup)
     packaging/build-deb.sh
     sudo apt install ./target/debian/coreglow_*_amd64.deb
     systemctl --user start coreglowd
@@ -44,3 +53,9 @@ Installing the coreglow package replaces it; then switch the running service ove
     systemctl --user start coreglowd
 
 Profiles are copied from `~/.config/ccxt/` on first start; the old folder is left as it was.
+
+## License
+
+GPL-3.0-or-later. See [LICENSE](LICENSE).
+
+Not affiliated with Corsair. Corsair and iCUE are trademarks of Corsair Memory, Inc.
