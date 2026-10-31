@@ -25,8 +25,11 @@ fn type_leds(t: u8) -> usize {
 const STRIPS: usize = 4;
 const STRIP_LEDS: usize = 10;
 
-pub const ZONE_NAMES: [&str; 10] =
-    ["strip1", "strip2", "strip3", "strip4", "strips", "right-fan", "left-fan", "fans", "pump", "all"];
+pub const ZONE_NAMES: [&str; 11] =
+    ["strip1", "strip2", "strip3", "strip4", "strips", "right-fan", "left-fan", "fans", "pump", "motherboard", "all"];
+
+/// Parts that aren't on the Corsair controller: "motherboard" is sent through OpenRGB.
+pub const EXTERNAL_ZONES: [&str; 1] = ["motherboard"];
 
 /// Parts shown in the live picture (one colour each).
 pub const PICTURE_ZONES: [&str; 7] = ["strip1", "strip2", "strip3", "strip4", "right-fan", "left-fan", "pump"];
@@ -72,7 +75,7 @@ pub fn zone(name: &str) -> Vec<usize> {
 }
 
 pub fn label(name: &str) -> &'static str {
-    match name {
+    crate::i18n::tr(match name {
         "strip1" => "LED strip 1",
         "strip2" => "LED strip 2",
         "strip3" => "LED strip 3",
@@ -82,8 +85,9 @@ pub fn label(name: &str) -> &'static str {
         "left-fan" => "Left fan",
         "fans" => "Both radiator fans",
         "pump" => "Pump head",
+        "motherboard" => "Motherboard (via OpenRGB)",
         _ => "Everything",
-    }
+    })
 }
 
 #[cfg(test)]

@@ -219,6 +219,9 @@ pub struct Config {
     /// Rules that switch profiles automatically.
     #[serde(default, skip_serializing_if = "Auto::is_empty")]
     pub auto: Auto,
+    /// Drive other RGB devices (the motherboard) through an OpenRGB server.
+    #[serde(default, skip_serializing_if = "OpenRgb::is_default")]
+    pub openrgb: OpenRgb,
     #[serde(default)]
     pub profiles: IndexMap<String, Profile>,
 }
@@ -227,6 +230,30 @@ pub struct Config {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Fallback {
     pub curve: Vec<(Num, Num)>,
+}
+
+/// Motherboard sync: coreglowd sends the "motherboard" part of each profile to every
+/// device the OpenRGB server lists (keep OpenRGB's Corsair detector off).
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
+pub struct OpenRgb {
+    #[serde(default)]
+    pub enabled: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub host: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub port: Option<u16>,
+}
+
+impl OpenRgb {
+    pub fn is_default(&self) -> bool {
+        *self == OpenRgb::default()
+    }
+    pub fn host(&self) -> &str {
+        self.host.as_deref().unwrap_or("localhost")
+    }
+    pub fn port(&self) -> u16 {
+        self.port.unwrap_or(crate::openrgb::DEFAULT_PORT)
+    }
 }
 
 /// Automatic profile switching: the first rule that matches decides the profile;
@@ -298,15 +325,15 @@ impl Rule {
 
     /// Plain-language condition, e.g. "Processor (CPU) is above 85 °C".
     pub fn describe(&self) -> String {
+        use crate::i18n::{tr, trf};
         match self.when.as_str() {
-            "temp-above" => format!(
+            "temp-above" => trf(
                 "{} is above {} °C",
-                crate::sensors::label(self.sensor.as_deref().unwrap_or("cpu")),
-                self.temp.map_or(0.0, |t| t.0)
+                &[&crate::sensors::label(self.sensor.as_deref().unwrap_or("cpu")), &self.temp.map_or(0.0, |t| t.0)],
             ),
-            "process" => format!("a program matching “{}” is running", self.name.as_deref().unwrap_or("")),
-            "time" => format!("it's between {} and {}", self.from.as_deref().unwrap_or("?"), self.to.as_deref().unwrap_or("?")),
-            "locked" => "the screen is locked".into(),
+            "process" => trf("a program matching “{}” is running", &[&self.name.as_deref().unwrap_or("")]),
+            "time" => trf("it's between {} and {}", &[&self.from.as_deref().unwrap_or("?"), &self.to.as_deref().unwrap_or("?")]),
+            "locked" => tr("the screen is locked").into(),
             other => format!("unknown condition “{other}”"),
         }
     }

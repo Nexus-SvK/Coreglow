@@ -18,7 +18,7 @@ pub const SENSORS: [(&str, &str); 5] = [
 ];
 
 pub fn label(id: &str) -> &str {
-    SENSORS.iter().find(|(i, _)| *i == id).map_or(id, |(_, l)| l)
+    SENSORS.iter().find(|(i, _)| *i == id).map_or(id, |(_, l)| crate::i18n::tr(l))
 }
 
 fn default_source(name: &str) -> Option<&'static str> {

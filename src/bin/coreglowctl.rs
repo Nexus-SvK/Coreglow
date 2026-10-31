@@ -16,6 +16,7 @@ usage: coreglowctl COMMAND
   path              print where the profiles file is
   test-fans         run the radiator fans at full speed for 5 seconds
   auto [on|off]     show the automatic switching rules, or turn them on or off
+  motherboard [on|off]  send the lighting to the motherboard too (through the OpenRGB server)
   fallback          store the hardware fallback fan curve (only while coreglowd is stopped)
   gui               open the window (coreglow)";
 
@@ -84,6 +85,27 @@ fn main() {
                 .unwrap_or_else(|e| fail(e));
             let pts: Vec<String> = curve.iter().map(|(t, d)| format!("{t}°C {d}%")).collect();
             println!("fallback stored: fans 1-2 follow probe 1 ({}), pump 100 %", pts.join(", "));
+        }
+        ("motherboard", 1) | ("motherboard", 2) => {
+            let mut cfg = Config::load().unwrap_or_else(|e| fail(e));
+            if let Some(arg) = args.get(1) {
+                cfg.openrgb.enabled = match arg.as_str() {
+                    "on" => true,
+                    "off" => false,
+                    _ => fail("use: coreglowctl motherboard on|off"),
+                };
+                cfg.active = cfg.active_name();
+                cfg.save().unwrap_or_else(|e| fail(e));
+            }
+            println!(
+                "motherboard sync is {} (OpenRGB server {}:{})",
+                if cfg.openrgb.enabled { "on" } else { "off" },
+                cfg.openrgb.host(),
+                cfg.openrgb.port()
+            );
+            if let Some(state) = Status::read().filter(|s| s.fresh()).and_then(|s| s.openrgb) {
+                println!("  {state}");
+            }
         }
         ("auto", 1) | ("auto", 2) => {
             let mut cfg = Config::load().unwrap_or_else(|e| fail(e));

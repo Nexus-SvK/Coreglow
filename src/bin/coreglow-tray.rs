@@ -11,6 +11,7 @@ use ksni::menu::{CheckmarkItem, RadioGroup, RadioItem, StandardItem};
 use ksni::MenuItem;
 
 use coreglow::config::Config;
+use coreglow::i18n::{tr, trf};
 use coreglow::paths;
 use coreglow::status::Status;
 
@@ -34,11 +35,11 @@ impl Tray {
 
     fn summary(&self) -> String {
         match &self.status {
-            None => "Lighting service isn't running".into(),
+            None => tr("Lighting service isn't running").into(),
             Some(s) => {
-                let cpu = s.temps.get("cpu").map_or(String::new(), |t| format!("CPU {t:.0} °C · "));
+                let cpu = s.temps.get("cpu").map_or(String::new(), |t| trf("CPU {} °C · ", &[&format!("{t:.0}")]));
                 let rpm = |k: &str| s.rpm.get(k).copied().unwrap_or(0);
-                format!("{cpu}fans {}/{} rpm · pump {} rpm", rpm("fan1"), rpm("fan2"), rpm("pump"))
+                format!("{cpu}{}", trf("fans {}/{} rpm · pump {} rpm", &[&rpm("fan1"), &rpm("fan2"), &rpm("pump")]))
             }
         }
     }
@@ -78,7 +79,7 @@ impl ksni::Tray for Tray {
         let mut items: Vec<MenuItem<Self>> = vec![StandardItem { label: self.summary(), enabled: false, ..Default::default() }.into()];
         if let Some(rule) = self.status.as_ref().and_then(|s| s.auto_rule.clone()) {
             let profile = self.status.as_ref().map_or(String::new(), |s| s.profile.clone());
-            items.push(StandardItem { label: format!("Automatic: “{profile}” because {rule}"), enabled: false, ..Default::default() }.into());
+            items.push(StandardItem { label: trf("Automatic: “{}” because {}", &[&profile, &rule]), enabled: false, ..Default::default() }.into());
         }
         items.push(MenuItem::Separator);
         let selected = self.profiles.iter().position(|p| *p == self.manual).unwrap_or(0);
@@ -99,7 +100,7 @@ impl ksni::Tray for Tray {
         items.push(MenuItem::Separator);
         items.push(
             CheckmarkItem {
-                label: "Switch profiles automatically".into(),
+                label: tr("Switch profiles automatically").into(),
                 checked: self.auto_enabled,
                 activate: Box::new(|this: &mut Self| {
                     if let Ok(mut cfg) = Config::load() {
@@ -116,7 +117,7 @@ impl ksni::Tray for Tray {
         );
         items.push(
             StandardItem {
-                label: "Test fans (full speed for 5 s)".into(),
+                label: tr("Test fans (full speed for 5 s)").into(),
                 enabled: self.status.is_some(),
                 activate: Box::new(|_: &mut Self| {
                     let _ = paths::request_fan_test();
@@ -126,8 +127,8 @@ impl ksni::Tray for Tray {
             .into(),
         );
         items.push(MenuItem::Separator);
-        items.push(StandardItem { label: "Open Coreglow".into(), icon_name: "coreglow".into(), activate: Box::new(|_: &mut Self| open_window()), ..Default::default() }.into());
-        items.push(StandardItem { label: "Hide this icon".into(), activate: Box::new(|_: &mut Self| std::process::exit(0)), ..Default::default() }.into());
+        items.push(StandardItem { label: tr("Open Coreglow").into(), icon_name: "coreglow".into(), activate: Box::new(|_: &mut Self| open_window()), ..Default::default() }.into());
+        items.push(StandardItem { label: tr("Hide this icon").into(), activate: Box::new(|_: &mut Self| std::process::exit(0)), ..Default::default() }.into());
         items
     }
 }

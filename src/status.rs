@@ -29,6 +29,9 @@ pub struct Status {
     /// The automatic rule in charge, in words.
     #[serde(default)]
     pub auto_rule: Option<String>,
+    /// Motherboard sync through OpenRGB: what's connected, or why not (None = off).
+    #[serde(default)]
+    pub openrgb: Option<String>,
 }
 
 pub const HISTORY_EVERY_S: u64 = 10;

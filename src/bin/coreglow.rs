@@ -15,6 +15,7 @@ use coreglow::config::{
 };
 use coreglow::effects::Temps;
 use coreglow::status::{Status, HISTORY_EVERY_S};
+use coreglow::i18n::{tr, trf};
 use coreglow::{paths, sensors, zones};
 
 const SPEED_K: f64 = 16.0; // period (s) = SPEED_K / speed
@@ -40,15 +41,15 @@ enum Page {
 
 fn effect_label(k: EffectKind) -> (&'static str, &'static str) {
     match k {
-        EffectKind::Static => ("Solid colour", "One colour, no movement"),
-        EffectKind::Breathing => ("Breathing", "Slowly fades in and out"),
-        EffectKind::Flash => ("Flashing", "Blinks on and off"),
-        EffectKind::ColorShift => ("Colour cycle", "Fades through your colours"),
-        EffectKind::Rainbow => ("Rainbow", "Everything changes colour together"),
-        EffectKind::RainbowWave => ("Rainbow wave", "A rainbow moving along the lights"),
-        EffectKind::ColorWave => ("Two-colour wave", "Two colours moving along the lights"),
-        EffectKind::Temperature => ("Shows temperature", "Colour changes as it gets hotter"),
-        EffectKind::Off => ("Off", "Lights off"),
+        EffectKind::Static => (tr("Solid colour"), tr("One colour, no movement")),
+        EffectKind::Breathing => (tr("Breathing"), tr("Slowly fades in and out")),
+        EffectKind::Flash => (tr("Flashing"), tr("Blinks on and off")),
+        EffectKind::ColorShift => (tr("Colour cycle"), tr("Fades through your colours")),
+        EffectKind::Rainbow => (tr("Rainbow"), tr("Everything changes colour together")),
+        EffectKind::RainbowWave => (tr("Rainbow wave"), tr("A rainbow moving along the lights")),
+        EffectKind::ColorWave => (tr("Two-colour wave"), tr("Two colours moving along the lights")),
+        EffectKind::Temperature => (tr("Shows temperature"), tr("Colour changes as it gets hotter")),
+        EffectKind::Off => (tr("Off"), tr("Lights off")),
     }
 }
 
@@ -110,7 +111,7 @@ impl App {
 
     fn changed(&mut self) {
         self.changed_at = Some(Instant::now());
-        self.save_msg = ("Saving…".into(), false);
+        self.save_msg = (tr("Saving…").into(), false);
     }
 
     fn select(&mut self, name: String) {
@@ -154,8 +155,8 @@ impl App {
             if t.elapsed() >= SAVE_DELAY {
                 self.changed_at = None;
                 self.save_msg = match self.cfg.save() {
-                    Ok(()) => ("Saved".into(), false),
-                    Err(e) => (format!("Not saved: {e}"), true),
+                    Ok(()) => (tr("Saved").into(), false),
+                    Err(e) => (trf("Not saved: {}", &[&e]), true),
                 };
                 self.file_stamp = stamp();
             }
@@ -217,7 +218,7 @@ fn color32(hex: &str) -> Color32 {
 fn sparkline(ui: &mut egui::Ui, values: &[f64], color: Color32, height: f32) {
     let (rect, _) = ui.allocate_exact_size(Vec2::new(ui.available_width(), height), Sense::hover());
     if values.len() < 2 {
-        ui.painter().text(rect.left_center(), Align2::LEFT_CENTER, "collecting…", FontId::proportional(11.0), ui.visuals().weak_text_color());
+        ui.painter().text(rect.left_center(), Align2::LEFT_CENTER, tr("collecting…"), FontId::proportional(11.0), ui.visuals().weak_text_color());
         return;
     }
     let lo = values.iter().copied().fold(f64::MAX, f64::min) - 1.0;
@@ -317,9 +318,9 @@ fn color_choice(ui: &mut egui::Ui, hex: &mut String, recent: &mut Recent) -> boo
     ui.vertical(|ui| {
         ui.horizontal_wrapped(|ui| {
             for (c, name) in SWATCHES {
-                changed |= swatch(ui, hex, c, name);
+                changed |= swatch(ui, hex, c, tr(name));
             }
-            ui.label(RichText::new("custom").weak());
+            ui.label(RichText::new(tr("custom")).weak());
             if color_button(ui, hex) {
                 recent.picked(hex);
                 changed = true;
@@ -327,7 +328,7 @@ fn color_choice(ui: &mut egui::Ui, hex: &mut String, recent: &mut Recent) -> boo
         });
         if !recent.list.is_empty() {
             ui.horizontal_wrapped(|ui| {
-                ui.label(RichText::new("recent").weak());
+                ui.label(RichText::new(tr("recent")).weak());
                 for c in recent.list.clone() {
                     changed |= swatch(ui, hex, &c, &format!("#{c}"));
                 }
@@ -342,7 +343,7 @@ fn sensor_combo(ui: &mut egui::Ui, id: &str, value: &mut String, gpu: bool) -> b
     egui::ComboBox::from_id_salt(id).selected_text(sensors::label(value)).width(220.0).show_ui(ui, |ui| {
         for (sid, label) in sensors::SENSORS {
             let enabled = sid != "gpu" || gpu;
-            let text = if enabled { label.to_string() } else { format!("{label} — needs NVIDIA driver") };
+            let text = if enabled { tr(label).to_string() } else { trf("{} — needs NVIDIA driver", &[&label]) };
             if ui.add_enabled(enabled, egui::SelectableLabel::new(value == sid, text)).clicked() {
                 *value = sid.to_string();
                 changed = true;
@@ -372,7 +373,7 @@ fn picture(ui: &mut egui::Ui, status: Option<&Status>, height: f32, clickable: b
         if !clickable {
             return;
         }
-        let resp = ui.interact(r, ui.id().with(zone), Sense::click()).on_hover_text(format!("{name}: click to change its lighting"));
+        let resp = ui.interact(r, ui.id().with(zone), Sense::click()).on_hover_text(trf("{}: click to change its lighting", &[&name]));
         if resp.hovered() {
             ui.painter().rect_stroke(r.expand(4.0), 8.0, Stroke::new(1.5, SKY), egui::StrokeKind::Outside);
         }
@@ -380,7 +381,7 @@ fn picture(ui: &mut egui::Ui, status: Option<&Status>, height: f32, clickable: b
             clicked = Some(zone);
         }
     };
-    for (x, zone, name) in [(70.0, "left-fan", "Left fan"), (210.0, "right-fan", "Right fan")] {
+    for (x, zone, name) in [(70.0, "left-fan", tr("Left fan")), (210.0, "right-fan", tr("Right fan"))] {
         let c = at(x, 70.0);
         p.circle_stroke(c, 58.0 * s, Stroke::new(10.0 * s, col(zone)));
         p.circle_filled(c, 16.0 * s, Color32::from_gray(50));
@@ -390,14 +391,14 @@ fn picture(ui: &mut egui::Ui, status: Option<&Status>, height: f32, clickable: b
     let pc = at(110.0, 225.0);
     p.circle_filled(pc, 40.0 * s, Color32::from_rgb(13, 14, 16));
     p.circle_stroke(pc, 40.0 * s, Stroke::new(8.0 * s, col("pump")));
-    label(at(110.0, 285.0), "Pump");
-    hit(Rect::from_center_size(pc, Vec2::splat(96.0 * s)), "pump", "Pump head");
+    label(at(110.0, 285.0), tr("Pump"));
+    hit(Rect::from_center_size(pc, Vec2::splat(96.0 * s)), "pump", tr("Pump head"));
     for (i, (x, y)) in [(360.0, 0.0), (395.0, 0.0), (360.0, 125.0), (395.0, 125.0)].into_iter().enumerate() {
         let r = Rect::from_min_size(at(x, y), Vec2::new(18.0 * s, 100.0 * s));
         p.rect_filled(r, 5.0, col(zones::PICTURE_ZONES[i]));
         hit(r, zones::PICTURE_ZONES[i], zones::label(zones::PICTURE_ZONES[i]));
     }
-    label(at(386.0, 250.0), "LED strips 1–4");
+    label(at(386.0, 250.0), tr("LED strips 1–4"));
     clicked
 }
 
@@ -469,20 +470,20 @@ fn effect_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool, recent: &mu
     let kind = e.effect;
     if matches!(kind, EffectKind::Static | EffectKind::Breathing | EffectKind::Flash) {
         let c = e.color.get_or_insert_with(|| "ffffff".into());
-        row(ui, "Colour", |ui| changed |= color_choice(ui, c, recent));
+        row(ui, tr("Colour"), |ui| changed |= color_choice(ui, c, recent));
     }
     if matches!(kind, EffectKind::ColorShift | EffectKind::ColorWave) {
         let max = if kind == EffectKind::ColorWave { 2 } else { 6 };
         let cs = e.colors.get_or_insert_with(|| vec!["ff0000".into(), "0000ff".into()]);
-        row(ui, "Colours", |ui| {
+        row(ui, tr("Colours"), |ui| {
             for c in cs.iter_mut() {
                 changed |= color_button(ui, c);
             }
-            if cs.len() < max && ui.small_button("+ add").clicked() {
+            if cs.len() < max && ui.small_button(tr("+ add")).clicked() {
                 cs.push("ffffff".into());
                 changed = true;
             }
-            if cs.len() > 2 && ui.small_button("− remove").clicked() {
+            if cs.len() > 2 && ui.small_button(tr("− remove")).clicked() {
                 cs.pop();
                 changed = true;
             }
@@ -493,27 +494,27 @@ fn effect_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool, recent: &mu
     }
     if kind.moving() {
         let mut speed = SPEED_K / e.period.map_or(4.0, |p| p.0);
-        row(ui, "Speed", |ui| {
+        row(ui, tr("Speed"), |ui| {
             if ui.add(egui::Slider::new(&mut speed, 1.0..=10.0).step_by(0.5).show_value(false)).changed() {
                 e.period = Some(Num((SPEED_K / speed * 100.0).round() / 100.0));
                 changed = true;
             }
-            ui.label(RichText::new(if speed <= 3.0 { "slow" } else if speed >= 8.0 { "fast" } else { "" }).weak());
+            ui.label(RichText::new(if speed <= 3.0 { tr("slow") } else if speed >= 8.0 { tr("fast") } else { "" }).weak());
         });
     }
     if matches!(kind, EffectKind::RainbowWave | EffectKind::ColorWave) {
         let mut w = e.waves.map_or(1.0, |w| w.0);
-        row(ui, "Wave length", |ui| {
+        row(ui, tr("Wave length"), |ui| {
             if ui.add(egui::Slider::new(&mut w, 0.5..=4.0).step_by(0.5).show_value(false)).changed() {
                 e.waves = Some(Num(w));
                 changed = true;
             }
-            ui.label(RichText::new(if w < 1.5 { "long" } else if w > 3.0 { "short" } else { "" }).weak());
+            ui.label(RichText::new(if w < 1.5 { tr("long") } else if w > 3.0 { tr("short") } else { "" }).weak());
         });
     }
     if kind != EffectKind::Off {
         let mut b = e.brightness.map_or(100.0, |b| b.0);
-        row(ui, "Brightness", |ui| {
+        row(ui, tr("Brightness"), |ui| {
             if ui.add(egui::Slider::new(&mut b, 5.0..=100.0).step_by(5.0).suffix(" %")).changed() {
                 e.brightness = Some(Num(b));
                 changed = true;
@@ -526,17 +527,17 @@ fn effect_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool, recent: &mu
 fn temperature_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool) -> bool {
     let mut changed = false;
     let sensor = e.sensor.get_or_insert_with(|| "cpu".into());
-    row(ui, "Follows", |ui| changed |= sensor_combo(ui, &format!("{id}-tsensor"), sensor, gpu));
+    row(ui, tr("Follows"), |ui| changed |= sensor_combo(ui, &format!("{id}-tsensor"), sensor, gpu));
     let stops = e.stops.get_or_insert_with(coreglow::config::default_stops);
     let n = stops.len();
     let mut remove = None;
     for (i, (t, c)) in stops.iter_mut().enumerate() {
-        let label = if i == 0 { "Cool" } else if i == n - 1 { "Hot" } else { "Warm" };
+        let label = if i == 0 { tr("Cool") } else if i == n - 1 { tr("Hot") } else { tr("Warm") };
         row(ui, label, |ui| {
             changed |= ui.add(egui::DragValue::new(&mut t.0).range(0.0..=110.0).suffix(" °C")).changed();
             ui.label("→");
             changed |= color_button(ui, c);
-            if n > 2 && ui.small_button("remove").clicked() {
+            if n > 2 && ui.small_button(tr("remove")).clicked() {
                 remove = Some(i);
             }
         });
@@ -549,15 +550,15 @@ fn temperature_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool) -> boo
         stops.sort_by(|a, b| a.0 .0.total_cmp(&b.0 .0));
     }
     row(ui, "", |ui| {
-        if ui.small_button("+ add a colour").clicked() {
+        if ui.small_button(tr("+ add a colour")).clicked() {
             let last = stops.last().map_or(80.0, |s| s.0 .0);
             stops.push((Num((last + 10.0).min(110.0)), "ff00ff".into()));
             changed = true;
         }
     });
     let mut on = e.alarm.is_some();
-    row(ui, "Warning", |ui| {
-        if ui.checkbox(&mut on, "Flash when it gets too hot").changed() {
+    row(ui, tr("Warning"), |ui| {
+        if ui.checkbox(&mut on, tr("Flash when it gets too hot")).changed() {
             e.alarm = on.then_some(Num(85.0));
             if on {
                 e.period = Some(Num(1.0));
@@ -565,7 +566,7 @@ fn temperature_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool) -> boo
             changed = true;
         }
         if let Some(a) = &mut e.alarm {
-            ui.label("above");
+            ui.label(tr("above"));
             changed |= ui.add(egui::DragValue::new(&mut a.0).range(30.0..=110.0).suffix(" °C")).changed();
         }
     });
@@ -600,7 +601,7 @@ fn curve_ui(
     if let Some((lo, hi)) = recent {
         let band = Rect::from_min_max(Pos2::new(x((lo as f32).clamp(X0, X1)), t), Pos2::new(x((hi as f32).clamp(X0, X1)), b));
         p.rect_filled(band, 0.0, AMBER.gamma_multiply(0.12));
-        p.text(Pos2::new(band.center().x, t + 10.0), Align2::CENTER_CENTER, format!("last 10 min: {lo:.0}–{hi:.0} °C"), FontId::proportional(11.0), AMBER);
+        p.text(Pos2::new(band.center().x, t + 10.0), Align2::CENTER_CENTER, trf("last 10 min: {}–{} °C", &[&format!("{lo:.0}"), &format!("{hi:.0}")]), FontId::proportional(11.0), AMBER);
     }
     let mut tmp = 20;
     while tmp <= 100 {
@@ -686,42 +687,42 @@ fn fans_ui(ui: &mut egui::Ui, f: &mut Fans, gpu: bool, status: Option<&Status>, 
     let mut changed = false;
     let fixed = f.fixed.is_some();
     ui.horizontal(|ui| {
-        if ui.selectable_label(!fixed, "Follow temperature").clicked() && fixed {
+        if ui.selectable_label(!fixed, tr("Follow temperature")).clicked() && fixed {
             f.fixed = None;
             f.sensor.get_or_insert_with(|| "cpu".into());
             f.curve.get_or_insert_with(|| curve_of(&PRESET_BALANCED));
             changed = true;
         }
-        if ui.selectable_label(fixed, "Fixed speed").clicked() && !fixed {
+        if ui.selectable_label(fixed, tr("Fixed speed")).clicked() && !fixed {
             f.fixed = Some(Num(50.0));
             changed = true;
         }
     });
     if let Some(fx) = &mut f.fixed {
-        row(ui, "Speed", |ui| {
+        row(ui, tr("Speed"), |ui| {
             changed |= ui.add(egui::Slider::new(&mut fx.0, 20.0..=100.0).step_by(5.0).suffix(" %")).changed();
         });
         return changed;
     }
     let sensor = f.sensor.get_or_insert_with(|| "probe1".into());
-    row(ui, "Follows", |ui| changed |= sensor_combo(ui, "fan-sensor", sensor, gpu));
+    row(ui, tr("Follows"), |ui| changed |= sensor_combo(ui, "fan-sensor", sensor, gpu));
     let now = status.and_then(|s| s.temps.get(sensor.as_str()).copied());
     let recent = status.and_then(|s| s.history.get(sensor.as_str())).filter(|h| h.len() > 1).map(|h| {
         (h.iter().copied().fold(f64::MAX, f64::min), h.iter().copied().fold(f64::MIN, f64::max))
     });
     let curve = f.curve.get_or_insert_with(|| curve_of(&PRESET_BALANCED));
     let mut full = false;
-    row(ui, "Quick choice", |ui| {
-        for (name, preset) in [("Quiet", &PRESET_QUIET[..]), ("Balanced", &PRESET_BALANCED[..]), ("Performance", &PRESET_PERFORMANCE[..])] {
+    row(ui, tr("Quick choice"), |ui| {
+        for (name, preset) in [(tr("Quiet"), &PRESET_QUIET[..]), (tr("Balanced"), &PRESET_BALANCED[..]), (tr("Performance"), &PRESET_PERFORMANCE[..])] {
             if ui.button(name).clicked() {
                 *curve = curve_of(preset);
                 changed = true;
             }
         }
-        full = ui.button("Full speed").clicked();
+        full = ui.button(tr("Full speed")).clicked();
     });
     changed |= curve_ui(ui, curve, now, recent, drag, 12);
-    ui.label(RichText::new("Drag a dot to change it · double-click to add · right-click to remove · click a dot, then use the arrow keys for fine steps").weak().small());
+    ui.label(RichText::new(tr("Drag a dot to change it · double-click to add · right-click to remove · click a dot, then use the arrow keys for fine steps")).weak().small());
     if full {
         f.fixed = Some(Num(100.0));
         changed = true;
@@ -740,7 +741,7 @@ fn sidebar(app: &mut App, ui: &mut egui::Ui) {
         ui.label(RichText::new("Coreglow").strong().size(17.0));
     });
     ui.add_space(14.0);
-    for (page, name) in [(Page::Home, "Home"), (Page::Lighting, "Lighting"), (Page::Fans, "Fans"), (Page::Profiles, "Profiles")] {
+    for (page, name) in [(Page::Home, tr("Home")), (Page::Lighting, tr("Lighting")), (Page::Fans, tr("Fans")), (Page::Profiles, tr("Profiles"))] {
         let on = app.page == page;
         let text = if on { RichText::new(name).strong().color(Color32::WHITE) } else { RichText::new(name) };
         let btn = egui::Button::new(text).fill(if on { NAV_ON } else { Color32::TRANSPARENT }).min_size(Vec2::new(ui.available_width(), 40.0));
@@ -757,16 +758,16 @@ fn sidebar(app: &mut App, ui: &mut egui::Ui) {
                     ui.horizontal(|ui| {
                         let (r, _) = ui.allocate_exact_size(Vec2::splat(10.0), Sense::hover());
                         ui.painter().circle_filled(r.center(), 4.0, GREEN);
-                        ui.label(RichText::new("Service running").color(GREEN));
+                        ui.label(RichText::new(tr("Service running")).color(GREEN));
                     });
                     if let Some(e) = &s.error {
                         ui.colored_label(ui.visuals().warn_fg_color, e);
                     }
                 }
                 None => {
-                    let why = app.status.as_ref().and_then(|s| s.error.clone()).unwrap_or_else(|| "Service isn't running".into());
+                    let why = app.status.as_ref().and_then(|s| s.error.clone()).unwrap_or_else(|| tr("Service isn't running").into());
                     ui.colored_label(ui.visuals().warn_fg_color, why);
-                    if ui.button("Start it").clicked() {
+                    if ui.button(tr("Start it")).clicked() {
                         let _ = std::process::Command::new("systemctl").args(["--user", "start", "coreglowd.service"]).spawn();
                     }
                 }
@@ -786,7 +787,7 @@ fn sidebar(app: &mut App, ui: &mut egui::Ui) {
 fn page_header(ui: &mut egui::Ui, heading: &str, profile: &str, status: Option<&Status>) {
     ui.horizontal(|ui| {
         ui.label(RichText::new(heading).strong().size(24.0));
-        ui.label(RichText::new(format!("· profile “{profile}”")).weak().size(16.0));
+        ui.label(RichText::new(trf("· profile “{}”", &[&profile])).weak().size(16.0));
     });
     if let Some(s) = status.filter(|s| s.auto_rule.is_some() && s.profile != profile) {
         auto_notice(ui, s);
@@ -798,7 +799,7 @@ fn page_header(ui: &mut egui::Ui, heading: &str, profile: &str, status: Option<&
 fn auto_notice(ui: &mut egui::Ui, s: &Status) {
     let Some(rule) = &s.auto_rule else { return };
     egui::Frame::new().fill(Color32::from_rgb(42, 36, 24)).corner_radius(8.0).inner_margin(8.0).show(ui, |ui| {
-        ui.label(RichText::new(format!("Automatic switching: right now “{}” is in use because {rule}.", s.profile)).color(AMBER));
+        ui.label(RichText::new(trf("Automatic switching: right now “{}” is in use because {}.", &[&s.profile, rule])).color(AMBER));
     });
 }
 
@@ -807,11 +808,11 @@ fn home(app: &mut App, ui: &mut egui::Ui) {
     let s = status.as_ref();
     ui.horizontal(|ui| {
         ui.vertical(|ui| {
-            ui.label(RichText::new("Your PC").strong().size(24.0));
+            ui.label(RichText::new(tr("Your PC")).strong().size(24.0));
             let line = match s {
-                Some(st) if st.error.is_some() => "There's a problem — see the sidebar.",
-                Some(_) => "Everything is running normally.",
-                None => "The lighting service isn't running.",
+                Some(st) if st.error.is_some() => tr("There's a problem — see the sidebar."),
+                Some(_) => tr("Everything is running normally."),
+                None => tr("The lighting service isn't running."),
             };
             ui.label(RichText::new(line).weak());
             if let Some(st) = s {
@@ -828,7 +829,7 @@ fn home(app: &mut App, ui: &mut egui::Ui) {
                     }
                 }
             });
-            ui.label(RichText::new("Profile").weak());
+            ui.label(RichText::new(tr("Profile")).weak());
             if let Some(n) = pick {
                 app.activate(&n);
             }
@@ -843,27 +844,27 @@ fn home(app: &mut App, ui: &mut egui::Ui) {
     let minutes = coreglow::status::HISTORY_LEN as u64 * HISTORY_EVERY_S / 60;
     ui.columns(4, |cols| {
         card_min(&mut cols[0], TILE_H, |ui| {
-            ui.label(RichText::new("CPU").weak());
+            ui.label(RichText::new(tr("CPU")).weak());
             ui.label(RichText::new(temp("cpu")).strong().size(28.0));
             sparkline(ui, &hist("cpu"), AMBER, 34.0);
-            ui.label(RichText::new(format!("last {minutes} minutes")).weak().small());
+            ui.label(RichText::new(trf("last {} minutes", &[&minutes])).weak().small());
         });
         card_min(&mut cols[1], TILE_H, |ui| {
-            ui.label(RichText::new("Inside the case").weak());
+            ui.label(RichText::new(tr("Inside the case")).weak());
             ui.label(RichText::new(temp("probe1")).strong().size(28.0));
             sparkline(ui, &hist("probe1"), SKY, 34.0);
-            ui.label(RichText::new(format!("probe 2: {}", temp("probe2"))).weak().small());
+            ui.label(RichText::new(trf("probe 2: {}", &[&temp("probe2")])).weak().small());
         });
         card_min(&mut cols[2], TILE_H, |ui| {
-            ui.label(RichText::new("Radiator fans").weak());
+            ui.label(RichText::new(tr("Radiator fans")).weak());
             ui.label(RichText::new(duty.map_or("–".into(), |d| format!("{d} %"))).strong().size(28.0));
-            ui.label(format!("Right fan  {} rpm", rpm("fan1")));
-            ui.label(format!("Left fan   {} rpm", rpm("fan2")));
+            ui.label(trf("Right fan  {} rpm", &[&rpm("fan1")]));
+            ui.label(trf("Left fan   {} rpm", &[&rpm("fan2")]));
         });
         card_min(&mut cols[3], TILE_H, |ui| {
-            ui.label(RichText::new("Pump").weak());
-            ui.label(RichText::new(format!("{} rpm", rpm("pump"))).strong().size(28.0));
-            ui.label(RichText::new("Full speed while the lighting is controlled from the PC. That's normal.").weak().small());
+            ui.label(RichText::new(tr("Pump")).weak());
+            ui.label(RichText::new(trf("{} rpm", &[&rpm("pump")])).strong().size(28.0));
+            ui.label(RichText::new(tr("Full speed while the lighting is controlled from the PC. That's normal.")).weak().small());
         });
     });
     ui.add_space(12.0);
@@ -872,21 +873,21 @@ fn home(app: &mut App, ui: &mut egui::Ui) {
     ui.columns(2, |cols| {
         card(&mut cols[0], |ui| {
             ui.horizontal(|ui| {
-                title(ui, "Your PC right now");
-                ui.label(RichText::new("Click a part to change its lighting").weak());
+                title(ui, tr("Your PC right now"));
+                ui.label(RichText::new(tr("Click a part to change its lighting")).weak());
             });
             ui.add_space(6.0);
             go_part = picture(ui, s, 300.0, true);
         });
         card(&mut cols[1], |ui| {
-            title(ui, "Quick changes");
+            title(ui, tr("Quick changes"));
             ui.add_space(6.0);
             let active = app.cfg.active.clone();
             let mut bright_changed = false;
             if let Some(p) = app.cfg.profiles.get_mut(&active) {
                 if p.lighting.effect != EffectKind::Off {
                     let mut b = p.lighting.brightness.map_or(100.0, |b| b.0);
-                    row(ui, "Brightness", |ui| {
+                    row(ui, tr("Brightness"), |ui| {
                         if ui.add(egui::Slider::new(&mut b, 5.0..=100.0).step_by(5.0).suffix(" %")).changed() {
                             p.lighting.brightness = Some(Num(b));
                             bright_changed = true;
@@ -902,8 +903,8 @@ fn home(app: &mut App, ui: &mut egui::Ui) {
             egui::Grid::new("quick").num_columns(2).spacing([8.0, 8.0]).show(ui, |ui| {
                 for (i, (label, profile)) in QUICK.iter().enumerate() {
                     let exists = app.cfg.profiles.contains_key(*profile);
-                    let b = egui::Button::new(*label).min_size(Vec2::new(150.0, 40.0));
-                    if ui.add_enabled(exists, b).on_disabled_hover_text(format!("Make a profile called “{profile}” to use this")).clicked() {
+                    let b = egui::Button::new(tr(label)).min_size(Vec2::new(150.0, 40.0));
+                    if ui.add_enabled(exists, b).on_disabled_hover_text(trf("Make a profile called “{}” to use this", &[profile])).clicked() {
                         switch = Some(*profile);
                     }
                     if i % 2 == 1 {
@@ -926,7 +927,7 @@ fn home(app: &mut App, ui: &mut egui::Ui) {
 fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
     let mut changed = false;
     let status = app.live().cloned();
-    page_header(ui, "Lighting", &app.selected, status.as_ref());
+    page_header(ui, tr("Lighting"), &app.selected, status.as_ref());
     led_strip(ui, status.as_ref());
     ui.add_space(12.0);
     let gpu = app.gpu;
@@ -936,13 +937,14 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
         ui.vertical(|ui| {
             ui.set_width(250.0);
             card(ui, |ui| {
-                title(ui, "What to change");
+                title(ui, tr("What to change"));
                 ui.add_space(4.0);
-                if ui.add(egui::SelectableLabel::new(app.part.is_none(), RichText::new("Whole PC").strong())).clicked() {
+                if ui.add(egui::SelectableLabel::new(app.part.is_none(), RichText::new(tr("Whole PC")).strong())).clicked() {
                     app.part = None;
                 }
-                ui.label(RichText::new("Or give one part its own lighting:").weak().small());
-                for z in zones::ZONE_NAMES.iter().filter(|z| **z != "all") {
+                ui.label(RichText::new(tr("Or give one part its own lighting:")).weak().small());
+                let board_on = app.cfg.openrgb.enabled;
+                for z in zones::ZONE_NAMES.iter().filter(|z| **z != "all" && (board_on || !zones::EXTERNAL_ZONES.contains(z))) {
                     let own = p.zones.contains_key(*z);
                     ui.horizontal(|ui| {
                         let swatch = status.as_ref().and_then(|s| s.zones.get(*z).or_else(|| s.zones.get(match *z {
@@ -957,15 +959,28 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
                         if ui.add(egui::SelectableLabel::new(app.part == Some(*z), name)).clicked() {
                             app.part = Some(*z);
                         }
-                        ui.label(RichText::new(if own { "own" } else { "same" }).small().color(if own { SKY } else { Color32::from_gray(140) }));
+                        ui.label(RichText::new(if own { tr("own") } else { tr("same") }).small().color(if own { SKY } else { Color32::from_gray(140) }));
                     });
                 }
+                ui.add_space(8.0);
+                ui.separator();
+                let mut on = app.cfg.openrgb.enabled;
+                if ui.checkbox(&mut on, tr("Include the motherboard")).on_hover_text(tr("Sends the same effects to the motherboard lighting through the OpenRGB server")).changed() {
+                    app.cfg.openrgb.enabled = on;
+                    changed = true;
+                }
+                let note = match (on, status.as_ref().and_then(|s| s.openrgb.clone())) {
+                    (false, _) => tr("Uses OpenRGB's server (openrgb --server), which is already running here.").to_string(),
+                    (true, Some(state)) => state,
+                    (true, None) => tr("Connecting…").to_string(),
+                };
+                ui.label(RichText::new(note).weak().small());
             });
         });
         ui.vertical(|ui| {
             card(ui, |ui| match app.part {
                 None => {
-                    title(ui, "Effect for the whole PC");
+                    title(ui, tr("Effect for the whole PC"));
                     ui.add_space(6.0);
                     changed |= effect_ui(ui, &mut p.lighting, "main", gpu, &mut app.recent);
                 }
@@ -974,11 +989,11 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
                     ui.add_space(6.0);
                     let own = p.zones.contains_key(z);
                     ui.horizontal(|ui| {
-                        if ui.selectable_label(!own, "Same as the whole PC").clicked() && own {
+                        if ui.selectable_label(!own, tr("Same as the whole PC")).clicked() && own {
                             p.zones.shift_remove(z);
                             changed = true;
                         }
-                        if ui.selectable_label(own, "Its own lighting").clicked() && !own {
+                        if ui.selectable_label(own, tr("Its own lighting")).clicked() && !own {
                             p.zones.insert(z.to_string(), Effect::solid("ffffff"));
                             changed = true;
                         }
@@ -987,9 +1002,9 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
                     if let Some(e) = p.zones.get_mut(z) {
                         changed |= effect_ui(ui, e, z, gpu, &mut app.recent);
                         ui.add_space(4.0);
-                        ui.label(RichText::new("If two choices cover the same part (for example “Both fans” and “Left fan”), the one lower in the list wins.").weak().small());
+                        ui.label(RichText::new(tr("If two choices cover the same part (for example “Both fans” and “Left fan”), the one lower in the list wins.")).weak().small());
                     } else {
-                        ui.label(RichText::new("This part follows the whole-PC lighting.").weak());
+                        ui.label(RichText::new(tr("This part follows the whole-PC lighting.")).weak());
                     }
                 }
             });
@@ -1001,7 +1016,7 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
 fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
     let mut changed = false;
     let status = app.live().cloned();
-    page_header(ui, "Fan speed", &app.selected, status.as_ref());
+    page_header(ui, tr("Fan speed"), &app.selected, status.as_ref());
     let gpu = app.gpu;
     let sel = app.selected.clone();
     let Some(p) = app.cfg.profiles.get_mut(&sel) else { return false };
@@ -1011,49 +1026,49 @@ fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
         ui.vertical(|ui| {
             ui.set_width(w);
             card(ui, |ui| {
-                title(ui, "Both radiator fans");
+                title(ui, tr("Both radiator fans"));
                 ui.add_space(6.0);
                 changed |= fans_ui(ui, &mut p.fans, gpu, s, &mut app.drag);
                 if p.fan1.is_some() || p.fan2.is_some() {
-                    ui.label(RichText::new("This profile also has separate settings for one fan, set in the profiles file.").weak());
+                    ui.label(RichText::new(tr("This profile also has separate settings for one fan, set in the profiles file.")).weak());
                 }
             });
         });
         ui.vertical(|ui| {
             card(ui, |ui| {
-                title(ui, "Right now");
+                title(ui, tr("Right now"));
                 let rpm = |k: &str| s.and_then(|st| st.rpm.get(k)).copied().unwrap_or(0);
                 let duty = |k: &str| s.and_then(|st| st.fan_duty.get(k)).copied().unwrap_or(0);
-                ui.label(format!("Right fan   {} rpm · {} %", rpm("fan1"), duty("fan1")));
-                ui.label(format!("Left fan    {} rpm · {} %", rpm("fan2"), duty("fan2")));
+                ui.label(trf("Right fan   {} rpm · {} %", &[&rpm("fan1"), &duty("fan1")]));
+                ui.label(trf("Left fan    {} rpm · {} %", &[&rpm("fan2"), &duty("fan2")]));
                 ui.add_space(4.0);
                 sparkline(ui, &s.and_then(|st| st.history.get("fan1_rpm")).cloned().unwrap_or_default(), SKY, 30.0);
-                ui.label(RichText::new("right fan, last 10 minutes").weak().small());
+                ui.label(RichText::new(tr("right fan, last 10 minutes")).weak().small());
                 ui.add_space(6.0);
                 if s.is_some_and(|st| st.testing_fans) {
-                    ui.label(RichText::new("Testing: fans at full speed…").color(AMBER));
+                    ui.label(RichText::new(tr("Testing: fans at full speed…")).color(AMBER));
                 } else {
-                    let btn = egui::Button::new("Test fans (full speed for 5 s)").min_size(Vec2::new(ui.available_width(), 36.0));
-                    if ui.add_enabled(s.is_some(), btn).on_disabled_hover_text("The lighting service isn't running").clicked() {
+                    let btn = egui::Button::new(tr("Test fans (full speed for 5 s)")).min_size(Vec2::new(ui.available_width(), 36.0));
+                    if ui.add_enabled(s.is_some(), btn).on_disabled_hover_text(tr("The lighting service isn't running")).clicked() {
                         let _ = paths::request_fan_test();
                     }
                 }
             });
             ui.add_space(12.0);
             card(ui, |ui| {
-                title(ui, "Pump");
-                ui.label(RichText::new(format!("{} rpm", s.and_then(|st| st.rpm.get("pump")).copied().unwrap_or(0))).strong().size(22.0));
-                ui.label(RichText::new("Runs at full speed while the lighting is controlled from the PC. That keeps the CPU cool and is normal.").weak());
+                title(ui, tr("Pump"));
+                ui.label(RichText::new(trf("{} rpm", &[&s.and_then(|st| st.rpm.get("pump")).copied().unwrap_or(0)])).strong().size(22.0));
+                ui.label(RichText::new(tr("Runs at full speed while the lighting is controlled from the PC. That keeps the CPU cool and is normal.")).weak());
             });
         });
     });
 
     ui.add_space(12.0);
     card(ui, |ui| {
-        title(ui, "When Coreglow is closed");
-        ui.label(RichText::new("The controller keeps its own backup curve. It only reads case probe 1, and the pump always stays at full speed. Changes are stored in the controller within a second.").weak());
+        title(ui, tr("When Coreglow is closed"));
+        ui.label(RichText::new(tr("The controller keeps its own backup curve. It only reads case probe 1, and the pump always stays at full speed. Changes are stored in the controller within a second.")).weak());
         ui.add_space(6.0);
-        egui::CollapsingHeader::new("Edit backup curve").id_salt("fallback-edit").show(ui, |ui| {
+        egui::CollapsingHeader::new(tr("Edit backup curve")).id_salt("fallback-edit").show(ui, |ui| {
             let fb = app.cfg.fallback.get_or_insert_with(|| Fallback { curve: curve_of(&FALLBACK_DEFAULT) });
             let now = s.and_then(|st| st.temps.get("probe1").copied());
             let recent = s.and_then(|st| st.history.get("probe1")).filter(|h| h.len() > 1).map(|h| {
@@ -1061,8 +1076,8 @@ fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
             });
             changed |= curve_ui(ui, &mut fb.curve, now, recent, &mut app.fallback_drag, FALLBACK_MAX_POINTS);
             ui.horizontal(|ui| {
-                ui.label(RichText::new(format!("{} of {FALLBACK_MAX_POINTS} points", fb.curve.len())).weak().small());
-                if ui.small_button("Reset to default").clicked() {
+                ui.label(RichText::new(trf("{} of {} points", &[&fb.curve.len(), &FALLBACK_MAX_POINTS])).weak().small());
+                if ui.small_button(tr("Reset to default")).clicked() {
                     fb.curve = curve_of(&FALLBACK_DEFAULT);
                     changed = true;
                 }
@@ -1075,10 +1090,10 @@ fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
 fn profiles_page(app: &mut App, ui: &mut egui::Ui) -> bool {
     let mut changed = false;
     ui.horizontal(|ui| {
-        ui.label(RichText::new("Profiles").strong().size(24.0));
+        ui.label(RichText::new(tr("Profiles")).strong().size(24.0));
         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-            if ui.add(egui::Button::new(RichText::new("+ New profile").strong()).min_size(Vec2::new(0.0, 36.0))).clicked() {
-                let n = app.unique_name("My profile");
+            if ui.add(egui::Button::new(RichText::new(tr("+ New profile")).strong()).min_size(Vec2::new(0.0, 36.0))).clicked() {
+                let n = app.unique_name(tr("My profile"));
                 app.cfg.profiles.insert(n.clone(), Profile {
                     lighting: Effect::solid("ffffff"),
                     fans: Fans { sensor: Some("cpu".into()), curve: Some(curve_of(&PRESET_BALANCED)), fixed: None },
@@ -1089,7 +1104,7 @@ fn profiles_page(app: &mut App, ui: &mut egui::Ui) -> bool {
             }
         });
     });
-    ui.label(RichText::new("A profile is a saved set of colours and fan speeds. Click one to edit it.").weak());
+    ui.label(RichText::new(tr("A profile is a saved set of colours and fan speeds. Click one to edit it.")).weak());
     ui.add_space(10.0);
 
     let names: Vec<String> = app.cfg.profiles.keys().cloned().collect();
@@ -1124,12 +1139,12 @@ fn profiles_page(app: &mut App, ui: &mut egui::Ui) -> bool {
                     ui.horizontal(|ui| {
                         ui.label(RichText::new(name).strong());
                         if active {
-                            ui.label(RichText::new("in use").small().color(GREEN));
+                            ui.label(RichText::new(tr("in use")).small().color(GREEN));
                         }
                     });
                     let fans = match p.fans.fixed {
-                        Some(f) => format!("Fans: fixed {} %", f.0),
-                        None => format!("Fans: follow {}", sensors::label(&p.fans.sensor_name())),
+                        Some(f) => trf("Fans: fixed {} %", &[&f.0]),
+                        None => trf("Fans: follow {}", &[&sensors::label(&p.fans.sensor_name())]),
                     };
                     ui.label(RichText::new(fans).weak().small());
                 }))
@@ -1151,7 +1166,7 @@ fn profiles_page(app: &mut App, ui: &mut egui::Ui) -> bool {
     if app.cfg.profiles.contains_key(&sel) {
         card(ui, |ui| {
             ui.horizontal_wrapped(|ui| {
-                ui.label(RichText::new("Name").weak());
+                ui.label(RichText::new(tr("Name")).weak());
                 let r = ui.add(egui::TextEdit::singleline(&mut app.name_edit).desired_width(200.0));
                 if r.lost_focus() {
                     let nn = app.name_edit.trim().to_string();
@@ -1170,19 +1185,19 @@ fn profiles_page(app: &mut App, ui: &mut egui::Ui) -> bool {
                     }
                 }
                 if app.selected == app.cfg.active {
-                    ui.label(RichText::new("in use").color(GREEN).strong());
-                } else if ui.add(egui::Button::new(RichText::new("Use this profile").strong())).clicked() {
+                    ui.label(RichText::new(tr("in use")).color(GREEN).strong());
+                } else if ui.add(egui::Button::new(RichText::new(tr("Use this profile")).strong())).clicked() {
                     app.cfg.active = app.selected.clone();
                     changed = true;
                 }
-                if ui.button("Edit lighting").clicked() {
+                if ui.button(tr("Edit lighting")).clicked() {
                     app.part = None;
                     app.page = Page::Lighting;
                 }
-                if ui.button("Edit fans").clicked() {
+                if ui.button(tr("Edit fans")).clicked() {
                     app.page = Page::Fans;
                 }
-                if ui.button("Duplicate").clicked() {
+                if ui.button(tr("Duplicate")).clicked() {
                     let n = app.unique_name(&format!("{} copy", app.selected));
                     let copy = app.cfg.profiles[&app.selected].clone();
                     app.cfg.profiles.insert(n.clone(), copy);
@@ -1190,8 +1205,8 @@ fn profiles_page(app: &mut App, ui: &mut egui::Ui) -> bool {
                     changed = true;
                 }
                 let can_delete = app.cfg.profiles.len() > 1 && app.selected != app.cfg.active;
-                let label = if app.confirm_delete { "Click again to delete" } else { "Delete" };
-                if ui.add_enabled(can_delete, egui::Button::new(label)).on_disabled_hover_text("Switch to another profile first").clicked() {
+                let label = if app.confirm_delete { tr("Click again to delete") } else { tr("Delete") };
+                if ui.add_enabled(can_delete, egui::Button::new(label)).on_disabled_hover_text(tr("Switch to another profile first")).clicked() {
                     if app.confirm_delete {
                         app.cfg.profiles.shift_remove(&app.selected);
                         let a = app.cfg.active.clone();
@@ -1203,7 +1218,7 @@ fn profiles_page(app: &mut App, ui: &mut egui::Ui) -> bool {
                 }
             });
             if app.selected != app.cfg.active {
-                ui.label(RichText::new("You're editing a profile that isn't in use. Click “Use this profile” to see it on your PC.").weak());
+                ui.label(RichText::new(tr("You're editing a profile that isn't in use. Click “Use this profile” to see it on your PC.")).weak());
             }
         });
     }
@@ -1222,12 +1237,12 @@ fn rules_card(app: &mut App, ui: &mut egui::Ui) -> bool {
     let auto = &mut app.cfg.auto;
     card(ui, |ui| {
         ui.horizontal(|ui| {
-            title(ui, "Switch automatically");
+            title(ui, tr("Switch automatically"));
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                changed |= ui.checkbox(&mut auto.enabled, "On").changed();
+                changed |= ui.checkbox(&mut auto.enabled, tr("On")).changed();
             });
         });
-        ui.label(RichText::new("Rules are checked from top to bottom; the first one that matches picks the profile.").weak());
+        ui.label(RichText::new(tr("Rules are checked from top to bottom; the first one that matches picks the profile.")).weak());
         if let Some(s) = &status {
             auto_notice(ui, s);
         }
@@ -1239,11 +1254,11 @@ fn rules_card(app: &mut App, ui: &mut egui::Ui) -> bool {
                 ui.set_width(ui.available_width());
                 ui.horizontal_wrapped(|ui| {
                     ui.label(RichText::new(format!("{}.", i + 1)).weak());
-                    ui.label("When");
-                    let kind_label = coreglow::config::RULE_KINDS.iter().find(|(k, _)| *k == r.when).map_or("?", |(_, l)| l);
+                    ui.label(tr("When"));
+                    let kind_label = coreglow::config::RULE_KINDS.iter().find(|(k, _)| *k == r.when).map_or("?", |(_, l)| tr(l));
                     egui::ComboBox::from_id_salt(("rule-kind", i)).selected_text(kind_label).width(200.0).show_ui(ui, |ui| {
                         for (k, l) in coreglow::config::RULE_KINDS {
-                            if ui.selectable_label(r.when == k, l).clicked() && r.when != k {
+                            if ui.selectable_label(r.when == k, tr(l)).clicked() && r.when != k {
                                 *r = coreglow::config::Rule::new(k, &r.profile);
                                 changed = true;
                             }
@@ -1258,20 +1273,20 @@ fn rules_card(app: &mut App, ui: &mut egui::Ui) -> bool {
                         }
                         "process" => {
                             let name = r.name.get_or_insert_with(String::new);
-                            changed |= ui.add(egui::TextEdit::singleline(name).hint_text("part of its name, e.g. steamapps").desired_width(200.0)).changed();
+                            changed |= ui.add(egui::TextEdit::singleline(name).hint_text(tr("part of its name, e.g. steamapps")).desired_width(200.0)).changed();
                         }
                         "time" => {
-                            for (label, field) in [("from", &mut r.from), ("to", &mut r.to)] {
+                            for (label, field) in [(tr("from"), &mut r.from), (tr("to"), &mut r.to)] {
                                 ui.label(label);
                                 let v = field.get_or_insert_with(|| "00:00".into());
                                 let ok = coreglow::config::parse_hm(v).is_some();
                                 let edit = egui::TextEdit::singleline(v).desired_width(52.0).text_color_opt((!ok).then_some(ui.visuals().error_fg_color));
-                                changed |= ui.add(edit).on_hover_text("24-hour time, HH:MM").changed();
+                                changed |= ui.add(edit).on_hover_text(tr("24-hour time, HH:MM")).changed();
                             }
                         }
                         _ => {}
                     }
-                    ui.label("use");
+                    ui.label(tr("use"));
                     egui::ComboBox::from_id_salt(("rule-profile", i)).selected_text(&r.profile).width(150.0).show_ui(ui, |ui| {
                         for name in &names {
                             if ui.selectable_label(r.profile == *name, name).clicked() {
@@ -1280,13 +1295,13 @@ fn rules_card(app: &mut App, ui: &mut egui::Ui) -> bool {
                             }
                         }
                     });
-                    if ui.add_enabled(i > 0, egui::Button::new("Up").small()).clicked() {
+                    if ui.add_enabled(i > 0, egui::Button::new(tr("Up")).small()).clicked() {
                         swap = Some((i - 1, i));
                     }
-                    if ui.add_enabled(i + 1 < n, egui::Button::new("Down").small()).clicked() {
+                    if ui.add_enabled(i + 1 < n, egui::Button::new(tr("Down")).small()).clicked() {
                         swap = Some((i, i + 1));
                     }
-                    if ui.add(egui::Button::new("Remove").small()).clicked() {
+                    if ui.add(egui::Button::new(tr("Remove")).small()).clicked() {
                         remove = Some(i);
                     }
                 });
@@ -1302,14 +1317,14 @@ fn rules_card(app: &mut App, ui: &mut egui::Ui) -> bool {
             changed = true;
         }
         ui.horizontal(|ui| {
-            if ui.button("+ Add a rule").clicked() {
+            if ui.button(tr("+ Add a rule")).clicked() {
                 auto.rules.push(coreglow::config::Rule::new("time", &manual));
                 auto.enabled = true;
                 changed = true;
             }
-            ui.label(RichText::new(format!("Otherwise: “{manual}”, the profile you chose.")).weak());
+            ui.label(RichText::new(trf("Otherwise: “{}”, the profile you chose.", &[&manual])).weak());
         });
-        ui.label(RichText::new("Tip: Steam games run from a folder called “steamapps”, so a “program is running” rule with that name catches all of them.").weak().small());
+        ui.label(RichText::new(tr("Tip: Steam games run from a folder called “steamapps”, so a “program is running” rule with that name catches all of them.")).weak().small());
     });
     changed
 }
@@ -1325,9 +1340,9 @@ impl eframe::App for App {
 
         if let Some(e) = &self.load_error {
             egui::CentralPanel::default().show(ctx, |ui| {
-                ui.heading("The profiles file couldn't be read");
+                ui.heading(tr("The profiles file couldn't be read"));
                 ui.label(e);
-                ui.label(format!("Fix or delete {} and reopen this window.", paths::config_file().display()));
+                ui.label(trf("Fix or delete {} and reopen this window.", &[&paths::config_file().display()]));
             });
             return;
         }
@@ -1366,7 +1381,7 @@ fn main() -> eframe::Result {
     };
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_title("Coreglow — PC Lighting & Fans")
+            .with_title(tr("Coreglow — PC Lighting & Fans"))
             .with_app_id("coreglow")
             .with_inner_size([1180.0, 840.0])
             .with_min_inner_size([900.0, 600.0]),

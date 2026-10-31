@@ -1,0 +1,45 @@
+.TH COREGLOW 1 "2026-10-31" "coreglow 0.6.0" "User Commands"
+.SH NAME
+coreglow, coreglow-tray \- window and tray icon for Coreglow lighting and fans
+.SH SYNOPSIS
+.B coreglow
+.RB [ \-\-page " " home | lighting | fans | profiles ]
+.br
+.B coreglow-tray
+.SH DESCRIPTION
+.B coreglow
+is the window ("Coreglow" in the application menu). Its pages:
+.TP
+.B Home
+Live temperatures with 10-minute graphs, fan and pump speeds, a picture of
+the PC (click a part to change its lighting) and quick changes.
+.TP
+.B Lighting
+The effect for the whole PC, or for a single part, with colour presets,
+recent colours and live previews. Motherboard sync through OpenRGB is
+switched on here.
+.TP
+.B Fans
+Fan curve or fixed speed, presets, a test button, and the backup curve the
+controller uses when Coreglow isn't running.
+.TP
+.B Profiles
+Profiles, and the rules that switch them automatically (temperature,
+running program, time of day, locked screen).
+.PP
+Changes are saved and applied as you make them.
+.PP
+.B coreglow-tray
+shows an icon in the system tray (StatusNotifierItem) with the profile list,
+automatic switching on/off, test fans and a way to open the window. It starts
+at login.
+.SH ENVIRONMENT
+.TP
+.B COREGLOW_LANG
+.B en
+or
+.B sk
+overrides the interface language (otherwise taken from LC_ALL, LC_MESSAGES or LANG).
+.SH SEE ALSO
+.BR coreglowd (1),
+.BR coreglowctl (1)

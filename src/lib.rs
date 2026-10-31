@@ -9,6 +9,8 @@ pub mod auto;
 pub mod config;
 pub mod device;
 pub mod effects;
+pub mod i18n;
+pub mod openrgb;
 pub mod paths;
 pub mod sensors;
 pub mod status;

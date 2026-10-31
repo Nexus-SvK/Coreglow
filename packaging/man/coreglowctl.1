@@ -1,0 +1,73 @@
+.TH COREGLOWCTL 1 "2026-10-31" "coreglow 0.6.0" "User Commands"
+.SH NAME
+coreglowctl \- control Coreglow lighting and fan profiles from the command line
+.SH SYNOPSIS
+.B coreglowctl
+[\fICOMMAND\fR [\fIARGS\fR]]
+.SH DESCRIPTION
+.B coreglowctl
+lists and switches the profiles that
+.BR coreglowd (1)
+runs on a Corsair iCUE Commander Core XT, shows live temperatures and fan
+speeds, and changes a few settings. Changes apply within a frame; the
+profiles themselves live in
+.IR ~/.config/coreglow/config.toml .
+.SH COMMANDS
+.TP
+.B status
+Profile in use, temperatures, fan duties and speeds (the default command).
+While an automatic rule is in charge, also the rule and the profile chosen by hand.
+.TP
+.B list
+All profiles; \fB*\fR marks the one chosen by hand.
+.TP
+.BI set " NAME"
+Use profile \fINAME\fR.
+.TP
+.BI brightness " NAME N"
+Set the main lighting brightness of profile \fINAME\fR to \fIN\fR percent.
+.TP
+.B test-fans
+Run the radiator fans at full speed for 5 seconds.
+.TP
+.BR auto " [" on | off ]
+Show the automatic switching rules, or turn automatic switching on or off.
+.TP
+.BR motherboard " [" on | off ]
+Send the lighting to the motherboard too, through an OpenRGB server.
+.TP
+.B edit
+Open the profiles file in \fB$EDITOR\fR (nano by default) and check it afterwards.
+.TP
+.B path
+Print where the profiles file is.
+.TP
+.B fallback
+Store the backup fan curve in the controller. Only while
+.B coreglowd
+is stopped; it does this by itself otherwise.
+.TP
+.B gui
+Open the window,
+.BR coreglow (1).
+.SH FILES
+.TP
+.I ~/.config/coreglow/config.toml
+Profiles, automatic rules, backup curve, motherboard sync.
+.TP
+.I ~/.config/coreglow/active
+Name of the profile chosen by hand.
+.TP
+.I $XDG_RUNTIME_DIR/coreglow-status.json
+Live values written by
+.B coreglowd
+every second.
+.SH EXAMPLES
+.nf
+coreglowctl set rainbow
+coreglowctl auto on
+coreglowctl brightness white 40
+.fi
+.SH SEE ALSO
+.BR coreglowd (1),
+.BR coreglow (1)
