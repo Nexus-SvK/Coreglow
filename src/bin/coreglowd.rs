@@ -10,6 +10,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
 
+use coreglow::auto::AutoState;
 use coreglow::config::{Config, Profile};
 use coreglow::device::{self, Device};
 use coreglow::effects::Temps;
@@ -37,8 +38,14 @@ fn stamp() -> (Option<SystemTime>, Option<SystemTime>) {
 const TEST_FANS_FOR: Duration = Duration::from_secs(5);
 
 struct State {
-    profile: Profile,
+    cfg: Config,
+    /// Profile chosen by hand (GUI, CLI, tray).
+    manual: String,
+    /// Profile in use: `manual`, or the one an automatic rule picked.
     name: String,
+    profile: Profile,
+    /// Index of the automatic rule in charge, if any.
+    rule: Option<usize>,
     sensors: Sensors,
     fallback: Vec<(f64, f64)>,
 }
@@ -48,7 +55,30 @@ fn load() -> Result<State, String> {
     let name = cfg.active_name();
     let profile = cfg.profiles[&name].clone();
     let sensors = Sensors::new(&cfg.sensors);
-    Ok(State { profile, name, sensors, fallback: cfg.fallback_curve() })
+    let fallback = cfg.fallback_curve();
+    Ok(State { manual: name.clone(), name, profile, rule: None, sensors, fallback, cfg })
+}
+
+impl State {
+    /// Use the profile rule `rule` picks (or the manual one), logging the change.
+    fn apply_rule(&mut self, rule: Option<usize>) {
+        let target = match rule {
+            Some(i) => self.cfg.auto.rules[i].profile.clone(),
+            None => self.manual.clone(),
+        };
+        if target != self.name || rule != self.rule {
+            match rule {
+                Some(i) => log(format!("automatic: {} → profile {target}", self.cfg.auto.rules[i].describe())),
+                None if self.rule.is_some() => log(format!("automatic rules no longer match → profile {target}")),
+                None => {}
+            }
+        }
+        self.rule = rule;
+        if target != self.name {
+            self.profile = self.cfg.profiles[&target].clone();
+            self.name = target;
+        }
+    }
 }
 
 /// True while a "test fans" request (the request file touched by the GUI or CLI) is recent.
@@ -76,39 +106,51 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
     let mut error = None;
     let mut history: BTreeMap<String, VecDeque<f64>> = BTreeMap::new();
     let mut next_history = Instant::now();
+    let mut auto = AutoState::default();
 
     while !stop.load(Ordering::Relaxed) {
         let now = Instant::now();
-        if now >= next_sensor {
-            next_sensor = now + SENSOR_EVERY;
-            if stamp() != cfg_stamp {
-                cfg_stamp = stamp();
-                match load() {
-                    Ok(new) => {
-                        if new.name != st.name {
-                            log(format!("switched to profile {}", new.name));
-                        } else {
-                            log(format!("profile {} changed", new.name));
-                        }
-                        if new.fallback != st.fallback {
-                            device::store_fallback(dev, &new.fallback)?;
-                            log("backup curve stored in the controller");
-                        }
-                        *st = new;
-                        error = None;
+        // Checked every frame (two stat calls), so edits and profile switches show at once.
+        if stamp() != cfg_stamp {
+            cfg_stamp = stamp();
+            match load() {
+                Ok(mut new) => {
+                    if new.manual != st.manual {
+                        log(format!("switched to profile {}", new.manual));
+                    } else {
+                        log(format!("profile {} changed", new.manual));
                     }
-                    Err(e) => {
-                        log(format!("config not loaded, keeping profile {}: {e}", st.name));
-                        error = Some(e);
+                    if new.fallback != st.fallback {
+                        device::store_fallback(dev, &new.fallback)?;
+                        log("backup curve stored in the controller");
                     }
+                    // keep the rule in charge until the next check, if it still exists
+                    let rule = st.rule.filter(|i| *i < new.cfg.auto.rules.len() && new.cfg.auto.enabled);
+                    new.rule = st.rule;
+                    new.apply_rule(rule);
+                    *st = new;
+                    error = None;
+                }
+                Err(e) => {
+                    log(format!("config not loaded, keeping profile {}: {e}", st.name));
+                    error = Some(e);
                 }
             }
+        }
+        if now >= next_sensor {
+            next_sensor = now + SENSOR_EVERY;
             let probes = dev.temps()?;
             let mut wanted = st.profile.sensors();
+            for p in st.cfg.profiles.values() {
+                wanted.extend(p.sensors());
+            }
+            wanted.extend(st.cfg.auto.rules.iter().filter_map(|r| r.sensor.clone()));
             wanted.extend(["probe1", "probe2", "cpu"].map(String::from));
             wanted.sort();
             wanted.dedup();
             temps = st.sensors.read(&probes, &wanted);
+            let rule = auto.evaluate(&st.cfg.auto, &temps);
+            st.apply_rule(rule);
             let fans = st.profile.fan_settings();
             let testing = testing_fans();
             let duties = if testing { [100, 100] } else { [fans[0].duty(&temps), fans[1].duty(&temps)] };
@@ -154,6 +196,8 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                 error: error.clone(),
                 history: history.iter().map(|(k, v)| (k.clone(), v.iter().copied().collect())).collect(),
                 testing_fans: testing,
+                manual_profile: st.manual.clone(),
+                auto_rule: st.rule.map(|i| st.cfg.auto.rules[i].describe()),
             }
             .write();
         }

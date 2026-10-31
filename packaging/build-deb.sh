@@ -13,6 +13,8 @@ rm -rf "$stage"
 install -Dm755 target/release/coreglowd      "$stage/usr/bin/coreglowd"
 install -Dm755 target/release/coreglowctl    "$stage/usr/bin/coreglowctl"
 install -Dm755 target/release/coreglow   "$stage/usr/bin/coreglow"
+install -Dm755 target/release/coreglow-tray "$stage/usr/bin/coreglow-tray"
+install -Dm644 packaging/coreglow-tray.desktop "$stage/etc/xdg/autostart/coreglow-tray.desktop"
 install -Dm644 packaging/coreglowd.service   "$stage/usr/lib/systemd/user/coreglowd.service"
 install -Dm644 packaging/70-coreglow.rules "$stage/usr/lib/udev/rules.d/70-coreglow.rules"
 install -Dm644 packaging/coreglow.desktop "$stage/usr/share/applications/coreglow.desktop"
@@ -22,6 +24,7 @@ install -Dm644 README.md                  "$stage/usr/share/doc/$pkg/README.md"
 install -Dm644 packaging/copyright        "$stage/usr/share/doc/$pkg/copyright"
 
 mkdir -p "$stage/DEBIAN"
+echo /etc/xdg/autostart/coreglow-tray.desktop > "$stage/DEBIAN/conffiles"
 size=$(du -ks "$stage/usr" | cut -f1)
 cat > "$stage/DEBIAN/control" <<EOF
 Package: $pkg

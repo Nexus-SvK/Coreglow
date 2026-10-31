@@ -216,6 +216,9 @@ pub struct Config {
     /// Curve the controller uses on its own when coreglowd isn't running.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fallback: Option<Fallback>,
+    /// Rules that switch profiles automatically.
+    #[serde(default, skip_serializing_if = "Auto::is_empty")]
+    pub auto: Auto,
     #[serde(default)]
     pub profiles: IndexMap<String, Profile>,
 }
@@ -224,6 +227,104 @@ pub struct Config {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Fallback {
     pub curve: Vec<(Num, Num)>,
+}
+
+/// Automatic profile switching: the first rule that matches decides the profile;
+/// with none matching (or switched off) the profile chosen by hand is used.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
+pub struct Auto {
+    #[serde(default)]
+    pub enabled: bool,
+    #[serde(default)]
+    pub rules: Vec<Rule>,
+}
+
+impl Auto {
+    pub fn is_empty(&self) -> bool {
+        !self.enabled && self.rules.is_empty()
+    }
+}
+
+/// `when` is one of: "temp-above" (sensor, temp), "process" (name), "time" (from, to), "locked".
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Rule {
+    pub when: String,
+    pub profile: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sensor: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub temp: Option<Num>,
+    /// Part of a running program's command line, e.g. "steamapps" for Steam games.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub from: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub to: Option<String>,
+}
+
+pub const RULE_KINDS: [(&str, &str); 4] = [
+    ("temp-above", "A temperature is above"),
+    ("process", "A program is running"),
+    ("time", "During a time of day"),
+    ("locked", "The screen is locked"),
+];
+
+/// "HH:MM" → minutes after midnight.
+pub fn parse_hm(s: &str) -> Option<u32> {
+    let (h, m) = s.trim().split_once(':')?;
+    let (h, m): (u32, u32) = (h.parse().ok()?, m.parse().ok()?);
+    (h < 24 && m < 60).then_some(h * 60 + m)
+}
+
+impl Rule {
+    /// A new rule of the given kind with sensible values.
+    pub fn new(when: &str, profile: &str) -> Rule {
+        let mut r = Rule { when: when.into(), profile: profile.into(), sensor: None, temp: None, name: None, from: None, to: None };
+        match when {
+            "temp-above" => {
+                r.sensor = Some("cpu".into());
+                r.temp = Some(Num(80.0));
+            }
+            "process" => r.name = Some("steamapps".into()),
+            "time" => {
+                r.from = Some("23:00".into());
+                r.to = Some("07:00".into());
+            }
+            _ => {}
+        }
+        r
+    }
+
+    /// Plain-language condition, e.g. "Processor (CPU) is above 85 °C".
+    pub fn describe(&self) -> String {
+        match self.when.as_str() {
+            "temp-above" => format!(
+                "{} is above {} °C",
+                crate::sensors::label(self.sensor.as_deref().unwrap_or("cpu")),
+                self.temp.map_or(0.0, |t| t.0)
+            ),
+            "process" => format!("a program matching “{}” is running", self.name.as_deref().unwrap_or("")),
+            "time" => format!("it's between {} and {}", self.from.as_deref().unwrap_or("?"), self.to.as_deref().unwrap_or("?")),
+            "locked" => "the screen is locked".into(),
+            other => format!("unknown condition “{other}”"),
+        }
+    }
+
+    fn validate(&self, profiles: &IndexMap<String, Profile>) -> Result<(), String> {
+        if !profiles.contains_key(&self.profile) {
+            return Err(format!("automatic rule uses profile '{}', which doesn't exist", self.profile));
+        }
+        match self.when.as_str() {
+            "temp-above" if self.temp.is_none() => Err("“temperature above” rule needs a temp".into()),
+            "process" if self.name.as_deref().is_none_or(|n| n.trim().is_empty()) => Err("“program running” rule needs a name".into()),
+            "time" if self.from.as_deref().and_then(parse_hm).is_none() || self.to.as_deref().and_then(parse_hm).is_none() => {
+                Err("“time of day” rule needs from and to as HH:MM".into())
+            }
+            "temp-above" | "process" | "time" | "locked" => Ok(()),
+            other => Err(format!("unknown automatic rule '{other}' (use temp-above, process, time or locked)")),
+        }
+    }
 }
 
 pub const FALLBACK_DEFAULT: [(f64, f64); 6] = [(25.0, 30.0), (30.0, 35.0), (35.0, 45.0), (40.0, 60.0), (45.0, 80.0), (50.0, 100.0)];
@@ -286,6 +387,9 @@ impl Config {
     pub fn validate(&self) -> Result<(), String> {
         if self.profiles.is_empty() {
             return Err("there must be at least one profile".into());
+        }
+        for r in &self.auto.rules {
+            r.validate(&self.profiles)?;
         }
         if let Some(f) = &self.fallback {
             if f.curve.len() < 2 || f.curve.len() > FALLBACK_MAX_POINTS {
@@ -357,6 +461,23 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn auto_rules_are_read_checked_and_kept() {
+        let text = format!(
+            "{BUILTIN_DEFAULT}\n[auto]\nenabled = true\nrules = [\n  {{ when = \"temp-above\", sensor = \"cpu\", temp = 85, profile = \"cpu-temp\" }},\n  {{ when = \"time\", from = \"23:00\", to = \"07:00\", profile = \"quiet\" }},\n  {{ when = \"locked\", profile = \"off\" }},\n]\n"
+        );
+        let mut cfg: Config = toml::from_str(&text).unwrap();
+        cfg.validate().unwrap();
+        assert_eq!(cfg.auto.rules.len(), 3);
+        let again: Config = toml::from_str(&toml::to_string(&cfg).unwrap()).unwrap();
+        assert_eq!(cfg, again);
+        cfg.auto.rules[1].from = Some("25:00".into());
+        assert!(cfg.validate().is_err(), "bad time");
+        cfg.auto.rules[1] = Rule::new("time", "no-such-profile");
+        assert!(cfg.validate().is_err(), "unknown profile");
+        assert_eq!(parse_hm("07:30"), Some(450));
+    }
 
     #[test]
     fn fallback_curve_is_read_checked_and_kept() {

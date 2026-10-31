@@ -15,6 +15,7 @@ usage: coreglowctl COMMAND
   edit              open the profiles file in $EDITOR
   path              print where the profiles file is
   test-fans         run the radiator fans at full speed for 5 seconds
+  auto [on|off]     show the automatic switching rules, or turn them on or off
   fallback          store the hardware fallback fan curve (only while coreglowd is stopped)
   gui               open the window (coreglow)";
 
@@ -84,6 +85,25 @@ fn main() {
             let pts: Vec<String> = curve.iter().map(|(t, d)| format!("{t}°C {d}%")).collect();
             println!("fallback stored: fans 1-2 follow probe 1 ({}), pump 100 %", pts.join(", "));
         }
+        ("auto", 1) | ("auto", 2) => {
+            let mut cfg = Config::load().unwrap_or_else(|e| fail(e));
+            if let Some(arg) = args.get(1) {
+                cfg.auto.enabled = match arg.as_str() {
+                    "on" => true,
+                    "off" => false,
+                    _ => fail("use: coreglowctl auto on|off"),
+                };
+                cfg.active = cfg.active_name();
+                cfg.save().unwrap_or_else(|e| fail(e));
+            }
+            println!("automatic switching is {}", if cfg.auto.enabled { "on" } else { "off" });
+            if cfg.auto.rules.is_empty() {
+                println!("  no rules yet: add them on the Profiles page of the window, or as [auto] in {}", paths::config_file().display());
+            }
+            for (i, r) in cfg.auto.rules.iter().enumerate() {
+                println!("  {}. when {} → {}", i + 1, r.describe(), r.profile);
+            }
+        }
         ("test-fans", 1) => {
             if !Status::read().is_some_and(|s| s.fresh()) {
                 fail("coreglowd isn't running; start it first: systemctl --user start coreglowd");
@@ -113,6 +133,9 @@ fn status() {
         println!("problem  {e}");
     }
     println!("profile  {}", s.profile);
+    if let Some(rule) = &s.auto_rule {
+        println!("auto     in use because {rule} (chosen by hand: {})", s.manual_profile);
+    }
     println!("temps    {}", s.temps.iter().map(|(k, v)| format!("{} {v:.1} °C", sensors::label(k))).collect::<Vec<_>>().join("   "));
     println!("fans     {}", s.fan_duty.iter().map(|(k, v)| format!("{k} {v} %")).collect::<Vec<_>>().join("   "));
     println!("rpm      {}", s.rpm.iter().map(|(k, v)| format!("{k} {v}")).collect::<Vec<_>>().join("   "));

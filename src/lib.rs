@@ -5,6 +5,7 @@
 //! commander_core driver and iCUE's BragiProtocols.dll (file IDs from its
 //! `bragiprotocol::FileId` enum).
 
+pub mod auto;
 pub mod config;
 pub mod device;
 pub mod effects;

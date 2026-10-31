@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Coreglow tray icon
+Comment=Quick profile switching for Coreglow in the system tray
+Exec=coreglow-tray
+Icon=coreglow
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-after=panel

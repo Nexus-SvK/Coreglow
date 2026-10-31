@@ -13,8 +13,10 @@ Lighting effects, profiles and fan control for the **Corsair iCUE Commander Core
 - `coreglowd`: user service that drives the controller (lighting at ~30 fps, fan duties for fans 1 and 2).
   When it stops, it stores a backup curve in the controller (fans 1 and 2 follow probe 1, pump at 100 %);
   the curve is editable on the Fans page or as `[fallback]` in the config.
-- `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `test-fans`, `edit`, `fallback`, `gui`.
-- `coreglow`: window ("Coreglow" in the app menu) for profiles, effects, per-part lighting and fan curves.
+- `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `auto [on|off]`, `test-fans`, `edit`, `fallback`, `gui`.
+- `coreglow`: window ("Coreglow" in the app menu) for profiles, effects, per-part lighting, fan curves and
+  automatic profile switching (by temperature, running program, time of day or locked screen).
+- `coreglow-tray`: tray icon (starts at login) for switching profiles, automatic switching on/off and testing fans.
 
 Profiles live in `~/.config/coreglow/config.toml` (created from `/usr/share/coreglow/config.toml`,
 or copied from `~/.config/ccxt/` if you used ccxt-control 0.1,
