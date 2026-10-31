@@ -265,9 +265,7 @@ impl Device {
     }
 }
 
-/// The controller's fallback: fans 1 and 2 on a probe-1 curve, pump at 100 %.
-pub const FALLBACK_CURVE: [(f64, f64); 6] = [(25.0, 30.0), (30.0, 35.0), (35.0, 45.0), (40.0, 60.0), (45.0, 80.0), (50.0, 100.0)];
-
-pub fn store_fallback(dev: &mut Device) -> Result<()> {
-    dev.store_hardware_cooling(&[0, 1], &FALLBACK_CURVE, &[(PUMP_CHANNEL, 100)])
+/// The controller's fallback: fans 1 and 2 on `curve` (probe 1), pump at 100 %.
+pub fn store_fallback(dev: &mut Device, curve: &[(f64, f64)]) -> Result<()> {
+    dev.store_hardware_cooling(&[0, 1], curve, &[(PUMP_CHANNEL, 100)])
 }

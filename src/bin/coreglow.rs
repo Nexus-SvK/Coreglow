@@ -11,8 +11,9 @@ use eframe::egui::{self, Align2, Color32, FontId, Pos2, Rect, RichText, Sense, S
 
 use coreglow::config::{
     color_hex, curve_of, parse_color, Config, Effect, EffectKind, Fans, Num, Profile, PRESET_BALANCED,
-    PRESET_PERFORMANCE, PRESET_QUIET,
+    PRESET_PERFORMANCE, PRESET_QUIET, Fallback, FALLBACK_DEFAULT, FALLBACK_MAX_POINTS,
 };
+use coreglow::effects::Temps;
 use coreglow::status::{Status, HISTORY_EVERY_S};
 use coreglow::{paths, sensors, zones};
 
@@ -71,6 +72,8 @@ struct App {
     file_stamp: (Option<SystemTime>, Option<SystemTime>),
     confirm_delete: bool,
     drag: Option<usize>,
+    fallback_drag: Option<usize>,
+    recent: Recent,
     gpu: bool,
     load_error: Option<String>,
 }
@@ -98,6 +101,8 @@ impl App {
             file_stamp: stamp(),
             confirm_delete: false,
             drag: None,
+            fallback_drag: None,
+            recent: Recent::load(),
             gpu: sensors::nvidia_available(),
             load_error,
         }
@@ -250,22 +255,84 @@ const SWATCHES: [(&str, &str); 7] = [
     ("a43bff", "Purple"),
 ];
 
-/// Preset swatches plus the custom picker.
-fn color_choice(ui: &mut egui::Ui, hex: &mut String) -> bool {
+/// Recently used custom colours, newest first, kept in ~/.config/coreglow/recent-colors.
+struct Recent {
+    list: Vec<String>,
+    /// A custom colour being picked; remembered once the picker has been still for a moment.
+    pending: Option<(String, Instant)>,
+}
+
+impl Recent {
+    const MAX: usize = 8;
+
+    fn load() -> Self {
+        let list = std::fs::read_to_string(paths::recent_colors_file())
+            .unwrap_or_default()
+            .lines()
+            .map(|l| l.trim().to_lowercase())
+            .filter(|l| parse_color(l).is_ok())
+            .take(Self::MAX)
+            .collect();
+        Recent { list, pending: None }
+    }
+
+    fn picked(&mut self, hex: &str) {
+        self.pending = Some((hex.to_lowercase(), Instant::now()));
+    }
+
+    /// Called every frame: store the pending colour after the picker settles.
+    fn commit(&mut self) {
+        let Some((hex, at)) = &self.pending else { return };
+        if at.elapsed() < Duration::from_millis(1200) {
+            return;
+        }
+        let hex = hex.clone();
+        self.pending = None;
+        if SWATCHES.iter().any(|(c, _)| *c == hex) {
+            return;
+        }
+        self.list.retain(|c| *c != hex);
+        self.list.insert(0, hex);
+        self.list.truncate(Self::MAX);
+        let _ = std::fs::create_dir_all(paths::config_dir());
+        let _ = std::fs::write(paths::recent_colors_file(), self.list.join("\n") + "\n");
+    }
+}
+
+fn swatch(ui: &mut egui::Ui, hex: &mut String, c: &str, name: &str) -> bool {
+    let sel = hex.eq_ignore_ascii_case(c);
+    let (rect, resp) = ui.allocate_exact_size(Vec2::splat(30.0), Sense::click());
+    let stroke = if sel { Stroke::new(3.0, ui.visuals().selection.bg_fill) } else { Stroke::new(1.0, Color32::from_gray(70)) };
+    ui.painter().rect(rect, 7.0, color32(c), stroke, egui::StrokeKind::Inside);
+    if resp.on_hover_text(name).clicked() && !sel {
+        *hex = c.to_string();
+        return true;
+    }
+    false
+}
+
+/// Preset swatches, recently used colours and the custom picker.
+fn color_choice(ui: &mut egui::Ui, hex: &mut String, recent: &mut Recent) -> bool {
     let mut changed = false;
-    ui.horizontal_wrapped(|ui| {
-        for (c, name) in SWATCHES {
-            let sel = hex.eq_ignore_ascii_case(c);
-            let (rect, resp) = ui.allocate_exact_size(Vec2::splat(30.0), Sense::click());
-            let stroke = if sel { Stroke::new(3.0, ui.visuals().selection.bg_fill) } else { Stroke::new(1.0, Color32::from_gray(70)) };
-            ui.painter().rect(rect, 7.0, color32(c), stroke, egui::StrokeKind::Inside);
-            if resp.on_hover_text(name).clicked() && !sel {
-                *hex = c.to_string();
+    ui.vertical(|ui| {
+        ui.horizontal_wrapped(|ui| {
+            for (c, name) in SWATCHES {
+                changed |= swatch(ui, hex, c, name);
+            }
+            ui.label(RichText::new("custom").weak());
+            if color_button(ui, hex) {
+                recent.picked(hex);
                 changed = true;
             }
+        });
+        if !recent.list.is_empty() {
+            ui.horizontal_wrapped(|ui| {
+                ui.label(RichText::new("recent").weak());
+                for c in recent.list.clone() {
+                    changed |= swatch(ui, hex, &c, &format!("#{c}"));
+                }
+            });
         }
-        ui.label(RichText::new("custom").weak());
-        changed |= color_button(ui, hex);
     });
     changed
 }
@@ -353,15 +420,46 @@ fn led_strip(ui: &mut egui::Ui, status: Option<&Status>) {
 
 // ---------- lighting editor ----------
 
+/// One effect choice with a small live preview of what it looks like with the current colours.
+fn effect_button(ui: &mut egui::Ui, kind: EffectKind, current: &Effect) -> egui::Response {
+    let (name, desc) = effect_label(kind);
+    let selected = current.effect == kind;
+    let (rect, resp) = ui.allocate_exact_size(Vec2::new(150.0, 54.0), Sense::click());
+    let vis = ui.visuals();
+    let fill = if selected { NAV_ON } else if resp.hovered() { Color32::from_gray(52) } else { Color32::from_gray(42) };
+    let stroke = if selected { Stroke::new(2.0, vis.selection.bg_fill) } else { Stroke::new(1.0, Color32::from_gray(62)) };
+    let p = ui.painter();
+    p.rect(rect, 8.0, fill, stroke, egui::StrokeKind::Inside);
+    let text_col = if selected { Color32::WHITE } else { vis.text_color() };
+    p.text(rect.left_top() + Vec2::new(10.0, 8.0), Align2::LEFT_TOP, name, FontId::proportional(13.5), text_col);
+
+    let mut preview = current.clone();
+    if kind != current.effect {
+        preview.set_kind(kind);
+    }
+    let t = ui.input(|i| i.time);
+    // a made-up temperature sweeping 45-85 °C so "Shows temperature" visibly changes
+    let fake = 65.0 + 20.0 * (t * 0.5).sin();
+    let mut temps = Temps::new();
+    temps.insert(preview.sensor.clone().unwrap_or_else(|| "cpu".into()), fake);
+    let n = 24;
+    let px = preview.render(n, t, &temps);
+    let bar = Rect::from_min_size(rect.left_bottom() + Vec2::new(10.0, -18.0), Vec2::new(rect.width() - 20.0, 8.0));
+    p.rect_filled(bar, 3.0, Color32::from_gray(15));
+    let w = bar.width() / n as f32;
+    for (i, c) in px.iter().enumerate() {
+        let r = Rect::from_min_size(Pos2::new(bar.left() + w * i as f32, bar.top()), Vec2::new(w + 0.5, bar.height()));
+        p.rect_filled(r, 0.0, Color32::from_rgb(c[0], c[1], c[2]));
+    }
+    resp.on_hover_text(desc)
+}
+
 /// Returns true if anything changed.
-fn effect_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool) -> bool {
+fn effect_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool, recent: &mut Recent) -> bool {
     let mut changed = false;
     ui.horizontal_wrapped(|ui| {
         for k in EffectKind::ALL {
-            let (name, desc) = effect_label(k);
-            let sel = e.effect == k;
-            let text = if sel { RichText::new(name).strong() } else { RichText::new(name) };
-            if ui.add_sized([150.0, 34.0], egui::SelectableLabel::new(sel, text)).on_hover_text(desc).clicked() && !sel {
+            if effect_button(ui, k, e).clicked() && e.effect != k {
                 e.set_kind(k);
                 changed = true;
             }
@@ -371,7 +469,7 @@ fn effect_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool) -> bool {
     let kind = e.effect;
     if matches!(kind, EffectKind::Static | EffectKind::Breathing | EffectKind::Flash) {
         let c = e.color.get_or_insert_with(|| "ffffff".into());
-        row(ui, "Colour", |ui| changed |= color_choice(ui, c));
+        row(ui, "Colour", |ui| changed |= color_choice(ui, c, recent));
     }
     if matches!(kind, EffectKind::ColorShift | EffectKind::ColorWave) {
         let max = if kind == EffectKind::ColorWave { 2 } else { 6 };
@@ -476,7 +574,14 @@ fn temperature_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool) -> boo
 
 // ---------- fan curve ----------
 
-fn curve_ui(ui: &mut egui::Ui, curve: &mut Vec<(Num, Num)>, now: Option<f64>, recent: Option<(f64, f64)>, drag: &mut Option<usize>) -> bool {
+fn curve_ui(
+    ui: &mut egui::Ui,
+    curve: &mut Vec<(Num, Num)>,
+    now: Option<f64>,
+    recent: Option<(f64, f64)>,
+    drag: &mut Option<usize>,
+    max_points: usize,
+) -> bool {
     const X0: f32 = 20.0;
     const X1: f32 = 100.0;
     let mut changed = false;
@@ -558,7 +663,7 @@ fn curve_ui(ui: &mut egui::Ui, curve: &mut Vec<(Num, Num)>, now: Option<f64>, re
     if resp.double_clicked() {
         if let Some(pos) = resp.interact_pointer_pos() {
             let (tt, dd) = ((tx(pos.x) as f64).round(), (ty(pos.y) as f64).round().clamp(0.0, 100.0));
-            if tt > X0 as f64 && tt < X1 as f64 && !curve.iter().any(|c| c.0 .0 == tt) {
+            if curve.len() < max_points && tt > X0 as f64 && tt < X1 as f64 && !curve.iter().any(|c| c.0 .0 == tt) {
                 curve.push((Num(tt), Num(dd)));
                 changed = true;
             }
@@ -615,7 +720,7 @@ fn fans_ui(ui: &mut egui::Ui, f: &mut Fans, gpu: bool, status: Option<&Status>, 
         }
         full = ui.button("Full speed").clicked();
     });
-    changed |= curve_ui(ui, curve, now, recent, drag);
+    changed |= curve_ui(ui, curve, now, recent, drag, 12);
     ui.label(RichText::new("Drag a dot to change it · double-click to add · right-click to remove · click a dot, then use the arrow keys for fine steps").weak().small());
     if full {
         f.fixed = Some(Num(100.0));
@@ -848,7 +953,7 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
                 None => {
                     title(ui, "Effect for the whole PC");
                     ui.add_space(6.0);
-                    changed |= effect_ui(ui, &mut p.lighting, "main", gpu);
+                    changed |= effect_ui(ui, &mut p.lighting, "main", gpu, &mut app.recent);
                 }
                 Some(z) => {
                     title(ui, zones::label(z));
@@ -866,7 +971,7 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
                     });
                     ui.add_space(6.0);
                     if let Some(e) = p.zones.get_mut(z) {
-                        changed |= effect_ui(ui, e, z, gpu);
+                        changed |= effect_ui(ui, e, z, gpu, &mut app.recent);
                         ui.add_space(4.0);
                         ui.label(RichText::new("If two choices cover the same part (for example “Both fans” and “Left fan”), the one lower in the list wins.").weak().small());
                     } else {
@@ -910,6 +1015,15 @@ fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
                 ui.add_space(4.0);
                 sparkline(ui, &s.and_then(|st| st.history.get("fan1_rpm")).cloned().unwrap_or_default(), SKY, 30.0);
                 ui.label(RichText::new("right fan, last 10 minutes").weak().small());
+                ui.add_space(6.0);
+                if s.is_some_and(|st| st.testing_fans) {
+                    ui.label(RichText::new("Testing: fans at full speed…").color(AMBER));
+                } else {
+                    let btn = egui::Button::new("Test fans (full speed for 5 s)").min_size(Vec2::new(ui.available_width(), 36.0));
+                    if ui.add_enabled(s.is_some(), btn).on_disabled_hover_text("The lighting service isn't running").clicked() {
+                        let _ = paths::request_fan_test();
+                    }
+                }
             });
             ui.add_space(12.0);
             card(ui, |ui| {
@@ -917,10 +1031,27 @@ fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
                 ui.label(RichText::new(format!("{} rpm", s.and_then(|st| st.rpm.get("pump")).copied().unwrap_or(0))).strong().size(22.0));
                 ui.label(RichText::new("Runs at full speed while the lighting is controlled from the PC. That keeps the CPU cool and is normal.").weak());
             });
-            ui.add_space(12.0);
-            card(ui, |ui| {
-                title(ui, "When Coreglow is closed");
-                ui.label(RichText::new("The controller keeps its own backup curve: fans follow case probe 1, pump at full speed.").weak());
+        });
+    });
+
+    ui.add_space(12.0);
+    card(ui, |ui| {
+        title(ui, "When Coreglow is closed");
+        ui.label(RichText::new("The controller keeps its own backup curve. It only reads case probe 1, and the pump always stays at full speed. Changes are stored in the controller within a second.").weak());
+        ui.add_space(6.0);
+        egui::CollapsingHeader::new("Edit backup curve").id_salt("fallback-edit").show(ui, |ui| {
+            let fb = app.cfg.fallback.get_or_insert_with(|| Fallback { curve: curve_of(&FALLBACK_DEFAULT) });
+            let now = s.and_then(|st| st.temps.get("probe1").copied());
+            let recent = s.and_then(|st| st.history.get("probe1")).filter(|h| h.len() > 1).map(|h| {
+                (h.iter().copied().fold(f64::MAX, f64::min), h.iter().copied().fold(f64::MIN, f64::max))
+            });
+            changed |= curve_ui(ui, &mut fb.curve, now, recent, &mut app.fallback_drag, FALLBACK_MAX_POINTS);
+            ui.horizontal(|ui| {
+                ui.label(RichText::new(format!("{} of {FALLBACK_MAX_POINTS} points", fb.curve.len())).weak().small());
+                if ui.small_button("Reset to default").clicked() {
+                    fb.curve = curve_of(&FALLBACK_DEFAULT);
+                    changed = true;
+                }
             });
         });
     });
@@ -1069,7 +1200,10 @@ impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         self.poll();
         self.autosave();
-        ctx.request_repaint_after(Duration::from_millis(500));
+        self.recent.commit();
+        // effect previews animate on the Lighting page
+        let repaint = if self.page == Page::Lighting { 33 } else { 500 };
+        ctx.request_repaint_after(Duration::from_millis(repaint));
 
         if let Some(e) = &self.load_error {
             egui::CentralPanel::default().show(ctx, |ui| {

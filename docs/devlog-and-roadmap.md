@@ -76,11 +76,11 @@ Ordered by value for the user. The design canvas has screens for items marked �
 ### Next (small, high value)
 - [x] **Sidebar layout and Home screen** 🎨 (0.3.0): live tiles with 10-minute sparklines, click-a-part picture,
       quick buttons (lights off, quiet fans). Needs coreglowd to keep a short history in the status file.
-- [ ] **Effect previews** 🎨: small animated swatches on the effect buttons, and a 69-LED preview strip.
-- [x] **Colour presets row** 🎨 next to the custom picker (0.3.0). Still to do: remember recently used colours.
+- [x] **Effect previews** 🎨: animated preview on every effect button (0.4.0); LED preview strip (0.3.0).
+- [x] **Colour presets row** 🎨 next to the custom picker (0.3.0), recently used colours (0.4.0).
 - [x] **Keyboard support on the fan curve**: click a dot, arrow keys move it (0.3.0).
-- [ ] **"Test fans" button** 🎨: full speed for 5 s, then back to the curve (a `coreglowd` command via a file or socket).
-- [ ] **Edit the hardware fallback curve** 🎨 in the GUI (today it's a constant in `device.rs`). Store it in the config.
+- [x] **"Test fans" button** 🎨 and `coreglowctl test-fans`: full speed for 5 s via a request file (0.4.0).
+- [x] **Edit the hardware fallback curve** 🎨: `[fallback]` in the config, editor on the Fans page, re-stored on change (0.4.0).
 
 ### Then
 - [ ] **Automatic profile switching** 🎨: rules by time of day, CPU or GPU temperature, a running process
@@ -105,6 +105,15 @@ Ordered by value for the user. The design canvas has screens for items marked �
       the pump on channel 0.
 
 ## Release notes
+
+### 0.4.0 (2026-10-31)
+- Backup curve (what the controller does when Coreglow isn't running) is now a `[fallback]` table in the config
+  (2-7 points, case probe 1), editable on the Fans page. coreglowd stores it at start, on change and on exit.
+  Verified on the controller by reading file 0x6d62 back.
+- "Test fans": button on the Fans page and `coreglowctl test-fans`; coreglowd runs fans 1 and 2 at 100 % for 5 s
+  (request file `$XDG_RUNTIME_DIR/coreglow-test-fans`, `testing_fans` in the status file).
+- Effect buttons show an animated preview with the current colours.
+- Recently used custom colours (`~/.config/coreglow/recent-colors`) next to the colour swatches.
 
 ### 0.3.0 (2026-10-31)
 New window layout from the design: sidebar with Home, Lighting, Fans and Profiles pages. Home has live tiles with
