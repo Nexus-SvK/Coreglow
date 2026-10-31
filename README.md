@@ -4,6 +4,12 @@
 
 Lighting effects, profiles and fan control for the **Corsair iCUE Commander Core XT** on Linux, without iCUE.
 
+![Coreglow home screen](docs/screenshots/home.png)
+
+| Lighting | Fans | Profiles |
+|---|---|---|
+| ![Lighting](docs/screenshots/lighting.png) | ![Fans](docs/screenshots/fans.png) | ![Profiles](docs/screenshots/profiles.png) |
+
 - `coreglowd`: user service that drives the controller (lighting at ~30 fps, fan duties for fans 1 and 2).
   When it stops, it stores a fallback curve in the controller (fans 1 and 2 follow probe 1, pump at 100 %).
 - `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `edit`, `fallback`, `gui`.

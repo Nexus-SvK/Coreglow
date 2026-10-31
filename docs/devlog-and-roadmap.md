@@ -74,11 +74,11 @@ and `coreglow-status.json` (written by coreglowd). No socket or D-Bus yet.
 Ordered by value for the user. The design canvas has screens for items marked 🎨.
 
 ### Next (small, high value)
-- [ ] **Sidebar layout and Home screen** 🎨: live tiles with 10-minute sparklines, click-a-part picture,
+- [x] **Sidebar layout and Home screen** 🎨 (0.3.0): live tiles with 10-minute sparklines, click-a-part picture,
       quick buttons (lights off, quiet fans). Needs coreglowd to keep a short history in the status file.
 - [ ] **Effect previews** 🎨: small animated swatches on the effect buttons, and a 69-LED preview strip.
-- [ ] **Colour presets row** 🎨 next to the custom picker; remember recently used colours.
-- [ ] **Keyboard support on the fan curve**: arrow keys move the selected dot.
+- [x] **Colour presets row** 🎨 next to the custom picker (0.3.0). Still to do: remember recently used colours.
+- [x] **Keyboard support on the fan curve**: click a dot, arrow keys move it (0.3.0).
 - [ ] **"Test fans" button** 🎨: full speed for 5 s, then back to the curve (a `coreglowd` command via a file or socket).
 - [ ] **Edit the hardware fallback curve** 🎨 in the GUI (today it's a constant in `device.rs`). Store it in the config.
 
@@ -105,6 +105,13 @@ Ordered by value for the user. The design canvas has screens for items marked �
       the pump on channel 0.
 
 ## Release notes
+
+### 0.3.0 (2026-10-31)
+New window layout from the design: sidebar with Home, Lighting, Fans and Profiles pages. Home has live tiles with
+10-minute graphs (coreglowd now keeps `history` in the status file), a clickable picture of the PC and quick buttons.
+Lighting: pick a part on the left, edit it on the right, colour swatches, a preview strip of all LEDs.
+Fans: curve with the last 10 minutes' temperature range, arrow-key fine tuning, live rpm. Profiles: cards with
+colour previews. `coreglow --page lighting|fans|profiles` opens on a page.
 
 ### 0.2.0 (2026-10-31)
 Renamed from ccxt-control to **Coreglow** (the name ccxt clashes with the CCXT trading library).
