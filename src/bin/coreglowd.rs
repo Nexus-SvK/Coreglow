@@ -33,10 +33,14 @@ fn stamp() -> (Option<SystemTime>, Option<SystemTime>) {
     (m(paths::config_file()), m(paths::active_file()))
 }
 
+/// How long a "test fans" request runs them at full speed.
+const TEST_FANS_FOR: Duration = Duration::from_secs(5);
+
 struct State {
     profile: Profile,
     name: String,
     sensors: Sensors,
+    fallback: Vec<(f64, f64)>,
 }
 
 fn load() -> Result<State, String> {
@@ -44,13 +48,22 @@ fn load() -> Result<State, String> {
     let name = cfg.active_name();
     let profile = cfg.profiles[&name].clone();
     let sensors = Sensors::new(&cfg.sensors);
-    Ok(State { profile, name, sensors })
+    Ok(State { profile, name, sensors, fallback: cfg.fallback_curve() })
+}
+
+/// True while a "test fans" request (the request file touched by the GUI or CLI) is recent.
+fn testing_fans() -> bool {
+    std::fs::metadata(paths::test_fans_file())
+        .and_then(|m| m.modified())
+        .ok()
+        .and_then(|t| t.elapsed().ok())
+        .is_some_and(|age| age < TEST_FANS_FOR)
 }
 
 /// Runs until `stop` is set or the device fails. Err = device error (reconnect).
 fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String> {
     dev.wake()?;
-    device::store_fallback(dev)?;
+    device::store_fallback(dev, &st.fallback)?;
     dev.init_lighting()?;
     let all_parts = zones::PICTURE_ZONES.map(|z| (z, zones::zone(z)[0]));
     let t0 = Instant::now();
@@ -77,6 +90,10 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                         } else {
                             log(format!("profile {} changed", new.name));
                         }
+                        if new.fallback != st.fallback {
+                            device::store_fallback(dev, &new.fallback)?;
+                            log("backup curve stored in the controller");
+                        }
                         *st = new;
                         error = None;
                     }
@@ -93,7 +110,8 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
             wanted.dedup();
             temps = st.sensors.read(&probes, &wanted);
             let fans = st.profile.fan_settings();
-            let duties = [fans[0].duty(&temps), fans[1].duty(&temps)];
+            let testing = testing_fans();
+            let duties = if testing { [100, 100] } else { [fans[0].duty(&temps), fans[1].duty(&temps)] };
             let moved = sent.is_none_or(|s| s.iter().zip(duties).any(|(a, b)| a.abs_diff(b) >= 2));
             if moved || now - last_fan >= RESEND_EVERY {
                 dev.set_duties(&[(0, duties[0]), (1, duties[1])])?;
@@ -135,6 +153,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                 },
                 error: error.clone(),
                 history: history.iter().map(|(k, v)| (k.clone(), v.iter().copied().collect())).collect(),
+                testing_fans: testing,
             }
             .write();
         }
@@ -190,7 +209,7 @@ fn main() {
         log(format!("controller at {}", dev.path.display()));
         let result = run(&mut dev, &mut st, &stop);
         // Hand the controller back to its own fallback curve, whatever happened.
-        let _ = dev.wake().and_then(|_| device::store_fallback(&mut dev)).and_then(|_| dev.sleep());
+        let _ = dev.wake().and_then(|_| device::store_fallback(&mut dev, &st.fallback)).and_then(|_| dev.sleep());
         match result {
             Ok(()) => log("controller back in hardware mode"),
             Err(e) => {

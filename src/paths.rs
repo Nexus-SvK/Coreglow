@@ -31,12 +31,30 @@ pub fn active_file() -> PathBuf {
     config_dir().join("active")
 }
 
+fn runtime_dir() -> PathBuf {
+    std::env::var_os("XDG_RUNTIME_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from(format!("/run/user/{}", unsafe { libc::getuid() })))
+}
+
 /// Live values from the daemon, refreshed every second.
 pub fn status_file() -> PathBuf {
-    let dir = std::env::var_os("XDG_RUNTIME_DIR")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from(format!("/run/user/{}", unsafe { libc::getuid() })));
-    dir.join("coreglow-status.json")
+    runtime_dir().join("coreglow-status.json")
+}
+
+/// Touching this file asks coreglowd to run the fans at full speed for a few seconds.
+pub fn test_fans_file() -> PathBuf {
+    runtime_dir().join("coreglow-test-fans")
+}
+
+/// Ask coreglowd to test the fans (full speed for a few seconds).
+pub fn request_fan_test() -> std::io::Result<()> {
+    std::fs::write(test_fans_file(), b"")
+}
+
+/// Recently used custom colours, newest first (GUI only).
+pub fn recent_colors_file() -> PathBuf {
+    config_dir().join("recent-colors")
 }
 
 /// Create the user's config if it doesn't exist yet: copied from the pre-rename

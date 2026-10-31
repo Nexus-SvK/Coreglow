@@ -213,8 +213,33 @@ pub struct Config {
     pub active: String,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub sensors: BTreeMap<String, String>,
+    /// Curve the controller uses on its own when coreglowd isn't running.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fallback: Option<Fallback>,
     #[serde(default)]
     pub profiles: IndexMap<String, Profile>,
+}
+
+/// Stored in the controller (hardware mode): fans 1 and 2 follow case probe 1, the pump stays at 100 %.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Fallback {
+    pub curve: Vec<(Num, Num)>,
+}
+
+pub const FALLBACK_DEFAULT: [(f64, f64); 6] = [(25.0, 30.0), (30.0, 35.0), (35.0, 45.0), (40.0, 60.0), (45.0, 80.0), (50.0, 100.0)];
+/// The controller's curve format holds at most this many points (liquidctl's limit).
+pub const FALLBACK_MAX_POINTS: usize = 7;
+
+impl Config {
+    /// The backup curve, sorted, as (°C, %) pairs.
+    pub fn fallback_curve(&self) -> Vec<(f64, f64)> {
+        let mut c: Vec<(f64, f64)> = match &self.fallback {
+            Some(f) => f.curve.iter().map(|(t, d)| (t.0, d.0)).collect(),
+            None => FALLBACK_DEFAULT.to_vec(),
+        };
+        c.sort_by(|a, b| a.0.total_cmp(&b.0));
+        c
+    }
 }
 
 pub fn parse_color(c: &str) -> Result<[u8; 3], String> {
@@ -261,6 +286,14 @@ impl Config {
     pub fn validate(&self) -> Result<(), String> {
         if self.profiles.is_empty() {
             return Err("there must be at least one profile".into());
+        }
+        if let Some(f) = &self.fallback {
+            if f.curve.len() < 2 || f.curve.len() > FALLBACK_MAX_POINTS {
+                return Err(format!("backup curve needs 2 to {FALLBACK_MAX_POINTS} points"));
+            }
+            if f.curve.iter().any(|(t, d)| !(0.0..=100.0).contains(&t.0) || !(0.0..=100.0).contains(&d.0)) {
+                return Err("backup curve points must be 0-100 °C and 0-100 %".into());
+            }
         }
         for (name, p) in &self.profiles {
             if name.is_empty() || name.len() > 40 || name.chars().any(|c| c.is_control() || c == '"') {
@@ -324,6 +357,20 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fallback_curve_is_read_checked_and_kept() {
+        let mut cfg: Config = toml::from_str(BUILTIN_DEFAULT).unwrap();
+        assert_eq!(cfg.fallback_curve(), FALLBACK_DEFAULT.to_vec());
+        let text = format!("{BUILTIN_DEFAULT}\n[fallback]\ncurve = [[50, 100], [20, 25]]\n");
+        cfg = toml::from_str(&text).unwrap();
+        cfg.validate().unwrap();
+        assert_eq!(cfg.fallback_curve(), vec![(20.0, 25.0), (50.0, 100.0)]);
+        let again: Config = toml::from_str(&toml::to_string(&cfg).unwrap()).unwrap();
+        assert_eq!(cfg, again);
+        cfg.fallback = Some(Fallback { curve: vec![(Num(30.0), Num(50.0))] });
+        assert!(cfg.validate().is_err(), "one point isn't a curve");
+    }
 
     #[test]
     fn default_config_parses_and_round_trips() {

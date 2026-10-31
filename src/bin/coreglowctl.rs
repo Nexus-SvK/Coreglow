@@ -14,6 +14,7 @@ usage: coreglowctl COMMAND
   brightness NAME N set the brightness of profile NAME's main lighting to N %
   edit              open the profiles file in $EDITOR
   path              print where the profiles file is
+  test-fans         run the radiator fans at full speed for 5 seconds
   fallback          store the hardware fallback fan curve (only while coreglowd is stopped)
   gui               open the window (coreglow)";
 
@@ -74,12 +75,21 @@ fn main() {
             if Status::read().is_some_and(|s| s.fresh()) {
                 fail("coreglowd is running; stop it first: systemctl --user stop coreglowd");
             }
+            let curve = Config::load().unwrap_or_else(|e| fail(e)).fallback_curve();
             let mut dev = Device::open().unwrap_or_else(|e| fail(e));
             dev.wake()
-                .and_then(|_| device::store_fallback(&mut dev))
+                .and_then(|_| device::store_fallback(&mut dev, &curve))
                 .and_then(|_| dev.sleep())
                 .unwrap_or_else(|e| fail(e));
-            println!("fallback stored: fans 1-2 on probe-1 curve, pump 100 %");
+            let pts: Vec<String> = curve.iter().map(|(t, d)| format!("{t}°C {d}%")).collect();
+            println!("fallback stored: fans 1-2 follow probe 1 ({}), pump 100 %", pts.join(", "));
+        }
+        ("test-fans", 1) => {
+            if !Status::read().is_some_and(|s| s.fresh()) {
+                fail("coreglowd isn't running; start it first: systemctl --user start coreglowd");
+            }
+            paths::request_fan_test().unwrap_or_else(|e| fail(e));
+            println!("fans at full speed for 5 seconds");
         }
         ("gui", 1) => {
             let err = std::process::Command::new("coreglow").spawn();

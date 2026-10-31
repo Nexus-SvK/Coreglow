@@ -20,6 +20,9 @@ pub struct Status {
     /// Recent readings, oldest first (one every HISTORY_EVERY_S seconds), for the GUI's graphs.
     #[serde(default)]
     pub history: BTreeMap<String, Vec<f64>>,
+    /// Fans are running at full speed for a "test fans" request.
+    #[serde(default)]
+    pub testing_fans: bool,
 }
 
 pub const HISTORY_EVERY_S: u64 = 10;
