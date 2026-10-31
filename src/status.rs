@@ -17,7 +17,14 @@ pub struct Status {
     pub zones: BTreeMap<String, String>,
     #[serde(default)]
     pub error: Option<String>,
+    /// Recent readings, oldest first (one every HISTORY_EVERY_S seconds), for the GUI's graphs.
+    #[serde(default)]
+    pub history: BTreeMap<String, Vec<f64>>,
 }
+
+pub const HISTORY_EVERY_S: u64 = 10;
+/// 60 samples x 10 s = the last 10 minutes.
+pub const HISTORY_LEN: usize = 60;
 
 pub fn now() -> f64 {
     std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0.0, |d| d.as_secs_f64())

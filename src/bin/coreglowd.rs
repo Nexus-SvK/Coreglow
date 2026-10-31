@@ -5,6 +5,7 @@
 //! hardware fallback curve, so the fans stay sensible without this daemon.
 //! Reconnects by itself when the controller disappears (unplugged, passed to a VM).
 
+use std::collections::{BTreeMap, VecDeque};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
@@ -60,6 +61,8 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
     let mut next_sensor = Instant::now();
     let mut last_frame: Vec<u8> = Vec::new();
     let mut error = None;
+    let mut history: BTreeMap<String, VecDeque<f64>> = BTreeMap::new();
+    let mut next_history = Instant::now();
 
     while !stop.load(Ordering::Relaxed) {
         let now = Instant::now();
@@ -101,6 +104,20 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                 last_fan = now;
             }
             let rpm = dev.speeds()?;
+            if now >= next_history {
+                next_history = now + Duration::from_secs(status::HISTORY_EVERY_S);
+                let r0 = rpm.first().copied().unwrap_or(0) as f64;
+                let samples = [("cpu", temps.get("cpu").copied()), ("probe1", temps.get("probe1").copied()), ("fan1_rpm", Some(r0))];
+                for (key, value) in samples {
+                    if let Some(v) = value {
+                        let h = history.entry(key.to_string()).or_default();
+                        h.push_back((v * 10.0).round() / 10.0);
+                        while h.len() > status::HISTORY_LEN {
+                            h.pop_front();
+                        }
+                    }
+                }
+            }
             let r = |i: usize| rpm.get(i).copied().unwrap_or(0);
             Status {
                 profile: st.name.clone(),
@@ -117,6 +134,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                         .collect()
                 },
                 error: error.clone(),
+                history: history.iter().map(|(k, v)| (k.clone(), v.iter().copied().collect())).collect(),
             }
             .write();
         }
