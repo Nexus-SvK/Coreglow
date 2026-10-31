@@ -1,4 +1,4 @@
-.TH COREGLOWCTL 1 "2026-10-31" "coreglow 0.6.0" "User Commands"
+.TH COREGLOWCTL 1 "2026-10-31" "coreglow 0.7.0" "User Commands"
 .SH NAME
 coreglowctl \- control Coreglow lighting and fan profiles from the command line
 .SH SYNOPSIS
@@ -36,6 +36,12 @@ Show the automatic switching rules, or turn automatic switching on or off.
 .BR motherboard " [" on | off ]
 Send the lighting to the motherboard too, through an OpenRGB server.
 .TP
+.B devices
+What's connected to each RGB port: the layout in use, and what the controller
+detected when
+.B coreglowd
+started (ports 1\(en6; the external port isn't auto-detected).
+.TP
 .B edit
 Open the profiles file in \fB$EDITOR\fR (nano by default) and check it afterwards.
 .TP
@@ -50,6 +56,23 @@ is stopped; it does this by itself otherwise.
 .B gui
 Open the window,
 .BR coreglow (1).
+.SH LAYOUT
+Without a
+.B [layout]
+table the built-in layout is used. A table lists the devices on each port in
+chain order, and may name parts:
+.PP
+.nf
+[layout]
+external = ["rgb-strip", "rgb-strip"]
+port1 = ["ql-fan", "ql-fan"]
+names = { fans = "port1", strips = "external" }
+.fi
+.PP
+Device ids: rgb-strip, strip-15, strip-21, strip-27, strip-40, strip-49,
+strip-84, triangle-9, ll-fan, ml-fan, hd-fan, 8-led-fan, ql-fan, pump-cap.
+Name selectors: a port ("port1"), a device on it ("external2"), a range of its
+LEDs ("external:0-9"), joined with "+". This is experimental.
 .SH FILES
 .TP
 .I ~/.config/coreglow/config.toml

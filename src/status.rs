@@ -32,6 +32,20 @@ pub struct Status {
     /// Motherboard sync through OpenRGB: what's connected, or why not (None = off).
     #[serde(default)]
     pub openrgb: Option<String>,
+    /// Per RGB port: the layout in use and what the controller detected (read at start).
+    #[serde(default)]
+    pub devices: Vec<PortInfo>,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct PortInfo {
+    pub port: String,
+    /// Device ids from the layout, in chain order.
+    pub configured: Vec<String>,
+    /// LEDs the controller detected (ports 1-6 only).
+    pub detected_leds: Option<u16>,
+    /// Best guess at what that is.
+    pub detected_kind: Option<String>,
 }
 
 pub const HISTORY_EVERY_S: u64 = 10;

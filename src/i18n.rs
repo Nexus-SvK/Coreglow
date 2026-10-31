@@ -224,6 +224,17 @@ static SK: &[(&str, &str)] = &[
     ("Switch profiles automatically", "Prepínať profily automaticky"),
     ("Open Coreglow", "Otvoriť Coreglow"),
     ("Hide this icon", "Skryť túto ikonu"),
+    // layout and devices
+    ("External RGB port", "Externý RGB port"),
+    ("RGB port {}", "RGB port {}"),
+    ("External device {}", "Externé zariadenie {}"),
+    ("What's connected", "Čo je pripojené"),
+    ("The lighting service reports this when it starts.", "Služba osvetlenia to zistí pri spustení."),
+    ("detected: {} ({} LEDs)", "zistené: {} ({} LED)"),
+    ("detected: {} LEDs", "zistené: {} LED"),
+    ("not auto-detected", "nezisťuje sa automaticky"),
+    ("nothing detected", "nič nezistené"),
+    ("A different build can describe its ports as [layout] in the profiles file (see man coreglowctl).", "Iná zostava môže opísať svoje porty ako [layout] v súbore profilov (pozri man coreglowctl)."),
 ];
 
 fn slovak() -> bool {

@@ -3,7 +3,7 @@
 use coreglow::config::{Config, Num};
 use coreglow::device::{self, Device};
 use coreglow::status::Status;
-use coreglow::{paths, sensors};
+use coreglow::{paths, sensors, zones};
 
 const USAGE: &str = "\
 usage: coreglowctl COMMAND
@@ -17,6 +17,7 @@ usage: coreglowctl COMMAND
   test-fans         run the radiator fans at full speed for 5 seconds
   auto [on|off]     show the automatic switching rules, or turn them on or off
   motherboard [on|off]  send the lighting to the motherboard too (through the OpenRGB server)
+  devices           what's connected to each RGB port: the layout in use and what the controller detects
   fallback          store the hardware fallback fan curve (only while coreglowd is stopped)
   gui               open the window (coreglow)";
 
@@ -85,6 +86,29 @@ fn main() {
                 .unwrap_or_else(|e| fail(e));
             let pts: Vec<String> = curve.iter().map(|(t, d)| format!("{t}°C {d}%")).collect();
             println!("fallback stored: fans 1-2 follow probe 1 ({}), pump 100 %", pts.join(", "));
+        }
+        ("devices", 1) => {
+            let cfg = Config::load().unwrap_or_else(|e| fail(e));
+            let layout = cfg.layout().unwrap_or_else(|e| fail(e));
+            println!("layout: {}", if cfg.layout.is_some() { "from [layout] in the profiles file" } else { "this build's (built in)" });
+            let status = Status::read().filter(|s| s.fresh());
+            for (i, port) in zones::PORTS.iter().enumerate() {
+                let devs: Vec<&str> = layout.ports[i].iter().map(|k| k.id).collect();
+                let leds: usize = layout.ports[i].iter().map(|k| k.leds).sum();
+                let configured = if devs.is_empty() { "nothing".to_string() } else { format!("{} ({leds} LEDs)", devs.join(", ")) };
+                let detected = status
+                    .as_ref()
+                    .and_then(|s| s.devices.iter().find(|d| d.port == *port))
+                    .map(|d| match (d.detected_leds, &d.detected_kind) {
+                        (Some(n), Some(k)) => format!("detected {n} LEDs: {k}"),
+                        (Some(n), None) => format!("detected {n} LEDs"),
+                        (None, _) if i == 0 => "not auto-detected".to_string(),
+                        (None, _) => "nothing detected".to_string(),
+                    })
+                    .unwrap_or_else(|| "(start coreglowd to see detection)".into());
+                println!("  {port:9} {configured:40} {detected}");
+            }
+            println!("parts: {}", layout.zone_names().join(", "));
         }
         ("motherboard", 1) | ("motherboard", 2) => {
             let mut cfg = Config::load().unwrap_or_else(|e| fail(e));

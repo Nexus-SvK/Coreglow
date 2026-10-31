@@ -131,13 +131,30 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
   drops it; the device address (bus 1, dev 8) stayed stable.
 - **[test]** Stopping iCUE's Windows services leaves iCUE showing "No supported CORSAIR devices found".
 
+## 8b. Device manifest (devices/commander_core_xt.rcc)
+
+- **[code]** A Qt resource bundle (`qres` v3, zlib). Unpacked: images plus `commander_core_xt_manifest.cuebmf`,
+  a 115 KB JSON manifest.
+- `LedChannelTypeToGeometryIndexMap` gives the geometry type byte of each device kind:
+  0 Autodetect, **1** LED strips (RgbStrip 10 LEDs, Strip15/21/27/40/49/84, triangles 9, extension cable 25),
+  **2** LL fan, **3** ML fan, **4** HD fan, **5** Fan8LedSeries, **6** QL fan, **12 (0x0c)** RgbPumpCap13Leds.
+- `DynamicGeometryTemplates` gives the LED count per kind (length of `ledsGeometry`): LL 16, ML 4, HD 12,
+  8-LED fan 8, QL 34, pump cap 13, RgbStrip 10.
+- So this build's stored layout = 6× QL slots on the external port (the 4 RgbStrips use the first 40 LEDs),
+  8-LED fans on ports 1 and 2, the 13-LED pump cap on port 3. This answers open question 3 below.
+- `RequiresApplyGeometryCommand: true`: the `15 01` command we found by capture.
+- `SupportsLedAutoDetection: true`; `SupportedChannelConfigurations` lists what each channel accepts
+  (external: strips, triangles, extension cable; ports: fans, pump cap, Autodetect).
+- **[test]** File 0x20 on this controller: ports 1–3 report (status 2, 8), (2, 8), (2, 13); ports 4–6 status 3
+  (nothing); the external port 0 (not auto-detected).
+
 ## 9. Open questions (worth a look next time)
 
 1. What do `09 <h>`, `14 0N 01` and the extra `15 01` at start-up do? Possibly autodetection subcommands
    (`CoolerAutodetectionSubcommand` and `LightingChannelAutodetectionSubcommand` exist in the enum list).
 2. What are properties 0x11, 0x12, 0x14, 0x55, 0x59 and 0x5a? (Firmware is 0x13.) Find the `PropertyId` enum's value
    table the same way as FileId (§3).
-3. LED counts per device type: 06 = 34, 05 = 8, 0c = 13 come from frame sizes. A table of all types probably lives in
+3. ~~LED counts per device type~~: answered by the device manifest (§8b). Previously: 06 = 34, 05 = 8, 0c = 13 came from frame sizes. A table of all types probably lives in
    `commander_core_xt.rcc` or a JSON in `predefined_data/`. Unpack the `.rcc` (Qt `rcc` format) to confirm, and to
    learn which real Corsair devices those types are.
 4. Can the pump be slowed in software mode at all (another file, or a 0x18 mode byte other than 00)? Not found yet.
