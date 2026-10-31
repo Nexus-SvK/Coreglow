@@ -1,18 +1,18 @@
-//! ccxt-gui: a window for choosing colours, effects and fan speeds.
+//! coreglow: a window for choosing colours, effects and fan speeds.
 //!
-//! Edits ~/.config/ccxt/config.toml (saved automatically, checked first) and shows
-//! the live values ccxtd publishes. The daemon applies changes within a second.
+//! Edits ~/.config/coreglow/config.toml (saved automatically, checked first) and shows
+//! the live values coreglowd publishes. The daemon applies changes within a second.
 
 use std::time::{Duration, Instant, SystemTime};
 
 use eframe::egui::{self, Align2, Color32, FontId, Pos2, RichText, Sense, Stroke, Vec2};
 
-use ccxt::config::{
+use coreglow::config::{
     color_hex, curve_of, parse_color, Config, Effect, EffectKind, Fans, Num, Profile, PRESET_BALANCED,
     PRESET_PERFORMANCE, PRESET_QUIET,
 };
-use ccxt::status::Status;
-use ccxt::{paths, sensors, zones};
+use coreglow::status::Status;
+use coreglow::{paths, sensors, zones};
 
 const SPEED_K: f64 = 16.0; // period (s) = SPEED_K / speed
 const SAVE_DELAY: Duration = Duration::from_millis(400);
@@ -94,7 +94,7 @@ impl App {
         }
         self.last_poll = Instant::now();
         self.status = Status::read();
-        // pick up changes made elsewhere (ccxtctl, editor) while nothing is pending here
+        // pick up changes made elsewhere (coreglowctl, editor) while nothing is pending here
         if self.changed_at.is_none() && stamp() != self.file_stamp {
             self.file_stamp = stamp();
             if let Ok(mut c) = Config::load() {
@@ -147,7 +147,7 @@ fn chip(ui: &mut egui::Ui, text: impl Into<String>, value: impl Into<String>) {
 
 fn top_bar(app: &mut App, ui: &mut egui::Ui) {
     ui.horizontal_wrapped(|ui| {
-        ui.heading(RichText::new("PC Lighting & Fans").strong());
+        ui.heading(RichText::new("Coreglow").strong());
         ui.add_space(12.0);
         match &app.status {
             Some(s) if s.fresh() => {
@@ -168,7 +168,7 @@ fn top_bar(app: &mut App, ui: &mut egui::Ui) {
                 let why = other.as_ref().and_then(|s| s.error.clone()).unwrap_or_else(|| "The lighting service isn't running.".into());
                 ui.colored_label(ui.visuals().warn_fg_color, why);
                 if ui.button("Start it").clicked() {
-                    let _ = std::process::Command::new("systemctl").args(["--user", "start", "ccxtd.service"]).spawn();
+                    let _ = std::process::Command::new("systemctl").args(["--user", "start", "coreglowd.service"]).spawn();
                 }
             }
         }
@@ -324,7 +324,7 @@ fn temperature_ui(ui: &mut egui::Ui, e: &mut Effect, id: &str, gpu: bool) -> boo
     let mut changed = false;
     let sensor = e.sensor.get_or_insert_with(|| "cpu".into());
     row(ui, "Follows", |ui| changed |= sensor_combo(ui, &format!("{id}-tsensor"), sensor, gpu));
-    let stops = e.stops.get_or_insert_with(ccxt::config::default_stops);
+    let stops = e.stops.get_or_insert_with(coreglow::config::default_stops);
     let n = stops.len();
     let mut remove = None;
     for (i, (t, c)) in stops.iter_mut().enumerate() {
@@ -668,11 +668,11 @@ impl eframe::App for App {
 fn main() -> eframe::Result {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_title("PC Lighting & Fans")
-            .with_app_id("ccxt-gui")
+            .with_title("Coreglow — PC Lighting & Fans")
+            .with_app_id("coreglow")
             .with_inner_size([1150.0, 820.0])
             .with_min_inner_size([760.0, 520.0]),
         ..Default::default()
     };
-    eframe::run_native("PC Lighting & Fans", options, Box::new(|_cc| Ok(Box::new(App::new()))))
+    eframe::run_native("Coreglow", options, Box::new(|_cc| Ok(Box::new(App::new()))))
 }

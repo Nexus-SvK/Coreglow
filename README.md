@@ -1,21 +1,22 @@
-# ccxt-control
+# Coreglow
 
 Lighting effects, profiles and fan control for the **Corsair iCUE Commander Core XT** on Linux, without iCUE.
 
-- `ccxtd`: user service that drives the controller (lighting at ~30 fps, fan duties for fans 1 and 2).
+- `coreglowd`: user service that drives the controller (lighting at ~30 fps, fan duties for fans 1 and 2).
   When it stops, it stores a fallback curve in the controller (fans 1 and 2 follow probe 1, pump at 100 %).
-- `ccxtctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `edit`, `fallback`, `gui`.
-- `ccxt-gui`: window ("PC Lighting & Fans" in the app menu) for profiles, effects, per-part lighting and fan curves.
+- `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `edit`, `fallback`, `gui`.
+- `coreglow`: window ("Coreglow" in the app menu) for profiles, effects, per-part lighting and fan curves.
 
-Profiles live in `~/.config/ccxt/config.toml` (created from `/usr/share/ccxt-control/config.toml`
+Profiles live in `~/.config/coreglow/config.toml` (created from `/usr/share/coreglow/config.toml`,
+or copied from `~/.config/ccxt/` if you used ccxt-control 0.1,
 on first run) and apply within a second of saving.
 
 ## Build and install
 
     sudo apt install rustc cargo build-essential pkg-config
     packaging/build-deb.sh
-    sudo apt install ./target/debian/ccxt-control_*_amd64.deb
-    systemctl --user start ccxtd
+    sudo apt install ./target/debian/coreglow_*_amd64.deb
+    systemctl --user start coreglowd
 
 ## Hardware notes
 
@@ -32,3 +33,14 @@ liquidctl's `commander_core` driver. Lighting needs 384-byte reports.
 
 - [docs/icue-reverse-engineering.md](docs/icue-reverse-engineering.md): protocol facts from iCUE captures and binaries.
 - [docs/devlog-and-roadmap.md](docs/devlog-and-roadmap.md): how this was built, mistakes, testing checklist, roadmap.
+
+## Upgrading from ccxt-control 0.1
+
+Coreglow was called ccxt-control before 0.2.0 (renamed to avoid a clash with the CCXT trading library).
+Installing the coreglow package replaces it; then switch the running service over:
+
+    systemctl --user stop ccxtd
+    systemctl --user daemon-reload
+    systemctl --user start coreglowd
+
+Profiles are copied from `~/.config/ccxt/` on first start; the old folder is left as it was.

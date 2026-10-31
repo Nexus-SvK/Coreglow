@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Coreglow
+GenericName=PC Lighting & Fans
+Comment=Colours, effects and fan speeds for the Corsair Commander Core XT
+Exec=coreglow
+Icon=coreglow
+Terminal=false
+Categories=Settings;HardwareSettings;
+Keywords=coreglow;corsair;rgb;lighting;fans;icue;commander;
+StartupWMClass=coreglow

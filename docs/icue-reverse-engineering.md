@@ -1,7 +1,7 @@
 # iCUE and the Commander Core XT: reverse-engineering log
 
 What was learned about Corsair iCUE 5 and the iCUE Commander Core XT (USB `1b1c:0c2a`, firmware 1.4.62)
-while building ccxt-control, 2026-10-30/31. Facts are marked with how they were established:
+while building coreglow, 2026-10-30/31. Facts are marked with how they were established:
 **[capture]** USB capture, **[code]** iCUE binaries, **[test]** tried on the hardware, **[liquidctl]**
 liquidctl's `commander_core` driver. Anything else is labelled as a guess.
 
@@ -58,7 +58,7 @@ All captures hold only the controller's packets. The raw bus captures also held 
 | `14 0N 01` (N = 1..6), `15 01` ×6 | seen at iCUE start-up, per fan/channel; meaning unclear |
 
 - **[capture]** iCUE keeps **handle 0** open for the lighting stream and does everything else on **handle 1**.
-  liquidctl and ccxtd use handle 0 for everything (fine, as long as one process owns the device).
+  liquidctl and coreglowd use handle 0 for everything (fine, as long as one process owns the device).
 
 ## 5. File IDs (`bragiprotocol::FileId`) **[code]**, with what was seen
 
@@ -109,7 +109,7 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
 - **[test]** The 4 LED strips (10 LEDs each) are the first 40 slots of the external chain. Slots 40–203 are unused.
   Mapped with a colour test.
 - **[test]** OpenRGB's layout (`07 00 01 06 ×6`) disables the external port, so the strips stay dark under OpenRGB.
-- Keepalive: OpenRGB re-sends a full frame every 10 s. ccxtd re-sends unchanged frames every 2 s. There's no
+- Keepalive: OpenRGB re-sends a full frame every 10 s. coreglowd re-sends unchanged frames every 2 s. There's no
   separate keepalive command; software mode persists until `01 03 00 01`.
 
 ## 7. Fans and pump
@@ -118,7 +118,7 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
 - **[capture] [test]** In software mode, **port 6 (the AIO pump) ignores 0x18** and runs at full speed (~3050 rpm),
   under iCUE as well. Fans 1 and 2 follow 0x18.
 - **[test]** In hardware mode, the stored curves (0x6d60–0x6d62) do slow port 6. The old fallback curve took the pump
-  down to ~760 rpm, which is too low for a pump, so ccxtd's fallback stores 100 % fixed for port 6.
+  down to ~760 rpm, which is too low for a pump, so coreglowd's fallback stores 100 % fixed for port 6.
 - **[test]** Hardware curves always use sensor 0 (probe 1). Other sensors (CPU) are only possible in software mode.
 
 ## 8. Behaviour notes
@@ -126,7 +126,7 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
 - **[test]** Running OpenRGB's detection (even `--list-devices`) leaves the controller in software mode, so the
   hardware fan curve stops applying until the device is put back in hardware mode.
 - **[test]** `liquidctl status` wakes and sleeps the device around each read. Running it alongside a software-mode
-  owner (OpenRGB, ccxtd) fights over the mode.
+  owner (OpenRGB, coreglowd) fights over the mode.
 - **[test]** USB passthrough to the VM: libvirt `hostdev` vendor/product, `--live`. A Windows restart or VM shutdown
   drops it; the device address (bus 1, dev 8) stayed stable.
 - **[test]** Stopping iCUE's Windows services leaves iCUE showing "No supported CORSAIR devices found".
@@ -147,13 +147,13 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
 
 ## 10. How to repeat the work
 
-1. Start the VM (`virsh -c qemu:///system start win11-icue`) and stop `ccxtd` on Linux.
+1. Start the VM (`virsh -c qemu:///system start win11-icue`) and stop `coreglowd` on Linux.
 2. Pass the controller through:
-   `virsh -c qemu:///system attach-device win11-icue ccxt.xml --live`, with `ccxt.xml` =
+   `virsh -c qemu:///system attach-device win11-icue controller.xml --live`, with `controller.xml` =
    `<hostdev mode='subsystem' type='usb' managed='yes'><source><vendor id='0x1b1c'/><product id='0x0c2a'/></source></hostdev>`.
 3. Capture on the host: `dumpcap -i usbmon1 -w raw.pcapng` (the wireshark group can read `/dev/usbmon*`
    through `/etc/udev/rules.d/60-usbmon.rules`). Don't type passwords while it runs.
 4. Change one thing at a time in iCUE and note the time.
 5. Keep only the controller's packets (filter by bus 1 and the device address; the address with the most 384-byte
    transfers on endpoint 4 is the controller) and delete the raw file.
-6. Detach (`detach-device … --live`) and start `ccxtd` again.
+6. Detach (`detach-device … --live`) and start `coreglowd` again.

@@ -23,8 +23,8 @@ pub fn label(id: &str) -> &str {
 
 fn default_source(name: &str) -> Option<&'static str> {
     Some(match name {
-        "probe1" => "ccxt:0",
-        "probe2" => "ccxt:1",
+        "probe1" => "controller:0",
+        "probe2" => "controller:1",
         "cpu" => "hwmon:k10temp:Tctl",
         "igpu" => "hwmon:amdgpu:edge",
         "gpu" => "nvidia-smi",
@@ -77,7 +77,7 @@ impl Sensors {
             let Some(src) = src else { continue };
             let (kind, rest) = src.split_once(':').unwrap_or((src.as_str(), ""));
             let value = match kind {
-                "ccxt" => rest.parse::<usize>().ok().and_then(|i| probes.get(i).copied().flatten()),
+                "controller" | "ccxt" => rest.parse::<usize>().ok().and_then(|i| probes.get(i).copied().flatten()),
                 "hwmon" => {
                     let (chip, label) = rest.split_once(':').unwrap_or((rest, ""));
                     self.hwmon(chip, label)

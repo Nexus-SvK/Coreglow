@@ -1,9 +1,9 @@
 [Unit]
-Description=Corsair Commander Core XT lighting and fan profiles (ccxtd)
+Description=Coreglow: Commander Core XT lighting and fan profiles (coreglowd)
 After=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/ccxtd
+ExecStart=/usr/bin/coreglowd
 Restart=on-failure
 RestartSec=5
 

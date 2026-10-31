@@ -1,4 +1,4 @@
-//! Profiles file (~/.config/ccxt/config.toml): lighting effects, per-part
+//! Profiles file (~/.config/coreglow/config.toml): lighting effects, per-part
 //! overrides and fan curves. The same format the earlier Python daemon used.
 
 use indexmap::IndexMap;
@@ -13,8 +13,8 @@ use crate::zones::ZONE_NAMES;
 pub const BUILTIN_DEFAULT: &str = include_str!("../assets/config.toml");
 
 const HEADER: &str = "\
-# Commander Core XT profiles (ccxt-control). Edited by ccxt-gui; editing by hand works too.
-# Switch with: ccxtctl set NAME    List: ccxtctl list    Live values: ccxtctl status
+# Commander Core XT profiles (coreglow). Edited by coreglow; editing by hand works too.
+# Switch with: coreglowctl set NAME    List: coreglowctl list    Live values: coreglowctl status
 # Saving applies the change within a second.
 #
 # lighting effects: static (color), off, breathing (color, period), flash (color, period),

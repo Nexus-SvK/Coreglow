@@ -1,12 +1,12 @@
-//! ccxtctl: list and switch profiles, show live values, restore the fallback curve.
+//! coreglowctl: list and switch profiles, show live values, restore the fallback curve.
 
-use ccxt::config::{Config, Num};
-use ccxt::device::{self, Device};
-use ccxt::status::Status;
-use ccxt::{paths, sensors};
+use coreglow::config::{Config, Num};
+use coreglow::device::{self, Device};
+use coreglow::status::Status;
+use coreglow::{paths, sensors};
 
 const USAGE: &str = "\
-usage: ccxtctl COMMAND
+usage: coreglowctl COMMAND
 
   status            live temperatures, fan speeds and the profile in use (default)
   list              all profiles (* = in use)
@@ -14,11 +14,11 @@ usage: ccxtctl COMMAND
   brightness NAME N set the brightness of profile NAME's main lighting to N %
   edit              open the profiles file in $EDITOR
   path              print where the profiles file is
-  fallback          store the hardware fallback fan curve (only while ccxtd is stopped)
-  gui               open the window (ccxt-gui)";
+  fallback          store the hardware fallback fan curve (only while coreglowd is stopped)
+  gui               open the window (coreglow)";
 
 fn fail(msg: impl std::fmt::Display) -> ! {
-    eprintln!("ccxtctl: {msg}");
+    eprintln!("coreglowctl: {msg}");
     std::process::exit(1)
 }
 
@@ -72,7 +72,7 @@ fn main() {
         ("path", 1) => println!("{}", paths::config_file().display()),
         ("fallback", 1) => {
             if Status::read().is_some_and(|s| s.fresh()) {
-                fail("ccxtd is running; stop it first: systemctl --user stop ccxtd");
+                fail("coreglowd is running; stop it first: systemctl --user stop coreglowd");
             }
             let mut dev = Device::open().unwrap_or_else(|e| fail(e));
             dev.wake()
@@ -82,9 +82,9 @@ fn main() {
             println!("fallback stored: fans 1-2 on probe-1 curve, pump 100 %");
         }
         ("gui", 1) => {
-            let err = std::process::Command::new("ccxt-gui").spawn();
+            let err = std::process::Command::new("coreglow").spawn();
             if let Err(e) = err {
-                fail(format!("ccxt-gui: {e}"));
+                fail(format!("coreglow: {e}"));
             }
         }
         _ => {
@@ -95,9 +95,9 @@ fn main() {
 }
 
 fn status() {
-    let Some(s) = Status::read() else { fail("no status: is ccxtd running? (systemctl --user status ccxtd)") };
+    let Some(s) = Status::read() else { fail("no status: is coreglowd running? (systemctl --user status coreglowd)") };
     if !s.fresh() {
-        println!("ccxtd isn't running (last status is old): systemctl --user start ccxtd");
+        println!("coreglowd isn't running (last status is old): systemctl --user start coreglowd");
     }
     if let Some(e) = &s.error {
         println!("problem  {e}");

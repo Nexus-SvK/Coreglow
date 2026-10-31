@@ -1,26 +1,26 @@
 [package]
-name = "ccxt-control"
-version = "0.1.0"
+name = "coreglow"
+version = "0.2.0"
 edition = "2021"
-description = "Lighting effects, profiles and fan control for the Corsair iCUE Commander Core XT on Linux"
+description = "Coreglow: lighting effects, profiles and fan control for the Corsair iCUE Commander Core XT on Linux"
 license = "GPL-3.0-or-later"
 rust-version = "1.85"
 
 [lib]
-name = "ccxt"
+name = "coreglow"
 path = "src/lib.rs"
 
 [[bin]]
-name = "ccxtd"
-path = "src/bin/ccxtd.rs"
+name = "coreglowd"
+path = "src/bin/coreglowd.rs"
 
 [[bin]]
-name = "ccxtctl"
-path = "src/bin/ccxtctl.rs"
+name = "coreglowctl"
+path = "src/bin/coreglowctl.rs"
 
 [[bin]]
-name = "ccxt-gui"
-path = "src/bin/ccxt-gui.rs"
+name = "coreglow"
+path = "src/bin/coreglow.rs"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }

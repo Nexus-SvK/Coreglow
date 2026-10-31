@@ -1,4 +1,4 @@
-//! Live values the daemon publishes for ccxtctl and the GUI.
+//! Live values the daemon publishes for coreglowctl and the GUI.
 
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;

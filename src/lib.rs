@@ -1,4 +1,4 @@
-//! Shared code for ccxtd (daemon), ccxtctl (CLI) and ccxt-gui.
+//! Shared code for coreglowd (daemon), coreglowctl (CLI) and coreglow.
 //!
 //! The Commander Core XT speaks Corsair's Bragi protocol over USB HID. Everything
 //! here was worked out from USB captures of iCUE and OpenRGB, liquidctl's

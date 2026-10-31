@@ -1,4 +1,4 @@
-# ccxt-control: development log and roadmap
+# Coreglow: development log and roadmap
 
 Companion to [icue-reverse-engineering.md](icue-reverse-engineering.md) (protocol facts).
 GUI ideas for the next version are drawn in the design canvas "PC Lighting & Fans — GUI updates"
@@ -24,7 +24,7 @@ GUI ideas for the next version are drawn in the design canvas "PC Lighting & Fan
    (RTTI and Qt enum tables) for names. That explained 0x18 (software fan duty) and the full file ID map.
 4. **Python daemon (prototype).** It reused liquidctl's framing. It found the four things lighting needs:
    384-byte reports, the stored geometry, `15 01`, and the exact frame length. Then profiles, zones and a browser panel.
-5. **Rust rewrite (this repo).** Direct hidraw, no Python or liquidctl at runtime, an egui window, and a .deb with a
+5. **Rust rewrite (this repo)**, first as ccxt-control 0.1, renamed Coreglow in 0.2. Direct hidraw, no Python or liquidctl at runtime, an egui window, and a .deb with a
    user service and udev rule. Installed 2026-10-31. The Python prototype is kept in `~/.local/share/ccxt-python-backup`.
 
 ## Mistakes worth remembering
@@ -50,24 +50,24 @@ GUI ideas for the next version are drawn in the design canvas "PC Lighting & Fan
 | `src/effects.rs` | effect rendering, temperature colours, fan duty from curves, frame building |
 | `src/config.rs` | TOML schema (compatible with the Python version), validation, atomic save |
 | `src/sensors.rs` | probes, hwmon (k10temp Tctl, amdgpu edge), nvidia-smi, smoothing |
-| `src/status.rs` | `$XDG_RUNTIME_DIR/ccxt-status.json`, written every second by ccxtd |
-| `src/bin/ccxtd.rs` | main loop: 30 fps when animated, sensors 1 Hz, reload on file change, reconnect |
-| `src/bin/ccxtctl.rs` | CLI |
-| `src/bin/ccxt-gui.rs` | egui window, autosave after 400 ms, reads status every second |
+| `src/status.rs` | `$XDG_RUNTIME_DIR/coreglow-status.json`, written every second by coreglowd |
+| `src/bin/coreglowd.rs` | main loop: 30 fps when animated, sensors 1 Hz, reload on file change, reconnect |
+| `src/bin/coreglowctl.rs` | CLI |
+| `src/bin/coreglow.rs` | egui window, autosave after 400 ms, reads status every second |
 | `packaging/` | service, udev rule, desktop entry, icon, maintainer scripts, `build-deb.sh` |
 
-Interfaces between the parts are files only: `config.toml` + `active` (written by the GUI and CLI, watched by ccxtd)
-and `ccxt-status.json` (written by ccxtd). No socket or D-Bus yet.
+Interfaces between the parts are files only: `config.toml` + `active` (written by the GUI and CLI, watched by coreglowd)
+and `coreglow-status.json` (written by coreglowd). No socket or D-Bus yet.
 
 ## Testing checklist (until there are hardware tests)
 
 1. `cargo test --release` (layout, default profiles render, curve maths).
-2. `systemctl --user stop ccxtd && ./target/release/ccxtd` → "controller at /dev/hidrawN", fans line, no errors.
-3. `ccxtctl status` while it runs: temps, duties, rpm, pump about 3000.
+2. `systemctl --user stop coreglowd && ./target/release/coreglowd` → "controller at /dev/hidrawN", fans line, no errors.
+3. `coreglowctl status` while it runs: temps, duties, rpm, pump about 3000.
 4. Switch through every profile and look at the PC: strips, both fans and the pump head all lit.
-5. Ctrl+C → "controller back in hardware mode". With `ccxtctl fallback` / `liquidctl status`: pump about 3000,
+5. Ctrl+C → "controller back in hardware mode". With `coreglowctl fallback` / `liquidctl status`: pump about 3000,
    fans on the probe curve.
-6. Unplug or pass the device to the VM while ccxtd runs → it logs and reconnects when the device is back.
+6. Unplug or pass the device to the VM while coreglowd runs → it logs and reconnects when the device is back.
 
 ## Roadmap
 
@@ -75,19 +75,19 @@ Ordered by value for the user. The design canvas has screens for items marked �
 
 ### Next (small, high value)
 - [ ] **Sidebar layout and Home screen** 🎨: live tiles with 10-minute sparklines, click-a-part picture,
-      quick buttons (lights off, quiet fans). Needs ccxtd to keep a short history in the status file.
+      quick buttons (lights off, quiet fans). Needs coreglowd to keep a short history in the status file.
 - [ ] **Effect previews** 🎨: small animated swatches on the effect buttons, and a 69-LED preview strip.
 - [ ] **Colour presets row** 🎨 next to the custom picker; remember recently used colours.
 - [ ] **Keyboard support on the fan curve**: arrow keys move the selected dot.
-- [ ] **"Test fans" button** 🎨: full speed for 5 s, then back to the curve (a `ccxtd` command via a file or socket).
+- [ ] **"Test fans" button** 🎨: full speed for 5 s, then back to the curve (a `coreglowd` command via a file or socket).
 - [ ] **Edit the hardware fallback curve** 🎨 in the GUI (today it's a constant in `device.rs`). Store it in the config.
 
 ### Then
 - [ ] **Automatic profile switching** 🎨: rules by time of day, CPU or GPU temperature, a running process
-      (e.g. Steam games), screen locked. Evaluate in ccxtd; show the rule that's active.
+      (e.g. Steam games), screen locked. Evaluate in coreglowd; show the rule that's active.
 - [ ] **Tray menu** 🎨: profile switch, brightness, lights off. Needs a StatusNotifierItem (ksni crate) or
       a GNOME extension.
-- [ ] **Control socket** (`$XDG_RUNTIME_DIR/ccxtd.sock`) instead of file polling: instant switching, "test fans",
+- [ ] **Control socket** (`$XDG_RUNTIME_DIR/coreglowd.sock`) instead of file polling: instant switching, "test fans",
       status push to the GUI.
 - [ ] **Night dimming** 🎨 (brightness schedule), perhaps via the 0x1f brightness file instead of scaling RGB.
 - [ ] **GPU temperature without NVIDIA's driver**: nouveau doesn't report it; consider the proprietary driver,
@@ -106,7 +106,13 @@ Ordered by value for the user. The design canvas has screens for items marked �
 
 ## Release notes
 
+### 0.2.0 (2026-10-31)
+Renamed from ccxt-control to **Coreglow** (the name ccxt clashes with the CCXT trading library).
+Binaries coreglowd / coreglowctl / coreglow, service coreglowd.service, udev rule 70-coreglow.rules,
+config ~/.config/coreglow (copied from ~/.config/ccxt on first start), status file coreglow-status.json,
+sensor source `controller:N` (`ccxt:N` still accepted). The package replaces ccxt-control.
+
 ### 0.1.0 (2026-10-31)
-First packaged version: ccxtd, ccxtctl, ccxt-gui; 9 starter profiles; effects static, off, breathing, flash, colour cycle,
+First packaged version: coreglowd, coreglowctl, coreglow; 9 starter profiles; effects static, off, breathing, flash, colour cycle,
 rainbow, rainbow wave, colour wave, temperature (with alarm); zones strip1–4, strips, right-fan, left-fan, fans, pump;
 fan curves on probe1, probe2, cpu, igpu, gpu; hardware fallback on exit; reconnect.

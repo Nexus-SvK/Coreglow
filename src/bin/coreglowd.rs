@@ -1,4 +1,4 @@
-//! ccxtd: drives the Commander Core XT from the active profile.
+//! coreglowd: drives the Commander Core XT from the active profile.
 //!
 //! Keeps the controller in software mode like iCUE: streams the lighting and
 //! sends fan duties for fans 1 and 2. On exit (or before taking over) it stores a
@@ -9,12 +9,12 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
 
-use ccxt::config::{Config, Profile};
-use ccxt::device::{self, Device};
-use ccxt::effects::Temps;
-use ccxt::sensors::Sensors;
-use ccxt::status::{self, Status};
-use ccxt::{paths, zones};
+use coreglow::config::{Config, Profile};
+use coreglow::device::{self, Device};
+use coreglow::effects::Temps;
+use coreglow::sensors::Sensors;
+use coreglow::status::{self, Status};
+use coreglow::{paths, zones};
 
 const FPS: u64 = 30;
 const SENSOR_EVERY: Duration = Duration::from_secs(1);
@@ -113,7 +113,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                 } else {
                     all_parts
                         .iter()
-                        .map(|(z, i)| (z.to_string(), ccxt::config::color_hex([last_frame[i * 3], last_frame[i * 3 + 1], last_frame[i * 3 + 2]])))
+                        .map(|(z, i)| (z.to_string(), coreglow::config::color_hex([last_frame[i * 3], last_frame[i * 3 + 1], last_frame[i * 3 + 2]])))
                         .collect()
                 },
                 error: error.clone(),
@@ -147,7 +147,7 @@ fn main() {
         }
     };
     log(format!(
-        "ccxtd {}: profile {}, {} LEDs ({} connected)",
+        "coreglowd {}: profile {}, {} LEDs ({} connected)",
         env!("CARGO_PKG_VERSION"),
         st.name,
         zones::frame_len(),
