@@ -23,6 +23,12 @@ pub struct Status {
     /// Fans are running at full speed for a "test fans" request.
     #[serde(default)]
     pub testing_fans: bool,
+    /// Profile chosen by hand; `profile` differs from it while an automatic rule is in charge.
+    #[serde(default)]
+    pub manual_profile: String,
+    /// The automatic rule in charge, in words.
+    #[serde(default)]
+    pub auto_rule: Option<String>,
 }
 
 pub const HISTORY_EVERY_S: u64 = 10;

@@ -83,11 +83,11 @@ Ordered by value for the user. The design canvas has screens for items marked �
 - [x] **Edit the hardware fallback curve** 🎨: `[fallback]` in the config, editor on the Fans page, re-stored on change (0.4.0).
 
 ### Then
-- [ ] **Automatic profile switching** 🎨: rules by time of day, CPU or GPU temperature, a running process
-      (e.g. Steam games), screen locked. Evaluate in coreglowd; show the rule that's active.
-- [ ] **Tray menu** 🎨: profile switch, brightness, lights off. Needs a StatusNotifierItem (ksni crate) or
-      a GNOME extension.
-- [ ] **Control socket** (`$XDG_RUNTIME_DIR/coreglowd.sock`) instead of file polling: instant switching, "test fans",
+- [x] **Automatic profile switching** 🎨: rules by temperature (with 3 °C hysteresis), running program, time of day,
+      locked screen; first match wins; editor on the Profiles page, `coreglowctl auto` (0.5.0).
+- [x] **Tray menu** 🎨: `coreglow-tray` (ksni, pure-Rust D-Bus): profiles, automatic on/off, test fans, open window;
+      autostarts at login (0.5.0). Brightness isn't in the menu (tray menus have no sliders).
+- [~] **Control socket** (`$XDG_RUNTIME_DIR/coreglowd.sock`) instead of file polling: instant switching, "test fans",
       status push to the GUI.
 - [ ] **Night dimming** 🎨 (brightness schedule), perhaps via the 0x1f brightness file instead of scaling RGB.
 - [ ] **GPU temperature without NVIDIA's driver**: nouveau doesn't report it; consider the proprietary driver,
@@ -105,6 +105,17 @@ Ordered by value for the user. The design canvas has screens for items marked �
       the pump on channel 0.
 
 ## Release notes
+
+### 0.5.0 (2026-10-31)
+- **Automatic profile switching**: `[auto]` in the config (`enabled`, `rules`); rule kinds `temp-above` (sensor, temp;
+  off again 3 °C below), `process` (part of a command line, e.g. `steamapps`), `time` (from/to HH:MM, may cross
+  midnight), `locked` (logind LockedHint). First matching rule wins, else the profile chosen by hand. The status file
+  reports `manual_profile` and `auto_rule`; the window shows a notice on every page while a rule is in charge.
+  Editor on the Profiles page; `coreglowctl auto [on|off]`.
+- **Tray icon**: `coreglow-tray` with profile list, automatic switching on/off, test fans, open window, summary
+  tooltip. Autostarts via /etc/xdg/autostart.
+- **Instant apply**: coreglowd checks the config files on every frame (two stat calls) instead of once a second.
+  The control socket stays on the roadmap; with this it's no longer needed for responsiveness.
 
 ### 0.4.0 (2026-10-31)
 - Backup curve (what the controller does when Coreglow isn't running) is now a `[fallback]` table in the config

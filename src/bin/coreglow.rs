@@ -783,12 +783,23 @@ fn sidebar(app: &mut App, ui: &mut egui::Ui) {
     });
 }
 
-fn page_header(ui: &mut egui::Ui, heading: &str, profile: &str) {
+fn page_header(ui: &mut egui::Ui, heading: &str, profile: &str, status: Option<&Status>) {
     ui.horizontal(|ui| {
         ui.label(RichText::new(heading).strong().size(24.0));
         ui.label(RichText::new(format!("· profile “{profile}”")).weak().size(16.0));
     });
+    if let Some(s) = status.filter(|s| s.auto_rule.is_some() && s.profile != profile) {
+        auto_notice(ui, s);
+    }
     ui.add_space(8.0);
+}
+
+/// "Right now X is in use because …" while an automatic rule is in charge.
+fn auto_notice(ui: &mut egui::Ui, s: &Status) {
+    let Some(rule) = &s.auto_rule else { return };
+    egui::Frame::new().fill(Color32::from_rgb(42, 36, 24)).corner_radius(8.0).inner_margin(8.0).show(ui, |ui| {
+        ui.label(RichText::new(format!("Automatic switching: right now “{}” is in use because {rule}.", s.profile)).color(AMBER));
+    });
 }
 
 fn home(app: &mut App, ui: &mut egui::Ui) {
@@ -803,6 +814,9 @@ fn home(app: &mut App, ui: &mut egui::Ui) {
                 None => "The lighting service isn't running.",
             };
             ui.label(RichText::new(line).weak());
+            if let Some(st) = s {
+                auto_notice(ui, st);
+            }
         });
         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
             let names: Vec<String> = app.cfg.profiles.keys().cloned().collect();
@@ -912,7 +926,7 @@ fn home(app: &mut App, ui: &mut egui::Ui) {
 fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
     let mut changed = false;
     let status = app.live().cloned();
-    page_header(ui, "Lighting", &app.selected);
+    page_header(ui, "Lighting", &app.selected, status.as_ref());
     led_strip(ui, status.as_ref());
     ui.add_space(12.0);
     let gpu = app.gpu;
@@ -987,7 +1001,7 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
 fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
     let mut changed = false;
     let status = app.live().cloned();
-    page_header(ui, "Fan speed", &app.selected);
+    page_header(ui, "Fan speed", &app.selected, status.as_ref());
     let gpu = app.gpu;
     let sel = app.selected.clone();
     let Some(p) = app.cfg.profiles.get_mut(&sel) else { return false };
@@ -1193,6 +1207,110 @@ fn profiles_page(app: &mut App, ui: &mut egui::Ui) -> bool {
             }
         });
     }
+    ui.add_space(14.0);
+    changed |= rules_card(app, ui);
+    changed
+}
+
+/// The "Switch automatically" editor on the Profiles page.
+fn rules_card(app: &mut App, ui: &mut egui::Ui) -> bool {
+    let mut changed = false;
+    let names: Vec<String> = app.cfg.profiles.keys().cloned().collect();
+    let gpu = app.gpu;
+    let manual = app.cfg.active.clone();
+    let status = app.live().cloned();
+    let auto = &mut app.cfg.auto;
+    card(ui, |ui| {
+        ui.horizontal(|ui| {
+            title(ui, "Switch automatically");
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                changed |= ui.checkbox(&mut auto.enabled, "On").changed();
+            });
+        });
+        ui.label(RichText::new("Rules are checked from top to bottom; the first one that matches picks the profile.").weak());
+        if let Some(s) = &status {
+            auto_notice(ui, s);
+        }
+        ui.add_space(6.0);
+        let n = auto.rules.len();
+        let (mut remove, mut swap) = (None, None);
+        for (i, r) in auto.rules.iter_mut().enumerate() {
+            egui::Frame::new().fill(Color32::from_rgb(44, 44, 44)).corner_radius(8.0).inner_margin(8.0).show(ui, |ui| {
+                ui.set_width(ui.available_width());
+                ui.horizontal_wrapped(|ui| {
+                    ui.label(RichText::new(format!("{}.", i + 1)).weak());
+                    ui.label("When");
+                    let kind_label = coreglow::config::RULE_KINDS.iter().find(|(k, _)| *k == r.when).map_or("?", |(_, l)| l);
+                    egui::ComboBox::from_id_salt(("rule-kind", i)).selected_text(kind_label).width(200.0).show_ui(ui, |ui| {
+                        for (k, l) in coreglow::config::RULE_KINDS {
+                            if ui.selectable_label(r.when == k, l).clicked() && r.when != k {
+                                *r = coreglow::config::Rule::new(k, &r.profile);
+                                changed = true;
+                            }
+                        }
+                    });
+                    match r.when.as_str() {
+                        "temp-above" => {
+                            let sensor = r.sensor.get_or_insert_with(|| "cpu".into());
+                            changed |= sensor_combo(ui, &format!("rule-sensor-{i}"), sensor, gpu);
+                            let t = r.temp.get_or_insert(Num(80.0));
+                            changed |= ui.add(egui::DragValue::new(&mut t.0).range(20.0..=110.0).suffix(" °C")).changed();
+                        }
+                        "process" => {
+                            let name = r.name.get_or_insert_with(String::new);
+                            changed |= ui.add(egui::TextEdit::singleline(name).hint_text("part of its name, e.g. steamapps").desired_width(200.0)).changed();
+                        }
+                        "time" => {
+                            for (label, field) in [("from", &mut r.from), ("to", &mut r.to)] {
+                                ui.label(label);
+                                let v = field.get_or_insert_with(|| "00:00".into());
+                                let ok = coreglow::config::parse_hm(v).is_some();
+                                let edit = egui::TextEdit::singleline(v).desired_width(52.0).text_color_opt((!ok).then_some(ui.visuals().error_fg_color));
+                                changed |= ui.add(edit).on_hover_text("24-hour time, HH:MM").changed();
+                            }
+                        }
+                        _ => {}
+                    }
+                    ui.label("use");
+                    egui::ComboBox::from_id_salt(("rule-profile", i)).selected_text(&r.profile).width(150.0).show_ui(ui, |ui| {
+                        for name in &names {
+                            if ui.selectable_label(r.profile == *name, name).clicked() {
+                                r.profile = name.clone();
+                                changed = true;
+                            }
+                        }
+                    });
+                    if ui.add_enabled(i > 0, egui::Button::new("Up").small()).clicked() {
+                        swap = Some((i - 1, i));
+                    }
+                    if ui.add_enabled(i + 1 < n, egui::Button::new("Down").small()).clicked() {
+                        swap = Some((i, i + 1));
+                    }
+                    if ui.add(egui::Button::new("Remove").small()).clicked() {
+                        remove = Some(i);
+                    }
+                });
+            });
+            ui.add_space(4.0);
+        }
+        if let Some((a, b)) = swap {
+            auto.rules.swap(a, b);
+            changed = true;
+        }
+        if let Some(i) = remove {
+            auto.rules.remove(i);
+            changed = true;
+        }
+        ui.horizontal(|ui| {
+            if ui.button("+ Add a rule").clicked() {
+                auto.rules.push(coreglow::config::Rule::new("time", &manual));
+                auto.enabled = true;
+                changed = true;
+            }
+            ui.label(RichText::new(format!("Otherwise: “{manual}”, the profile you chose.")).weak());
+        });
+        ui.label(RichText::new("Tip: Steam games run from a folder called “steamapps”, so a “program is running” rule with that name catches all of them.").weak().small());
+    });
     changed
 }
 
