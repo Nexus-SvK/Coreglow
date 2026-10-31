@@ -1,0 +1,37 @@
+[package]
+name = "ccxt-control"
+version = "0.1.0"
+edition = "2021"
+description = "Lighting effects, profiles and fan control for the Corsair iCUE Commander Core XT on Linux"
+license = "GPL-3.0-or-later"
+rust-version = "1.85"
+
+[lib]
+name = "ccxt"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ccxtd"
+path = "src/bin/ccxtd.rs"
+
+[[bin]]
+name = "ccxtctl"
+path = "src/bin/ccxtctl.rs"
+
+[[bin]]
+name = "ccxt-gui"
+path = "src/bin/ccxt-gui.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = { version = "0.8", features = ["preserve_order"] }
+indexmap = { version = "2", features = ["serde"] }
+libc = "0.2"
+ctrlc = { version = "3", features = ["termination"] }
+eframe = { version = "0.31", default-features = false, features = ["default_fonts", "glow", "wayland", "x11"] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+strip = true

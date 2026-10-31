@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+if [ "$1" = "configure" ]; then
+    # USB access for the logged-in user
+    if command -v udevadm >/dev/null; then
+        udevadm control --reload-rules || true
+        udevadm trigger --subsystem-match=hidraw || true
+    fi
+    # Start the lighting service in every user's desktop session
+    if command -v systemctl >/dev/null; then
+        systemctl --global enable ccxtd.service || true
+    fi
+    if command -v gtk-update-icon-cache >/dev/null; then
+        gtk-update-icon-cache -q /usr/share/icons/hicolor || true
+    fi
+    echo "ccxt-control: start it now with 'systemctl --user start ccxtd' (or log out and in)."
+fi
+exit 0

@@ -1,0 +1,44 @@
+active = "white"
+
+[profiles.white]
+lighting = { effect = "static", color = "ffffff" }
+fans = { sensor = "probe1", curve = [[25, 30], [30, 35], [35, 45], [40, 60], [45, 80], [50, 100]] }
+
+[profiles.quiet]
+lighting = { effect = "static", color = "ffffff", brightness = 40 }
+fans = { sensor = "cpu", curve = [[50, 25], [65, 35], [75, 55], [85, 80], [90, 100]] }
+
+[profiles.performance]
+lighting = { effect = "static", color = "ffffff" }
+fans = { sensor = "cpu", curve = [[40, 50], [60, 70], [75, 90], [80, 100]] }
+
+[profiles.cpu-temp]
+lighting = { effect = "temperature", sensor = "cpu", stops = [[45, "00ff00"], [65, "ffff00"], [80, "ff0000"]], alarm = 85, period = 1 }
+fans = { sensor = "cpu", curve = [[45, 30], [60, 45], [75, 75], [85, 100]] }
+
+[profiles.pump-temp]
+lighting = { effect = "static", color = "ffffff" }
+zones.pump = { effect = "temperature", sensor = "cpu", stops = [[45, "0080ff"], [65, "ffff00"], [80, "ff0000"]] }
+fans = { sensor = "cpu", curve = [[45, 30], [60, 45], [75, 75], [85, 100]] }
+
+[profiles.rainbow]
+lighting = { effect = "rainbow_wave", period = 6, waves = 2 }
+fans = { sensor = "probe1", curve = [[25, 30], [30, 35], [35, 45], [40, 60], [45, 80], [50, 100]] }
+
+[profiles.breathing]
+lighting = { effect = "breathing", color = "00a0ff", period = 5 }
+fans = { sensor = "probe1", curve = [[25, 30], [30, 35], [35, 45], [40, 60], [45, 80], [50, 100]] }
+
+[profiles.ocean]
+lighting = { effect = "color_wave", colors = ["0040ff", "00ffd0"], period = 5, waves = 1.5 }
+fans = { sensor = "probe1", curve = [[25, 30], [30, 35], [35, 45], [40, 60], [45, 80], [50, 100]] }
+
+[profiles.off]
+lighting = { effect = "off" }
+fans = { sensor = "cpu", curve = [[50, 25], [65, 35], [75, 55], [85, 80], [90, 100]] }
+
+[profiles.mixed]
+lighting = { effect = "static", color = "ff0000" }
+zones.fans = { effect = "temperature", sensor = "cpu", stops = [[45, "00a0ff"], [65, "ffff00"], [80, "ff0000"]] }
+zones.pump = { effect = "breathing", color = "0060ff", period = 4 }
+fans = { sensor = "cpu", curve = [[45, 30], [60, 45], [75, 75], [85, 100]] }

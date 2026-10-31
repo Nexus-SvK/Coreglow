@@ -1,0 +1,11 @@
+[Unit]
+Description=Corsair Commander Core XT lighting and fan profiles (ccxtd)
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/ccxtd
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

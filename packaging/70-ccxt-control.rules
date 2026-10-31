@@ -1,0 +1,2 @@
+# Corsair iCUE Commander Core XT: let the logged-in desktop user talk to it (ccxtd).
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1b1c", ATTRS{idProduct}=="0c2a", TAG+="uaccess"
