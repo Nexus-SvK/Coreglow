@@ -35,6 +35,7 @@ Conflicts: ccxt-control
 Provides: ccxt-control
 Section: utils
 Priority: optional
+Homepage: https://github.com/Nexus-SvK/Coreglow
 Description: Coreglow: lighting effects, profiles and fan control for the Corsair Commander Core XT
  Drives the Corsair iCUE Commander Core XT on Linux without iCUE:
  lighting effects (solid, breathing, rainbow, waves, temperature colours),
