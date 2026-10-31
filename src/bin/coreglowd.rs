@@ -161,6 +161,24 @@ impl MotherboardSync {
     }
 }
 
+/// What the controller reports on each RGB port, next to what the layout says.
+fn detected_devices(dev: &mut Device, layout: &zones::Layout) -> Vec<status::PortInfo> {
+    let found = dev.autodetected().unwrap_or_default();
+    zones::PORTS
+        .iter()
+        .enumerate()
+        .map(|(i, port)| {
+            let (state, leds) = found.get(i).copied().unwrap_or((0, 0));
+            status::PortInfo {
+                port: port.to_string(),
+                configured: layout.ports[i].iter().map(|k| k.id.to_string()).collect(),
+                detected_leds: (state == 2).then_some(leds),
+                detected_kind: (state == 2).then(|| zones::kind_for_leds(leds as usize).map(|k| k.id.to_string())).flatten(),
+            }
+        })
+        .collect()
+}
+
 /// True while a "test fans" request (the request file touched by the GUI or CLI) is recent.
 fn testing_fans() -> bool {
     std::fs::metadata(paths::test_fans_file())
@@ -174,8 +192,10 @@ fn testing_fans() -> bool {
 fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String> {
     dev.wake()?;
     device::store_fallback(dev, &st.fallback)?;
-    dev.init_lighting()?;
-    let all_parts = zones::PICTURE_ZONES.map(|z| (z, zones::zone(z)[0]));
+    let mut layout = zones::current();
+    dev.init_lighting(&layout)?;
+    let devices = detected_devices(dev, &layout);
+    let mut all_parts: Vec<(&str, usize)> = zones::PICTURE_ZONES.iter().filter_map(|z| zones::zone(z).first().map(|i| (*z, *i))).collect();
     let t0 = Instant::now();
     let mut cfg_stamp = stamp();
     let mut temps = Temps::new();
@@ -211,6 +231,12 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                     new.apply_rule(rule);
                     *st = new;
                     error = None;
+                    if *zones::current() != *layout {
+                        layout = zones::current();
+                        dev.init_lighting(&layout)?;
+                        all_parts = zones::PICTURE_ZONES.iter().filter_map(|z| zones::zone(z).first().map(|i| (*z, *i))).collect();
+                        log(format!("lighting layout changed: {} LEDs", layout.frame_len()));
+                    }
                 }
                 Err(e) => {
                     log(format!("config not loaded, keeping profile {}: {e}", st.name));
@@ -276,6 +302,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                         .collect()
                 },
                 openrgb: board.state.clone(),
+                devices: devices.clone(),
                 error: error.clone(),
                 history: history.iter().map(|(k, v)| (k.clone(), v.iter().copied().collect())).collect(),
                 testing_fans: testing,

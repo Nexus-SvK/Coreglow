@@ -8,7 +8,7 @@ use std::fmt;
 use std::path::Path;
 
 use crate::paths;
-use crate::zones::ZONE_NAMES;
+use crate::zones::Layout;
 
 pub const BUILTIN_DEFAULT: &str = include_str!("../assets/config.toml");
 
@@ -222,6 +222,9 @@ pub struct Config {
     /// Drive other RGB devices (the motherboard) through an OpenRGB server.
     #[serde(default, skip_serializing_if = "OpenRgb::is_default")]
     pub openrgb: OpenRgb,
+    /// What's connected to the RGB ports (experimental; without it, this build's layout).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout: Option<LayoutConfig>,
     #[serde(default)]
     pub profiles: IndexMap<String, Profile>,
 }
@@ -230,6 +233,26 @@ pub struct Config {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Fallback {
     pub curve: Vec<(Num, Num)>,
+}
+
+/// `[layout]`: port name ("external", "port1" … "port6") → device ids in chain order,
+/// plus optional `names` (part name → selector such as "port1" or "external:0-9").
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
+pub struct LayoutConfig {
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub names: IndexMap<String, String>,
+    #[serde(flatten)]
+    pub ports: IndexMap<String, Vec<String>>,
+}
+
+impl Config {
+    /// The layout this config describes.
+    pub fn layout(&self) -> Result<Layout, String> {
+        match &self.layout {
+            None => Ok(Layout::this_build()),
+            Some(l) => Layout::from_config(&l.ports, &l.names),
+        }
+    }
 }
 
 /// Motherboard sync: coreglowd sends the "motherboard" part of each profile to every
@@ -418,6 +441,7 @@ impl Config {
         for r in &self.auto.rules {
             r.validate(&self.profiles)?;
         }
+        let zone_names = self.layout()?.zone_names();
         if let Some(f) = &self.fallback {
             if f.curve.len() < 2 || f.curve.len() > FALLBACK_MAX_POINTS {
                 return Err(format!("backup curve needs 2 to {FALLBACK_MAX_POINTS} points"));
@@ -432,8 +456,8 @@ impl Config {
             }
             p.lighting.validate(&format!("{name}: lighting"))?;
             for (zone, e) in &p.zones {
-                if !ZONE_NAMES.contains(&zone.as_str()) {
-                    return Err(format!("{name}: unknown part '{zone}' (use {})", ZONE_NAMES.join(", ")));
+                if !zone_names.contains(zone) {
+                    return Err(format!("{name}: unknown part '{zone}' (use {})", zone_names.join(", ")));
                 }
                 e.validate(&format!("{name}: {zone}"))?;
             }
@@ -462,6 +486,7 @@ impl Config {
         let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
         let cfg: Config = toml::from_str(&text).map_err(|e| format!("{}: {e}", path.display()))?;
         cfg.validate()?;
+        crate::zones::set_current(cfg.layout()?);
         Ok(cfg)
     }
 

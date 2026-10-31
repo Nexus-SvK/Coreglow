@@ -95,8 +95,9 @@ Ordered by value for the user. The design canvas has screens for items marked ðŸ
       or NVML if installed.
 
 ### Later / research
-- [ ] **Configurable hardware layout**: read 0x20 autodetection and 0x1e at start-up instead of a fixed
-      `PORT_CONFIG`; let the user name devices (needs the LED-type table, open question 3).
+- [x] **Configurable hardware layout** (0.7.0, experimental): device table from iCUE's manifest, `[layout]` in the
+      config, detection report (`coreglowctl devices`). Still to do: a layout editor in the window; trying a custom
+      layout (especially LED strips via 0x1d) on hardware.
 - [x] **Sync with motherboard RGB** (0.6.0): OpenRGB SDK client (protocol v0); the motherboard continues the whole-PC
       effect or gets its own part. Live colour sending still to be tried on the hardware.
 - [ ] **Answer the open protocol questions** (icue-reverse-engineering.md Â§9), especially pump control in
@@ -106,6 +107,14 @@ Ordered by value for the user. The design canvas has screens for items marked ðŸ
       the pump on channel 0.
 
 ## Release notes
+
+### 0.7.0 (2026-10-31)
+- **Lighting layout**: device kinds and LED counts from iCUE's device manifest (`commander_core_xt.rcc`). Without a
+  `[layout]` table the layout is this build's, byte for byte (unit-tested). A `[layout]` table lists devices per port
+  (`external`, `port1`â€¦`port6`) and optional part `names`; the geometry (and 0x1d LED totals for strips) is written
+  from it, and part names follow it. Experimental: custom layouts aren't tried on hardware yet.
+- **Detection**: coreglowd reads what the controller detects on each port at start; `coreglowctl devices` and the
+  "What's connected" section on the Lighting page show it. On this PC: 8-LED fans on ports 1â€“2, pump cap on port 3.
 
 ### 0.6.0 (2026-10-31)
 - **Motherboard sync**: `[openrgb] enabled = true` (window: Lighting page, CLI: `coreglowctl motherboard on|off`).

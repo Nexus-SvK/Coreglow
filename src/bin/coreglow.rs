@@ -64,7 +64,7 @@ struct App {
     selected: String,
     page: Page,
     /// Part chosen on the Lighting page; None = whole PC.
-    part: Option<&'static str>,
+    part: Option<String>,
     name_edit: String,
     status: Option<Status>,
     last_poll: Instant,
@@ -396,7 +396,7 @@ fn picture(ui: &mut egui::Ui, status: Option<&Status>, height: f32, clickable: b
     for (i, (x, y)) in [(360.0, 0.0), (395.0, 0.0), (360.0, 125.0), (395.0, 125.0)].into_iter().enumerate() {
         let r = Rect::from_min_size(at(x, y), Vec2::new(18.0 * s, 100.0 * s));
         p.rect_filled(r, 5.0, col(zones::PICTURE_ZONES[i]));
-        hit(r, zones::PICTURE_ZONES[i], zones::label(zones::PICTURE_ZONES[i]));
+        hit(r, zones::PICTURE_ZONES[i], &zones::label(zones::PICTURE_ZONES[i]));
     }
     label(at(386.0, 250.0), tr("LED strips 1–4"));
     clicked
@@ -919,7 +919,7 @@ fn home(app: &mut App, ui: &mut egui::Ui) {
     });
     if let Some(z) = go_part {
         app.select(app.cfg.active.clone());
-        app.part = Some(z);
+        app.part = Some(z.to_string());
         app.page = Page::Lighting;
     }
 }
@@ -944,20 +944,21 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
                 }
                 ui.label(RichText::new(tr("Or give one part its own lighting:")).weak().small());
                 let board_on = app.cfg.openrgb.enabled;
-                for z in zones::ZONE_NAMES.iter().filter(|z| **z != "all" && (board_on || !zones::EXTERNAL_ZONES.contains(z))) {
-                    let own = p.zones.contains_key(*z);
+                let names = zones::zone_names();
+                for z in names.iter().map(String::as_str).filter(|z| *z != "all" && (board_on || !zones::EXTERNAL_ZONES.contains(z))) {
+                    let own = p.zones.contains_key(z);
                     ui.horizontal(|ui| {
-                        let swatch = status.as_ref().and_then(|s| s.zones.get(*z).or_else(|| s.zones.get(match *z {
+                        let swatch = status.as_ref().and_then(|s| s.zones.get(z).or_else(|| s.zones.get(match z {
                             "strips" => "strip1",
                             "fans" => "right-fan",
                             _ => z,
                         }))).map_or(Color32::from_gray(60), |c| color32(c));
                         let (r, _) = ui.allocate_exact_size(Vec2::splat(14.0), Sense::hover());
                         ui.painter().rect_filled(r, 3.0, swatch);
-                        let indent = matches!(*z, "strip1" | "strip2" | "strip3" | "strip4" | "left-fan" | "right-fan");
+                        let indent = matches!(z, "strip1" | "strip2" | "strip3" | "strip4" | "left-fan" | "right-fan");
                         let name = if indent { format!("   {}", zones::label(z)) } else { zones::label(z).to_string() };
-                        if ui.add(egui::SelectableLabel::new(app.part == Some(*z), name)).clicked() {
-                            app.part = Some(*z);
+                        if ui.add(egui::SelectableLabel::new(app.part.as_deref() == Some(z), name)).clicked() {
+                            app.part = Some(z.to_string());
                         }
                         ui.label(RichText::new(if own { tr("own") } else { tr("same") }).small().color(if own { SKY } else { Color32::from_gray(140) }));
                     });
@@ -976,16 +977,39 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
                 };
                 ui.label(RichText::new(note).weak().small());
             });
+            ui.add_space(12.0);
+            card(ui, |ui| {
+                egui::CollapsingHeader::new(RichText::new(tr("What's connected")).strong()).id_salt("devices").show(ui, |ui| {
+                    let devices = status.as_ref().map(|s| s.devices.clone()).unwrap_or_default();
+                    if devices.is_empty() {
+                        ui.label(RichText::new(tr("The lighting service reports this when it starts.")).weak().small());
+                    }
+                    for d in devices {
+                        let configured = if d.configured.is_empty() { "–".to_string() } else { d.configured.join(", ") };
+                        let detected = match (d.detected_leds, d.detected_kind) {
+                            (Some(n), Some(k)) => trf("detected: {} ({} LEDs)", &[&k, &n]),
+                            (Some(n), None) => trf("detected: {} LEDs", &[&n]),
+                            (None, _) if d.port == "external" => tr("not auto-detected").to_string(),
+                            (None, _) => tr("nothing detected").to_string(),
+                        };
+                        ui.label(RichText::new(zones::label(&d.port)).strong().small());
+                        ui.label(RichText::new(format!("{configured} · {detected}")).weak().small());
+                    }
+                    ui.add_space(4.0);
+                    ui.label(RichText::new(tr("A different build can describe its ports as [layout] in the profiles file (see man coreglowctl).")).weak().small());
+                });
+            });
         });
         ui.vertical(|ui| {
-            card(ui, |ui| match app.part {
+            card(ui, |ui| match app.part.clone() {
                 None => {
                     title(ui, tr("Effect for the whole PC"));
                     ui.add_space(6.0);
                     changed |= effect_ui(ui, &mut p.lighting, "main", gpu, &mut app.recent);
                 }
                 Some(z) => {
-                    title(ui, zones::label(z));
+                    let z = z.as_str();
+                    title(ui, &zones::label(z));
                     ui.add_space(6.0);
                     let own = p.zones.contains_key(z);
                     ui.horizontal(|ui| {

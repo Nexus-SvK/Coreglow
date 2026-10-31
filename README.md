@@ -13,7 +13,7 @@ Lighting effects, profiles and fan control for the **Corsair iCUE Commander Core
 - `coreglowd`: user service that drives the controller (lighting at ~30 fps, fan duties for fans 1 and 2).
   When it stops, it stores a backup curve in the controller (fans 1 and 2 follow probe 1, pump at 100 %);
   the curve is editable on the Fans page or as `[fallback]` in the config.
-- `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `auto [on|off]`, `motherboard [on|off]`, `test-fans`, `edit`, `fallback`, `gui`.
+- `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `auto [on|off]`, `motherboard [on|off]`, `devices`, `test-fans`, `edit`, `fallback`, `gui`.
 - `coreglow`: window ("Coreglow" in the app menu) for profiles, effects, per-part lighting, fan curves and
   automatic profile switching (by temperature, running program, time of day or locked screen).
 - `coreglow-tray`: tray icon (starts at login) for switching profiles, automatic switching on/off and testing fans.
@@ -37,6 +37,23 @@ Download the `.deb` from the [latest release](https://github.com/Nexus-SvK/Coreg
     packaging/build-deb.sh
     sudo apt install ./target/debian/coreglow_*_amd64.deb
     systemctl --user start coreglowd
+
+## Other builds (experimental)
+
+Without a `[layout]` table Coreglow uses this build's layout. Another build can describe its RGB ports in
+`~/.config/coreglow/config.toml`; `coreglowctl devices` shows what the controller detects:
+
+```toml
+[layout]
+external = ["rgb-strip", "rgb-strip"]       # chain order; LED strips can't be mixed with fans on one port
+port1 = ["ql-fan", "ql-fan", "ql-fan"]
+port2 = ["pump-cap"]
+names = { fans = "port1", pump = "port2", strips = "external" }
+```
+
+Device ids: rgb-strip, strip-15/21/27/40/49/84, triangle-9, ll-fan, ml-fan, hd-fan, 8-led-fan, ql-fan, pump-cap.
+Without `names`, parts are called external, external1…, port1…, port11…. Profiles may only use part names the
+layout has; the file is rejected otherwise, so rename profile parts when you change the layout.
 
 ## Hardware notes
 

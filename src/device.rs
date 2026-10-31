@@ -11,7 +11,7 @@ use std::io::{Read, Write};
 use std::os::fd::AsRawFd;
 use std::path::PathBuf;
 
-use crate::zones::PORT_CONFIG;
+use crate::zones::Layout;
 
 pub type Result<T> = std::result::Result<T, String>;
 
@@ -37,6 +37,10 @@ const F_COOLERS_RPM: &[u8] = &[0x17];
 const T_COOLERS_RPM: [u8; 2] = [0x06, 0x00];
 const F_TARGET_ROTATION: &[u8] = &[0x18]; // software-mode fan duties
 const T_TARGET_ROTATION: [u8; 2] = [0x07, 0x00];
+const F_STRIP_QUANTITIES: &[u8] = &[0x1d]; // LightingChannelsControllersQuantity
+const T_STRIP_QUANTITIES: [u8; 2] = [0x0c, 0x00];
+const F_AUTODETECTED: &[u8] = &[0x20]; // LightingChannelsAutodetectionResults
+const T_AUTODETECTED: [u8; 2] = [0x0f, 0x00];
 const F_GEOMETRIES: &[u8] = &[0x1e];
 const T_GEOMETRIES: [u8; 2] = [0x0d, 0x00];
 const F_TEMPERATURES: &[u8] = &[0x21];
@@ -180,10 +184,26 @@ impl Device {
 
     // ---- software mode (daemon) ----
 
-    /// Lighting layout of this build, applied like iCUE does.
-    pub fn init_lighting(&mut self) -> Result<()> {
-        self.write_data(F_GEOMETRIES, T_GEOMETRIES, &PORT_CONFIG)?;
+    /// Write the lighting layout and apply it, like iCUE does.
+    pub fn init_lighting(&mut self, layout: &Layout) -> Result<()> {
+        if let Some(q) = layout.strip_quantities() {
+            self.write_data(F_STRIP_QUANTITIES, T_STRIP_QUANTITIES, &q)?;
+        }
+        self.write_data(F_GEOMETRIES, T_GEOMETRIES, &layout.geometry())?;
         self.send(&CMD_APPLY_LIGHTING, &[]).map(drop)
+    }
+
+    /// LEDs the controller detected on each RGB port: (status, LED count). Status 2 =
+    /// something detected; the external port isn't auto-detected.
+    pub fn autodetected(&mut self) -> Result<Vec<(u16, u16)>> {
+        let d = self.read_data(F_AUTODETECTED, T_AUTODETECTED)?;
+        let n = *d.first().unwrap_or(&0) as usize;
+        Ok((0..n)
+            .map(|i| {
+                let o = 1 + 4 * i;
+                (u16::from_le_bytes([d[o], d[o + 1]]), u16::from_le_bytes([d[o + 2], d[o + 3]]))
+            })
+            .collect())
     }
 
     pub fn write_frame(&mut self, rgb: &[u8]) -> Result<()> {
