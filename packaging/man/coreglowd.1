@@ -1,0 +1,42 @@
+.TH COREGLOWD 1 "2026-10-31" "coreglow 0.6.0" "User Commands"
+.SH NAME
+coreglowd \- lighting and fan service for the Corsair iCUE Commander Core XT
+.SH SYNOPSIS
+.B coreglowd
+.SH DESCRIPTION
+.B coreglowd
+runs as a systemd user service
+.RB ( coreglowd.service )
+and drives a Corsair iCUE Commander Core XT over hidraw: it streams the
+lighting of the profile in use (about 30 frames per second for moving
+effects), sets the duty of fans 1 and 2 from their curves, and evaluates the
+automatic switching rules. With motherboard sync on, it also sends the
+lighting to an OpenRGB server.
+.PP
+While it runs, the pump (fan port 6) stays at full speed; the controller does
+that whenever the lighting is driven from the PC. When the service stops, it
+stores the backup curve in the controller (fans 1 and 2 follow case probe 1,
+pump at 100 %) and returns it to hardware mode.
+.PP
+It notices changes to its files on every frame, and reconnects by itself when
+the controller disappears (unplugged, or passed to a virtual machine).
+.SH FILES
+.TP
+.I ~/.config/coreglow/config.toml
+Profiles and settings; created from
+.I /usr/share/coreglow/config.toml
+on first start.
+.TP
+.I $XDG_RUNTIME_DIR/coreglow-status.json
+Live values, written every second.
+.TP
+.I $XDG_RUNTIME_DIR/coreglow-test-fans
+Touching this file runs the fans at full speed for 5 seconds.
+.SH NOTES
+Needs read and write access to the controller's hidraw node; the package's
+udev rule grants it to the user at the seat. Don't run
+.B liquidctl status
+or OpenRGB's Corsair detection while it runs: they switch the controller's mode.
+.SH SEE ALSO
+.BR coreglowctl (1),
+.BR coreglow (1)

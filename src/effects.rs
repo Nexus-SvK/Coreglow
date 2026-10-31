@@ -188,6 +188,16 @@ impl Profile {
         s
     }
 
+    /// Colours for `n` motherboard LEDs: they continue the whole-PC effect after the
+    /// pump (so waves run on into them), unless the profile gives "motherboard" its own.
+    pub fn motherboard(&self, t: f64, temps: &Temps, n: usize) -> Vec<Rgb> {
+        if let Some(e) = self.zones.get("motherboard") {
+            return e.render(n, t, temps);
+        }
+        let corsair = zones::zone("all").len();
+        self.lighting.render(corsair + n, t, temps).split_off(corsair)
+    }
+
     /// Full lighting frame (RGB bytes); slots with nothing connected stay dark.
     pub fn frame(&self, t: f64, temps: &Temps) -> Vec<u8> {
         let mut px = vec![[0u8; 3]; zones::frame_len()];

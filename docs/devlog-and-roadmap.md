@@ -83,6 +83,7 @@ Ordered by value for the user. The design canvas has screens for items marked �
 - [x] **Edit the hardware fallback curve** 🎨: `[fallback]` in the config, editor on the Fans page, re-stored on change (0.4.0).
 
 ### Then
+- [x] **Slovak translation** of the window and tray (0.6.0); review by a native speaker welcome.
 - [x] **Automatic profile switching** 🎨: rules by temperature (with 3 °C hysteresis), running program, time of day,
       locked screen; first match wins; editor on the Profiles page, `coreglowctl auto` (0.5.0).
 - [x] **Tray menu** 🎨: `coreglow-tray` (ksni, pure-Rust D-Bus): profiles, automatic on/off, test fans, open window;
@@ -96,15 +97,25 @@ Ordered by value for the user. The design canvas has screens for items marked �
 ### Later / research
 - [ ] **Configurable hardware layout**: read 0x20 autodetection and 0x1e at start-up instead of a fixed
       `PORT_CONFIG`; let the user name devices (needs the LED-type table, open question 3).
-- [ ] **Sync with motherboard RGB**: talk to OpenRGB's SDK server (port 6742, localhost) so effects span both.
+- [x] **Sync with motherboard RGB** (0.6.0): OpenRGB SDK client (protocol v0); the motherboard continues the whole-PC
+      effect or gets its own part. Live colour sending still to be tried on the hardware.
 - [ ] **Answer the open protocol questions** (icue-reverse-engineering.md §9), especially pump control in
       software mode and stored (hardware) lighting.
-- [ ] **Packaging polish**: man pages, lintian-clean `.deb`, `dpkg-shlibdeps` for Depends, signed apt repo,
-      CI build.
+- [~] **Packaging polish**: man pages and CI build done (0.6.0, 0.3.0); still lintian, `dpkg-shlibdeps`, a signed apt repo.
 - [ ] **Other Commander models** (Core 0x0c1c, ST 0x0c32): same Bragi protocol; needs their geometry and
       the pump on channel 0.
 
 ## Release notes
+
+### 0.6.0 (2026-10-31)
+- **Motherboard sync**: `[openrgb] enabled = true` (window: Lighting page, CLI: `coreglowctl motherboard on|off`).
+  coreglowd talks to the OpenRGB server (localhost:6742, protocol v0), switches its devices to direct mode and
+  sends the motherboard part: the whole-PC effect continued after the pump, or the profile's own `motherboard`
+  part. Reconnects every 10 s; the status file reports what's connected. Verified: reading the device list from the
+  running server (B650 AORUS ELITE AX V2, 2 LEDs). Not yet tried: sending colours.
+- **Slovak translation** of the window, tray and rule descriptions (`src/i18n.rs`), chosen from LC_ALL / LC_MESSAGES /
+  LANG; `COREGLOW_LANG=en|sk` overrides it.
+- **Man pages**: coreglowctl(1), coreglowd(1), coreglow(1) / coreglow-tray(1).
 
 ### 0.5.0 (2026-10-31)
 - **Automatic profile switching**: `[auto]` in the config (`enabled`, `rules`); rule kinds `temp-above` (sensor, temp;

@@ -21,6 +21,11 @@ install -Dm644 packaging/coreglow.desktop "$stage/usr/share/applications/coreglo
 install -Dm644 packaging/coreglow.svg "$stage/usr/share/icons/hicolor/scalable/apps/coreglow.svg"
 install -Dm644 assets/config.toml         "$stage/usr/share/coreglow/config.toml"
 install -Dm644 README.md                  "$stage/usr/share/doc/$pkg/README.md"
+for m in packaging/man/*.1; do
+    install -Dm644 "$m" "$stage/usr/share/man/man1/$(basename "$m")"
+    gzip -9n "$stage/usr/share/man/man1/$(basename "$m")"
+done
+ln -s coreglow.1.gz "$stage/usr/share/man/man1/coreglow-tray.1.gz"
 install -Dm644 packaging/copyright        "$stage/usr/share/doc/$pkg/copyright"
 
 mkdir -p "$stage/DEBIAN"

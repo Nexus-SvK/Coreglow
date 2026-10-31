@@ -11,12 +11,12 @@ use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
 
 use coreglow::auto::AutoState;
-use coreglow::config::{Config, Profile};
+use coreglow::config::{Config, OpenRgb, Profile};
 use coreglow::device::{self, Device};
 use coreglow::effects::Temps;
 use coreglow::sensors::Sensors;
 use coreglow::status::{self, Status};
-use coreglow::{paths, zones};
+use coreglow::{openrgb, paths, zones};
 
 const FPS: u64 = 30;
 const SENSOR_EVERY: Duration = Duration::from_secs(1);
@@ -81,6 +81,86 @@ impl State {
     }
 }
 
+/// Sends the "motherboard" part of the profile to an OpenRGB server, when enabled.
+struct MotherboardSync {
+    client: Option<openrgb::Client>,
+    next_try: Instant,
+    last: Vec<[u8; 3]>,
+    last_sent: Instant,
+    /// For the status file: what's connected, or why not.
+    state: Option<String>,
+}
+
+impl MotherboardSync {
+    const RETRY: Duration = Duration::from_secs(10);
+
+    fn new() -> Self {
+        MotherboardSync { client: None, next_try: Instant::now(), last: Vec::new(), last_sent: Instant::now(), state: None }
+    }
+
+    fn tick(&mut self, cfg: &OpenRgb, profile: &Profile, t: f64, temps: &Temps) {
+        if !cfg.enabled {
+            if self.client.take().is_some() {
+                log("motherboard sync off");
+            }
+            self.state = None;
+            return;
+        }
+        let now = Instant::now();
+        if self.client.is_none() {
+            if now < self.next_try {
+                return;
+            }
+            self.next_try = now + Self::RETRY;
+            match openrgb::Client::connect(cfg.host(), cfg.port()) {
+                Ok(mut c) => {
+                    let names: Vec<String> = c.controllers.iter().map(|d| format!("{} ({} LEDs)", d.name, d.leds)).collect();
+                    for i in 0..c.controllers.len() as u32 {
+                        let _ = c.set_custom_mode(i);
+                    }
+                    log(format!("motherboard sync: {}", names.join(", ")));
+                    self.state = Some(names.join(", "));
+                    self.last.clear();
+                    self.client = Some(c);
+                }
+                Err(e) => {
+                    if self.state.as_deref() != Some(e.as_str()) {
+                        log(format!("motherboard sync: {e}"));
+                    }
+                    self.state = Some(e);
+                    return;
+                }
+            }
+        }
+        let Some(c) = self.client.as_mut() else { return };
+        let colors = profile.motherboard(t, temps, c.total_leds());
+        if colors == self.last && now - self.last_sent < STATIC_EVERY {
+            return;
+        }
+        let mut start = 0;
+        let mut result = Ok(());
+        for d in c.controllers.clone() {
+            result = result.and_then(|_| c.set_leds(d.index, &colors[start..start + d.leds]));
+            start += d.leds;
+        }
+        match result {
+            Ok(()) => {
+                self.last = colors;
+                self.last_sent = now;
+            }
+            Err(e) => {
+                log(format!("motherboard sync lost: {e}"));
+                self.state = Some(e);
+                self.client = None;
+            }
+        }
+    }
+
+    fn first_color(&self) -> Option<[u8; 3]> {
+        self.client.as_ref().and(self.last.first().copied())
+    }
+}
+
 /// True while a "test fans" request (the request file touched by the GUI or CLI) is recent.
 fn testing_fans() -> bool {
     std::fs::metadata(paths::test_fans_file())
@@ -107,6 +187,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
     let mut history: BTreeMap<String, VecDeque<f64>> = BTreeMap::new();
     let mut next_history = Instant::now();
     let mut auto = AutoState::default();
+    let mut board = MotherboardSync::new();
 
     while !stop.load(Ordering::Relaxed) {
         let now = Instant::now();
@@ -191,8 +272,10 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                     all_parts
                         .iter()
                         .map(|(z, i)| (z.to_string(), coreglow::config::color_hex([last_frame[i * 3], last_frame[i * 3 + 1], last_frame[i * 3 + 2]])))
+                        .chain(board.first_color().map(|c| ("motherboard".to_string(), coreglow::config::color_hex(c))))
                         .collect()
                 },
+                openrgb: board.state.clone(),
                 error: error.clone(),
                 history: history.iter().map(|(k, v)| (k.clone(), v.iter().copied().collect())).collect(),
                 testing_fans: testing,
@@ -208,6 +291,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
             last_frame = frame;
             last_light = now;
         }
+        board.tick(&st.cfg.openrgb, &st.profile, (now - t0).as_secs_f64(), &temps);
         let pause = if st.profile.animated() { Duration::from_millis(1000 / FPS) } else { Duration::from_millis(200) };
         std::thread::sleep(pause);
     }
