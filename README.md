@@ -27,3 +27,8 @@ on first run) and apply within a second of saving.
 
 Protocol notes: Bragi file IDs from iCUE's `BragiProtocols.dll`, framing from USB captures and
 liquidctl's `commander_core` driver. Lighting needs 384-byte reports.
+
+## Docs
+
+- [docs/icue-reverse-engineering.md](docs/icue-reverse-engineering.md): protocol facts from iCUE captures and binaries.
+- [docs/devlog-and-roadmap.md](docs/devlog-and-roadmap.md): how this was built, mistakes, testing checklist, roadmap.
