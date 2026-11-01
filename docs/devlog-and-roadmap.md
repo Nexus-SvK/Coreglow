@@ -102,8 +102,8 @@ Ordered by value for the user. The design canvas has screens for items marked �
       custom layout (especially LED strips via 0x1d) on hardware.
 - [x] **Sync with motherboard RGB** (0.6.0): OpenRGB SDK client (protocol v0); the motherboard continues the whole-PC
       effect or gets its own part. Live colour sending still to be tried on the hardware.
-- [ ] **Answer the open protocol questions** (icue-reverse-engineering.md §9), especially pump control in
-      software mode and stored (hardware) lighting.
+- [~] **Answer the open protocol questions** (icue-reverse-engineering.md §9): pump control answered (2026-11-01:
+      this build's pump can't be slowed between 50 and 100 %, in either mode); stored (hardware) lighting still open.
 - [x] **Packaging polish**: man pages and CI build (0.6.0, 0.3.0); lintian in CI, `dpkg-shlibdeps`, md5sums,
       changelog and a signed apt repository on GitHub Pages (0.10.0).
 - [~] **Other Commander models**: Commander CORE (0x0c1c, and 0x0c32, which iCUE lists as a newer Commander
