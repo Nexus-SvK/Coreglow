@@ -137,10 +137,12 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
   unexpected data type: they're only readable in software mode (liquidctl wakes the device to read them). Rpm read
   right after a wake is reliable after a long hardware-mode stretch, but frequent wakes disturb it (halves and
   quarters of the real value).
-- **[test] (2026-11-01, watched)** Writing the lighting buffer (0x22) in hardware mode is accepted (no error) but not
-  shown. After `01 03 00 01` the LEDs **keep the last frame from software mode** (white, with red/green/blue
-  written afterwards in hardware mode, and with nothing written for 8 s). So a colour shown just before handing
-  back to hardware mode stays on while coreglow isn't running. Whether it survives a reboot or power cycle: untested.
+- **[test] (2026-11-01, watched, several runs)** Writing the lighting buffer (0x22) in hardware mode is accepted
+  (no error) but not shown. After `01 03 00 01` the LEDs go dark at once or within ~2 s, whatever was shown
+  before (held 3 s, streamed, with or without the fallback cooling stored in the same or a separate session) and
+  whether or not frames keep coming in hardware mode. Two early runs seemed to keep the colour; the later,
+  more careful ones didn't. So a colour can't be left on for while coreglow isn't running: the controller's own
+  (hardware) lighting is dark here.
 
 ## 8. Behaviour notes
 
@@ -197,8 +199,8 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
    learn which real Corsair devices those types are.
 4. ~~Can the pump be slowed?~~ Not in the safe range (≥ 50 %), in either mode (§7, tests of 2026-11-01).
    Untried: a 0x18 mode byte other than 00.
-5. Hardware (stored) lighting: the last software-mode frame stays after switching to hardware mode (§7); unknown
-   whether it survives a power cycle. The enum names exist (`OnDeviceLighting`, `StaticColorLighting`…), but iCUE didn't use
+5. Hardware (stored) lighting: switching to hardware mode turns the LEDs off (§7), so it would need the controller's
+   own stored lighting, which iCUE doesn't use for this device. The enum names exist (`OnDeviceLighting`, `StaticColorLighting`…), but iCUE didn't use
    them for this device. Maybe the firmware doesn't support it, or iCUE exposes it elsewhere.
 6. Brightness file 0x1f: is 0xd9 a 0–255 scale or 0–1000? It might allow hardware dimming instead of scaling RGB.
 
