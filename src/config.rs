@@ -27,8 +27,10 @@ const HEADER: &str = "\
 # fans: sensor + curve = [[temp, duty], ...], or fixed = duty. fan1 / fan2 override one fan.
 #   pump = 50-100 sets a Commander CORE's pump speed; the Core XT's pump runs at full speed.
 # sensors: probe1, probe2 (controller probes), liquid (Commander CORE), cpu, igpu (Ryzen graphics), gpu (needs nvidia-smi).
-# closed_lighting = \"off\" | \"rainbow\" | \"RRGGBB\": what the lights show while coreglow isn't running
-#   (stored in the controller; unset = leave what it has).
+# closed_lighting = \"off\" | \"RRGGBB\" | an effect (rainbow, rainbow-wave, spiral-rainbow, color-warp,
+#   color-shift, color-pulse, color-wave, arc, heartbeat, rain, sequential, strobing, visor): what the lights
+#   show while coreglow isn't running (stored in the controller; unset = leave what it has).
+#   closed_speed = \"slow\" | \"medium\" | \"fast\".
 # [night]: enabled, from = \"HH:MM\", to = \"HH:MM\", brightness = 0-100 dims all lighting in that window.
 ";
 
@@ -288,9 +290,13 @@ pub struct Config {
     #[serde(default)]
     pub active: String,
     /// What the lights show while coreglow isn't running, stored in the controller:
-    /// "off", "rainbow" or a colour "RRGGBB". Unset: whatever the controller has stored.
+    /// "off", a colour "RRGGBB", or a built-in effect ("rainbow", "visor", …: device::HW_EFFECTS).
+    /// Unset: whatever the controller has stored.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub closed_lighting: Option<String>,
+    /// Speed of that effect: "slow", "medium" (default) or "fast".
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub closed_speed: Option<String>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub sensors: BTreeMap<String, String>,
     /// Curve the controller uses on its own when coreglowd isn't running.
@@ -341,14 +347,23 @@ impl Config {
 
     /// The `closed_lighting` setting, parsed (None = leave the controller's own).
     pub fn stored_lighting(&self) -> Result<Option<crate::device::StoredLighting>, String> {
-        use crate::device::StoredLighting;
+        use crate::device::{hw_effect, HwSpeed, StoredLighting, HW_EFFECTS};
+        let speed = match self.closed_speed.as_deref() {
+            None | Some("medium") => HwSpeed::Medium,
+            Some("slow") => HwSpeed::Slow,
+            Some("fast") => HwSpeed::Fast,
+            Some(s) => return Err(format!("closed_speed: '{s}' (use slow, medium or fast)")),
+        };
         Ok(match self.closed_lighting.as_deref() {
             None => None,
             Some("off") => Some(StoredLighting::Static([0, 0, 0])),
-            Some("rainbow") => Some(StoredLighting::Rainbow),
-            Some(c) => Some(StoredLighting::Static(
-                parse_color(c).map_err(|e| format!("closed_lighting: {e} (use off, rainbow or RRGGBB)"))?,
-            )),
+            Some(c) => match hw_effect(c) {
+                Some(e) => Some(StoredLighting::Effect(e, speed)),
+                None => Some(StoredLighting::Static(parse_color(c).map_err(|_| {
+                    let names: Vec<&str> = HW_EFFECTS.iter().map(|e| e.id).collect();
+                    format!("closed_lighting: '{c}' (use off, RRGGBB or one of {})", names.join(", "))
+                })?)),
+            },
         })
     }
 
@@ -680,7 +695,13 @@ mod tests {
         let saved = toml::to_string(&cfg).unwrap();
         assert_eq!(toml::from_str::<Config>(&saved).unwrap().closed_lighting.as_deref(), Some("203040"));
         cfg.closed_lighting = Some("rainbow".into());
-        assert_eq!(cfg.stored_lighting(), Ok(Some(StoredLighting::Rainbow)));
+        let rainbow = crate::device::hw_effect("rainbow").unwrap();
+        assert_eq!(cfg.stored_lighting(), Ok(Some(StoredLighting::Effect(rainbow, crate::device::HwSpeed::Medium))));
+        cfg.closed_speed = Some("fast".into());
+        assert_eq!(cfg.stored_lighting(), Ok(Some(StoredLighting::Effect(rainbow, crate::device::HwSpeed::Fast))));
+        cfg.closed_speed = Some("warp".into());
+        assert!(cfg.validate().is_err());
+        cfg.closed_speed = None;
         cfg.closed_lighting = Some("off".into());
         assert_eq!(cfg.stored_lighting(), Ok(Some(StoredLighting::Static([0, 0, 0]))));
         cfg.closed_lighting = Some("nope".into());

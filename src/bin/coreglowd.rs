@@ -292,7 +292,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool, hub: &Hub, requests:
                         device::store_fallback(dev, &new.fallback)?;
                         log("backup curve stored in the controller");
                     }
-                    if new.cfg.closed_lighting != st.cfg.closed_lighting {
+                    if (&new.cfg.closed_lighting, &new.cfg.closed_speed) != (&st.cfg.closed_lighting, &st.cfg.closed_speed) {
                         store_closed_lighting(dev, &new.cfg);
                     }
                     // keep the rule in charge until the next check, if it still exists

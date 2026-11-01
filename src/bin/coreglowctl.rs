@@ -19,7 +19,9 @@ usage: coreglowctl COMMAND
   auto [on|off]     show the automatic switching rules, or turn them on or off
   motherboard [on|off]  send the lighting to the motherboard too (through the OpenRGB server)
   night [off | FROM-TO [N]]  show night dimming, turn it off, or dim to N % (default 30) from FROM to TO (HH:MM)
-  closed [keep|off|rainbow|RRGGBB]  what the lights show while coreglow isn't running (stored in the controller)
+  closed [keep|off|RRGGBB|EFFECT [slow|medium|fast]]  what the lights show while coreglow isn't running
+                    (stored in the controller); EFFECT: rainbow, rainbow-wave, spiral-rainbow, color-warp,
+                    color-shift, color-pulse, color-wave, arc, heartbeat, rain, sequential, strobing, visor
   devices           what's connected to each RGB port: the layout in use and what the controller detects
   fallback          store the hardware fallback fan curve (only while coreglowd is stopped)
   gui               open the window (coreglow)";
@@ -191,24 +193,36 @@ fn main() {
                 _ => println!("night dimming is off"),
             }
         }
-        ("closed", 1) | ("closed", 2) => {
+        ("closed", 1..=3) => {
             let mut cfg = Config::load().unwrap_or_else(|e| fail(e));
             if let Some(arg) = args.get(1) {
                 cfg.closed_lighting = match arg.as_str() {
                     "keep" => None,
-                    "off" | "rainbow" => Some(arg.clone()),
+                    "off" => Some(arg.clone()),
+                    e if coreglow::device::hw_effect(e).is_some() => Some(arg.clone()),
                     hex => {
                         let hex = hex.trim_start_matches('#');
-                        parse_color(hex).unwrap_or_else(|e| fail(format!("{e} (use keep, off, rainbow or RRGGBB)")));
+                        parse_color(hex).unwrap_or_else(|_| fail("use keep, off, RRGGBB or an effect (see coreglowctl --help)"));
                         Some(hex.to_lowercase())
                     }
+                };
+                cfg.closed_speed = match args.get(2).map(String::as_str) {
+                    None | Some("medium") => None,
+                    Some(s @ ("slow" | "fast")) => Some(s.to_string()),
+                    Some(_) => fail("speed is slow, medium or fast"),
                 };
                 cfg.active = cfg.active_name();
                 cfg.save().unwrap_or_else(|e| fail(e));
             }
             match cfg.closed_lighting.as_deref() {
                 None => println!("while coreglow isn't running: whatever the controller has stored (not changed)"),
-                Some(v) => println!("while coreglow isn't running: {v} (stored in the controller by coreglowd)"),
+                Some(v) => {
+                    let speed = match (coreglow::device::hw_effect(v), cfg.closed_speed.as_deref()) {
+                        (Some(_), s) => format!(", {} speed", s.unwrap_or("medium")),
+                        _ => String::new(),
+                    };
+                    println!("while coreglow isn't running: {v}{speed} (stored in the controller by coreglowd)")
+                }
             }
         }
         ("test-fans", 1) => {

@@ -163,8 +163,37 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
     why the LEDs went dark whenever coreglow handed back.
   - **[test]** Afterwards, with nothing running on Linux, the controller showed the stored rainbow (watched).
   - Stored profile 2 (file 0x07) points at 0x6d66 and 0x6d63; the lighting files 0x6d64/0x6d65 weren't referenced
-    there. Other effects (colour shift, pulse, wave, temperature…) are listed in the manifest's
-    `SupportedLightingTypes.Hardware`; their parameters still need a capture each.
+    there.
+- **[capture] (2026-11-01, `captures/ccxt-icue-effects-writes.txt`, every preset saved in turn)** All effects share
+  the layout *effect code (2 bytes) · colour mode · speed · variant · 00 · colour count · colours · ports*:
+
+  | Effect | Code | Colour mode | Variant | Colours by default |
+  |---|---|---|---|---|
+  | Static colour | `7e 20` | 09 | (speed 00) | 1 (yours) |
+  | Rainbow | `02 a4` | 08 | 00 | – |
+  | Rainbow wave | `4c b9` | 08 | 04 | – |
+  | Spiral rainbow | `87 ab` | 08 | 06 | – |
+  | Colour warp | `18 00` | 08 | 04 | – |
+  | Colour shift | `fa a5` | 0a | 00 | random |
+  | Colour pulse | `4f ad` | 0a | 00 | random |
+  | Colour wave | `ff 7b` | 0a | 04 | random |
+  | Arc | `1b 00` | 0a | 06 | random |
+  | Heartbeat | `1c 00` | 0a | 08 | random |
+  | Rain | `7e a0` | 0a | 01 | random |
+  | Sequential | `17 00` | 0a | 04 | random |
+  | Strobing | `1a 00` | 0a | 00 | random |
+  | Visor | `c0 90` | 0a / 09 | 04 | random / 2 alternating (red, blue) |
+  | Marquee | `19 00` | 09 | 05 | 1 (red) |
+  | Temperature | `1e 00` | 09 | – | 3 stops: `ff B G R` + temp ×100 u16 (20 °C green, 40 °C yellow, 60 °C red); no speed |
+
+  Colour mode: 08 = the effect's own colours, 09 = colours given, 0a = random. Speed: 03 slow, 04 medium
+  (default), 05 fast (iCUE's slider has three steps). Variant is a per-effect default (direction or style), not
+  changed in these captures. The temperature effect's sensor isn't visible in the data.
+  - **[test]** Rainbow wave at fast speed, stored by coreglowd, played with nothing running (watched).
+- **[capture] [test] Brightness (file 0x1f)**: iCUE's Device Settings slider writes one u16 per RGB port: 0, 217,
+  435, 660 for 0 / 33 / 66 / 100 % (this controller was at 217). Watched with coreglow streaming white: 0 dims the
+  LEDs somewhat but doesn't turn them off, and 33 % vs 100 % shows no visible difference. So it's not useful for
+  dimming the streamed lighting; coreglow doesn't set it.
 
 ## 8. Behaviour notes
 
@@ -224,7 +253,7 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
 5. ~~Hardware (stored) lighting~~: answered (§7b): files 0x6d64/0x6d65, written by iCUE's Device Memory Mode.
    Still open: the other effects' parameters. The enum names exist (`OnDeviceLighting`, `StaticColorLighting`…), but iCUE didn't use
    them for this device. Maybe the firmware doesn't support it, or iCUE exposes it elsewhere.
-6. Brightness file 0x1f: is 0xd9 a 0–255 scale or 0–1000? It might allow hardware dimming instead of scaling RGB.
+6. ~~Brightness file 0x1f~~: iCUE's steps are 0/217/435/660; barely visible on streamed lighting (§7b).
 
 ## 10. How to repeat the work
 
