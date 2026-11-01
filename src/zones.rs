@@ -62,7 +62,7 @@ pub fn kind_for_leds(leds: usize) -> Option<&'static Kind> {
 }
 
 /// Can `k` go on port `i` of `model`?
-fn allowed(model: Model, i: usize, k: &Kind) -> bool {
+pub fn allowed(model: Model, i: usize, k: &Kind) -> bool {
     match model {
         Model::CoreXt => !PUMP_RINGS.contains(&k.byte),
         Model::Core if i == 0 => PUMP_RINGS.contains(&k.byte),

@@ -1,4 +1,4 @@
-.TH COREGLOWD 1 "2026-11-01" "coreglow 0.8.0" "User Commands"
+.TH COREGLOWD 1 "2026-11-01" "coreglow 0.9.0" "User Commands"
 .SH NAME
 coreglowd \- lighting and fan service for the Corsair iCUE Commander Core XT and Commander CORE
 .SH SYNOPSIS
@@ -24,6 +24,20 @@ speed (50\(en100 %), and the fans on ports 3\(en6 follow the profile's shared fa
 setting. When the service stops, it stores the backup curve in the controller
 (Core XT: fans 1 and 2 follow case probe 1; CORE: fans 1\(en6 follow the liquid
 temperature; pump at 100 %) and returns it to hardware mode.
+.PP
+It listens on the control socket
+.I $XDG_RUNTIME_DIR/coreglowd.sock
+(only the user can open it), one text line per request:
+.B set
+.IR NAME ,
+.BR test-fans ,
+.B status
+(the latest status as JSON) and
+.B watch
+(a JSON status line every time one is published).
+.BR coreglow ,
+.B coreglowctl
+and the tray use it, and fall back to the files when it isn't there.
 .PP
 It notices changes to its files on every frame, and reconnects by itself when
 the controller disappears (unplugged, or passed to a virtual machine).

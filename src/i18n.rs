@@ -250,8 +250,20 @@ static SK: &[(&str, &str)] = &[
     ("To", "Do"),
     ("Dimmed right now.", "Práve je stlmené."),
     ("Drag the times, or click and type HH:MM.", "Časy posuňte myšou, alebo kliknite a napíšte HH:MM."),
-];
-fn slovak() -> bool {
+    // 0.9: layout editor
+    ("Change what's connected…", "Zmeniť, čo je pripojené…"),
+    ("{}: devices on each RGB port, in the order they're chained. The name is what the Lighting page calls the part.", "{}: zariadenia na každom RGB porte v poradí, v akom sú zapojené. Názov je to, ako časť volá stránka Osvetlenie."),
+    ("Add…", "Pridať…"),
+    ("controller sees {} LEDs{}", "ovládač vidí {} LED{}"),
+    ("Other parts from the profiles file:", "Ďalšie časti zo súboru profilov:"),
+    ("“{}” can't be used as a name here", "„{}“ sa tu nedá použiť ako názov"),
+    ("Profiles lose their own lighting for: {}", "Profily prídu o vlastné osvetlenie pre: {}"),
+    ("Apply", "Použiť"),
+    ("Cancel", "Zrušiť"),
+    ("Use what the controller detects", "Použiť, čo zistí ovládač"),
+    ("Back to the built-in layout", "Späť na vstavané zapojenie"),
+    ("Removes [layout] from the profiles file", "Odstráni [layout] zo súboru profilov"),
+];fn slovak() -> bool {
     static SLOVAK: OnceLock<bool> = OnceLock::new();
     *SLOVAK.get_or_init(|| {
         let var = |k: &str| std::env::var(k).ok().filter(|v| !v.is_empty());
