@@ -20,6 +20,7 @@ install -Dm644 packaging/coreglowd.service   "$stage/usr/lib/systemd/user/coregl
 install -Dm644 packaging/70-coreglow.rules "$stage/usr/lib/udev/rules.d/70-coreglow.rules"
 install -Dm644 packaging/coreglow.desktop "$stage/usr/share/applications/coreglow.desktop"
 install -Dm644 packaging/coreglow.svg "$stage/usr/share/icons/hicolor/scalable/apps/coreglow.svg"
+install -Dm644 packaging/io.github.nexus_svk.Coreglow.metainfo.xml "$stage/usr/share/metainfo/io.github.nexus_svk.Coreglow.metainfo.xml"
 install -Dm644 assets/config.toml         "$stage/usr/share/coreglow/config.toml"
 install -Dm644 README.md                  "$stage/usr/share/doc/$pkg/README.md"
 for m in packaging/man/*.1; do
@@ -28,10 +29,10 @@ for m in packaging/man/*.1; do
 done
 ln -s coreglow.1.gz "$stage/usr/share/man/man1/coreglow-tray.1.gz"
 install -Dm644 packaging/copyright        "$stage/usr/share/doc/$pkg/copyright"
-# Debian wants a changelog; the release notes live in docs/devlog-and-roadmap.md
+# Debian wants a changelog (changelog.gz: a native package); the release notes live in docs/devlog-and-roadmap.md
 printf '%s (%s) stable; urgency=medium\n\n  * Release %s: see docs/devlog-and-roadmap.md in the source.\n\n -- %s  %s\n' \
     "$pkg" "$version" "$version" "$maintainer" "$(date -R -d "@${SOURCE_DATE_EPOCH:-$(git log -1 --format=%ct 2>/dev/null || date +%s)}")" \
-    | gzip -9n > "$stage/usr/share/doc/$pkg/changelog.Debian.gz"
+    | gzip -9n > "$stage/usr/share/doc/$pkg/changelog.gz"
 
 # Libraries the binaries link against (dpkg-shlibdeps), plus the ones the window loads at
 # run time (OpenGL/EGL, Wayland, X11, xkbcommon) that it can't see.
@@ -55,7 +56,7 @@ Version: $version
 Architecture: $arch
 Maintainer: $maintainer
 Installed-Size: $size
-Depends: ${shlibs:-libc6 (>= 2.35), libgcc-s1}, $runtime, systemd, udev
+Depends: ${shlibs:-libc6 (>= 2.35), libgcc-s1}, $runtime, init-system-helpers (>= 1.58), systemd, udev
 Replaces: ccxt-control
 Conflicts: ccxt-control
 Provides: ccxt-control
@@ -64,11 +65,13 @@ Priority: optional
 Homepage: https://github.com/Nexus-SvK/Coreglow
 Description: lighting effects, profiles and fan control for Corsair Commander controllers
  Drives the Corsair iCUE Commander Core XT (and, experimentally, the
- Commander CORE of the ELITE CAPELLIX / ELITE LCD coolers) on Linux without iCUE:
- lighting effects (solid, breathing, rainbow, waves, temperature colours),
- per-part lighting, fan curves on CPU or case temperature, and profiles.
+ Commander CORE of the ELITE CAPELLIX / ELITE LCD coolers) on Linux
+ without iCUE: lighting effects (solid, breathing, rainbow, waves,
+ temperature colours), per-part lighting, fan curves on CPU or case
+ temperature, profiles and night dimming.
  .
- Contains coreglowd (user service), coreglowctl (command line) and coreglow (window).
+ Contains coreglowd (user service), coreglowctl (command line),
+ coreglow (window) and coreglow-tray (tray icon).
 EOF
 install -m755 packaging/debian/postinst packaging/debian/prerm packaging/debian/postrm "$stage/DEBIAN/"
 (cd "$stage" && find usr -type f -print0 | sort -z | xargs -0 md5sum > DEBIAN/md5sums)

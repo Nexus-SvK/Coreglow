@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.nexus_svk.Coreglow</id>
+  <name>Coreglow</name>
+  <summary>Lighting effects, profiles and fan control for Corsair Commander controllers</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <description>
+    <p>
+      Drives the Corsair iCUE Commander CORE XT (and, experimentally, the Commander CORE of the
+      ELITE CAPELLIX and ELITE LCD coolers) on Linux without iCUE: lighting effects, per-part
+      lighting, fan curves, profiles that switch automatically, and night dimming.
+    </p>
+  </description>
+  <launchable type="desktop-id">coreglow.desktop</launchable>
+  <url type="homepage">https://github.com/Nexus-SvK/Coreglow</url>
+  <url type="bugtracker">https://github.com/Nexus-SvK/Coreglow/issues</url>
+  <developer id="io.github.nexus_svk">
+    <name>Nexus-SvK</name>
+  </developer>
+  <content_rating type="oars-1.1"/>
+  <provides>
+    <modalias>usb:v1B1Cp0C2Ad*</modalias>
+    <modalias>usb:v1B1Cp0C1Cd*</modalias>
+    <modalias>usb:v1B1Cp0C32d*</modalias>
+  </provides>
+  <releases>
+    <release version="0.10.0" date="2026-11-01"/>
+  </releases>
+</component>
