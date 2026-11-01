@@ -12,7 +12,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
 
 use coreglow::auto::AutoState;
-use coreglow::config::{Config, OpenRgb, Profile};
+use coreglow::config::{Config, Night, OpenRgb, Profile};
 use coreglow::control::{self, Hub, Request};
 use coreglow::device::{self, Device};
 use coreglow::effects::Temps;
@@ -243,6 +243,9 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool, hub: &Hub, requests:
     let mut temps = Temps::new();
     let mut sent: Option<Vec<(usize, u8)>> = None;
     let mut night = false;
+    // brightness factor now; glides toward the night-dimming target (starts there)
+    let mut dim = st.cfg.night_factor();
+    let mut last_tick = Instant::now();
     let mut test_until = Instant::now();
     let (mut last_fan, mut last_light) = (Instant::now() - RESEND_EVERY, Instant::now() - STATIC_EVERY);
     let mut next_sensor = Instant::now();
@@ -392,7 +395,9 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool, hub: &Hub, requests:
             hub.publish(&status);
         }
 
-        let dim = st.cfg.night_factor();
+        dim = Night::fade(dim, st.cfg.night_factor(), (now - last_tick).as_secs_f64());
+        last_tick = now;
+        let fading = dim != st.cfg.night_factor();
         let mut frame = st.profile.frame((now - t0).as_secs_f64(), &temps);
         if dim < 1.0 {
             frame.iter_mut().for_each(|v| *v = dimmed(*v, dim));
@@ -403,7 +408,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool, hub: &Hub, requests:
             last_light = now;
         }
         board.tick(&st.cfg.openrgb, &st.profile, (now - t0).as_secs_f64(), &temps, dim);
-        let pause = if st.profile.animated() { Duration::from_millis(1000 / FPS) } else { Duration::from_millis(200) };
+        let pause = if st.profile.animated() || fading { Duration::from_millis(1000 / FPS) } else { Duration::from_millis(200) };
         std::thread::sleep(pause);
     }
     Ok(())

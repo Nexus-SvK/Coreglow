@@ -1025,9 +1025,9 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
                         ui.label(RichText::new(tr("The lighting service reports this when it starts.")).weak().small());
                     }
                     for d in devices {
-                        let configured = if d.configured.is_empty() { "–".to_string() } else { d.configured.join(", ") };
+                        let configured = if d.configured.is_empty() { "–".to_string() } else { d.configured.iter().map(|id| zones::kind_label(id)).collect::<Vec<_>>().join(", ") };
                         let detected = match (d.detected_leds, d.detected_kind) {
-                            (Some(n), Some(k)) => trf("detected: {} ({} LEDs)", &[&k, &n]),
+                            (Some(n), Some(k)) => trf("detected: {} ({} LEDs)", &[&zones::kind_label(&k), &n]),
                             (Some(n), None) => trf("detected: {} LEDs", &[&n]),
                             (None, _) if d.port == "external" => tr("not auto-detected").to_string(),
                             (None, _) => tr("nothing detected").to_string(),
@@ -1168,7 +1168,7 @@ fn layout_window(app: &mut App, ctx: &egui::Context) -> bool {
                         let mut remove = None;
                         for (j, id) in draft.ports[i].iter().enumerate() {
                             ui.horizontal(|ui| {
-                                ui.label(zones::kind(id).map_or(id.as_str(), |k| tr(k.label)));
+                                ui.label(zones::kind_label(id));
                                 if ui.small_button("×").on_hover_text(tr("Remove")).clicked() {
                                     remove = Some(j);
                                 }
@@ -1188,7 +1188,7 @@ fn layout_window(app: &mut App, ctx: &egui::Context) -> bool {
                         }
                         if let Some(d) = devices.iter().find(|d| d.port == *port) {
                             if let Some(n) = d.detected_leds {
-                                let what = d.detected_kind.as_deref().and_then(zones::kind).map_or(String::new(), |k| format!(": {}", tr(k.label)));
+                                let what = d.detected_kind.as_deref().map_or(String::new(), |k| format!(": {}", zones::kind_label(k)));
                                 ui.label(RichText::new(trf("controller sees {} LEDs{}", &[&n, &what])).weak().small());
                             }
                         }

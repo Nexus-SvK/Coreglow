@@ -29,10 +29,15 @@ on first run) and apply within a second of saving.
 
 ## Install
 
-Download the `.deb` from the [latest release](https://github.com/Nexus-SvK/Coreglow/releases/latest), then:
+From the apt repository, so updates come with the system's other updates:
 
-    sudo apt install ./coreglow_*_amd64.deb
+    sudo curl -fsSLo /usr/share/keyrings/coreglow-archive-keyring.gpg https://nexus-svk.github.io/Coreglow/coreglow-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/coreglow-archive-keyring.gpg] https://nexus-svk.github.io/Coreglow stable main" | sudo tee /etc/apt/sources.list.d/coreglow.list
+    sudo apt update && sudo apt install coreglow
     systemctl --user start coreglowd
+
+Or download the `.deb` from the [latest release](https://github.com/Nexus-SvK/Coreglow/releases/latest) and
+`sudo apt install ./coreglow_*_amd64.deb`.
 
 ## Build from source
 
@@ -91,6 +96,7 @@ liquidctl's `commander_core` driver. Lighting needs 384-byte reports.
 - [docs/icue-reverse-engineering.md](docs/icue-reverse-engineering.md): protocol facts from iCUE captures and binaries.
 - [docs/devlog-and-roadmap.md](docs/devlog-and-roadmap.md): how this was built, mistakes, testing checklist, roadmap.
 - [docs/corsair-devices.md](docs/corsair-devices.md): every device iCUE 5 supports, with USB IDs and protocol family.
+- [docs/icue-link-hub.md](docs/icue-link-hub.md): groundwork for the iCUE LINK System Hub (sub-devices, what support would take).
 
 ## Upgrading from ccxt-control 0.1
 

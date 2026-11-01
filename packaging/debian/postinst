@@ -7,8 +7,8 @@ if [ "$1" = "configure" ]; then
         udevadm trigger --subsystem-match=hidraw || true
     fi
     # Start the lighting service in every user's desktop session
-    if command -v systemctl >/dev/null; then
-        systemctl --global enable coreglowd.service || true
+    if command -v deb-systemd-helper >/dev/null; then
+        deb-systemd-helper --user enable coreglowd.service || true
     fi
     if command -v gtk-update-icon-cache >/dev/null; then
         gtk-update-icon-cache -q /usr/share/icons/hicolor || true

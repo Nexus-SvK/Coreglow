@@ -104,12 +104,24 @@ Ordered by value for the user. The design canvas has screens for items marked ðŸ
       effect or gets its own part. Live colour sending still to be tried on the hardware.
 - [ ] **Answer the open protocol questions** (icue-reverse-engineering.md Â§9), especially pump control in
       software mode and stored (hardware) lighting.
-- [~] **Packaging polish**: man pages and CI build done (0.6.0, 0.3.0); still lintian, `dpkg-shlibdeps`, a signed apt repo.
+- [x] **Packaging polish**: man pages and CI build (0.6.0, 0.3.0); lintian in CI, `dpkg-shlibdeps`, md5sums,
+      changelog and a signed apt repository on GitHub Pages (0.10.0).
 - [~] **Other Commander models**: Commander CORE (0x0c1c, and 0x0c32, which iCUE lists as a newer Commander
       CORE rather than an "ST") supported experimentally in 0.8.0 from its manifest; needs a hardware report.
-      Next candidates in [corsair-devices.md](corsair-devices.md): the iCUE LINK System Hub (0x0c3f).
+      Next: the iCUE LINK System Hub (0x0c3f); groundwork in [icue-link-hub.md](icue-link-hub.md), the sub-device
+      commands' numbers still need a USB capture from an owner.
 
 ## Release notes
+
+### 0.10.0 (2026-11-01)
+- **Night dimming fades** over a minute (from full brightness to off would take 60 s) instead of switching at once;
+  turning it on or off in the window fades too.
+- **Device names translated** (Slovak) in the layout editor and "What's connected", which also show names instead of ids.
+- **Packaging**: dependencies from `dpkg-shlibdeps` (plus the libraries the window loads at run time), md5sums,
+  `changelog.Debian.gz`, a real maintainer address; lintian runs in CI.
+- **apt repository** on GitHub Pages (`https://nexus-svk.github.io/Coreglow stable main`), signed, updated by the
+  release workflow; CI builds a test repository and reads it with apt on every change.
+- **iCUE LINK System Hub groundwork**: [icue-link-hub.md](icue-link-hub.md).
 
 ### 0.9.0 (2026-11-01)
 - **Control socket** `$XDG_RUNTIME_DIR/coreglowd.sock` (mode 0600): `set NAME`, `test-fans`, `status`, `watch`.
