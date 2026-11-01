@@ -1,9 +1,9 @@
 //! coreglowctl: list and switch profiles, show live values, restore the fallback curve.
 
-use coreglow::config::{Config, Num};
+use coreglow::config::{parse_hm, Config, Night, Num};
 use coreglow::device::{self, Device};
 use coreglow::status::Status;
-use coreglow::{paths, sensors, zones};
+use coreglow::{paths, sensors};
 
 const USAGE: &str = "\
 usage: coreglowctl COMMAND
@@ -17,6 +17,7 @@ usage: coreglowctl COMMAND
   test-fans         run the radiator fans at full speed for 5 seconds
   auto [on|off]     show the automatic switching rules, or turn them on or off
   motherboard [on|off]  send the lighting to the motherboard too (through the OpenRGB server)
+  night [off | FROM-TO [N]]  show night dimming, turn it off, or dim to N % (default 30) from FROM to TO (HH:MM)
   devices           what's connected to each RGB port: the layout in use and what the controller detects
   fallback          store the hardware fallback fan curve (only while coreglowd is stopped)
   gui               open the window (coreglow)";
@@ -85,14 +86,26 @@ fn main() {
                 .and_then(|_| dev.sleep())
                 .unwrap_or_else(|e| fail(e));
             let pts: Vec<String> = curve.iter().map(|(t, d)| format!("{t}°C {d}%")).collect();
-            println!("fallback stored: fans 1-2 follow probe 1 ({}), pump 100 %", pts.join(", "));
+            let what = match dev.model {
+                coreglow::model::Model::CoreXt => "fans 1-2 follow probe 1",
+                coreglow::model::Model::Core => "fans 1-6 follow the liquid temperature",
+            };
+            println!("fallback stored on the {}: {what} ({}), pump 100 %", dev.model.name(), pts.join(", "));
         }
         ("devices", 1) => {
             let cfg = Config::load().unwrap_or_else(|e| fail(e));
             let layout = cfg.layout().unwrap_or_else(|e| fail(e));
-            println!("layout: {}", if cfg.layout.is_some() { "from [layout] in the profiles file" } else { "this build's (built in)" });
             let status = Status::read().filter(|s| s.fresh());
-            for (i, port) in zones::PORTS.iter().enumerate() {
+            if let Some(m) = status.as_ref().and_then(Status::model) {
+                println!("controller: {}{}", m.name(), if m.experimental() { " (experimental support)" } else { "" });
+            }
+            let source = match (&cfg.layout, status.as_ref().is_some_and(|s| s.detected.is_some())) {
+                (Some(_), _) => "from [layout] in the profiles file",
+                (None, true) => "detected by the controller",
+                (None, false) => "this build's (built in)",
+            };
+            println!("layout: {source}");
+            for (i, port) in layout.model.ports().iter().enumerate() {
                 let devs: Vec<&str> = layout.ports[i].iter().map(|k| k.id).collect();
                 let leds: usize = layout.ports[i].iter().map(|k| k.leds).sum();
                 let configured = if devs.is_empty() { "nothing".to_string() } else { format!("{} ({leds} LEDs)", devs.join(", ")) };
@@ -102,7 +115,7 @@ fn main() {
                     .map(|d| match (d.detected_leds, &d.detected_kind) {
                         (Some(n), Some(k)) => format!("detected {n} LEDs: {k}"),
                         (Some(n), None) => format!("detected {n} LEDs"),
-                        (None, _) if i == 0 => "not auto-detected".to_string(),
+                        (None, _) if *port == "external" => "not auto-detected".to_string(),
                         (None, _) => "nothing detected".to_string(),
                     })
                     .unwrap_or_else(|| "(start coreglowd to see detection)".into());
@@ -150,6 +163,32 @@ fn main() {
                 println!("  {}. when {} → {}", i + 1, r.describe(), r.profile);
             }
         }
+        ("night", 1..=3) => {
+            let mut cfg = Config::load().unwrap_or_else(|e| fail(e));
+            match args.get(1).map(String::as_str) {
+                None => {}
+                Some("off") => cfg.night.get_or_insert_with(Night::default).enabled = false,
+                Some(span) => {
+                    let (from, to) = span.split_once('-').unwrap_or_else(|| fail("use: coreglowctl night 22:00-07:00 [percent]"));
+                    if parse_hm(from).is_none() || parse_hm(to).is_none() {
+                        fail("times must be HH:MM, e.g. coreglowctl night 22:00-07:00 30");
+                    }
+                    let n: f64 = args.get(2).map_or(Ok(30.0), |a| a.trim_end_matches('%').parse()).unwrap_or_else(|_| fail("brightness must be 0-100"));
+                    cfg.night = Some(Night { enabled: true, from: from.into(), to: to.into(), brightness: Num(n.clamp(0.0, 100.0)) });
+                }
+            }
+            if args.len() > 1 {
+                cfg.active = cfg.active_name();
+                cfg.save().unwrap_or_else(|e| fail(e));
+            }
+            match &cfg.night {
+                Some(n) if n.enabled => {
+                    let now = if Status::read().is_some_and(|s| s.fresh() && s.night) { " (dimmed now)" } else { "" };
+                    println!("night dimming: {} % from {} to {}{now}", n.brightness.0, n.from, n.to);
+                }
+                _ => println!("night dimming is off"),
+            }
+        }
         ("test-fans", 1) => {
             if !Status::read().is_some_and(|s| s.fresh()) {
                 fail("coreglowd isn't running; start it first: systemctl --user start coreglowd");
@@ -178,6 +217,9 @@ fn status() {
     if let Some(e) = &s.error {
         println!("problem  {e}");
     }
+    if let Some(m) = s.model() {
+        println!("device   {}{}", m.name(), if m.experimental() { " (experimental support)" } else { "" });
+    }
     println!("profile  {}", s.profile);
     if let Some(rule) = &s.auto_rule {
         println!("auto     in use because {rule} (chosen by hand: {})", s.manual_profile);
@@ -185,4 +227,7 @@ fn status() {
     println!("temps    {}", s.temps.iter().map(|(k, v)| format!("{} {v:.1} °C", sensors::label(k))).collect::<Vec<_>>().join("   "));
     println!("fans     {}", s.fan_duty.iter().map(|(k, v)| format!("{k} {v} %")).collect::<Vec<_>>().join("   "));
     println!("rpm      {}", s.rpm.iter().map(|(k, v)| format!("{k} {v}")).collect::<Vec<_>>().join("   "));
+    if s.night {
+        println!("night    lighting dimmed (coreglowctl night)");
+    }
 }

@@ -10,9 +10,10 @@ use std::time::{Duration, Instant, SystemTime};
 use eframe::egui::{self, Align2, Color32, FontId, Pos2, Rect, RichText, Sense, Stroke, Vec2};
 
 use coreglow::config::{
-    color_hex, curve_of, parse_color, Config, Effect, EffectKind, Fans, Num, Profile, PRESET_BALANCED,
-    PRESET_PERFORMANCE, PRESET_QUIET, Fallback, FALLBACK_DEFAULT, FALLBACK_MAX_POINTS,
+    color_hex, curve_of, parse_color, Config, Effect, EffectKind, Fans, Night, Num, Profile, PRESET_BALANCED,
+    PRESET_PERFORMANCE, PRESET_QUIET, Fallback, FALLBACK_DEFAULT, FALLBACK_MAX_POINTS, PUMP_MIN,
 };
+use coreglow::model::Model;
 use coreglow::effects::Temps;
 use coreglow::status::{Status, HISTORY_EVERY_S};
 use coreglow::i18n::{tr, trf};
@@ -30,6 +31,15 @@ const SKY: Color32 = Color32::from_rgb(127, 184, 255);
 
 /// Quick buttons on Home switch to these profiles when they exist.
 const QUICK: [(&str, &str); 4] = [("Lights off", "off"), ("Quiet fans", "quiet"), ("All white", "white"), ("Rainbow", "rainbow")];
+
+thread_local! {
+    /// The controller coreglowd reports (the Core XT until it says otherwise).
+    static MODEL: std::cell::Cell<Model> = const { std::cell::Cell::new(Model::CoreXt) };
+}
+
+fn model() -> Model {
+    MODEL.with(|m| m.get())
+}
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Page {
@@ -135,6 +145,19 @@ impl App {
         }
         self.last_poll = Instant::now();
         self.status = Status::read();
+        if let Some(s) = &self.status {
+            if let Some(m) = s.model() {
+                MODEL.with(|c| c.set(m));
+            }
+            // a Commander CORE's parts come from what coreglowd detected
+            if self.cfg.layout.is_none() {
+                if let Some(l) = s.detected_layout() {
+                    if *zones::current() != l {
+                        zones::set_current(l);
+                    }
+                }
+            }
+        }
         // pick up changes made elsewhere (coreglowctl, editor) while nothing is pending here
         if self.changed_at.is_none() && stamp() != self.file_stamp {
             self.file_stamp = stamp();
@@ -341,7 +364,8 @@ fn color_choice(ui: &mut egui::Ui, hex: &mut String, recent: &mut Recent) -> boo
 fn sensor_combo(ui: &mut egui::Ui, id: &str, value: &mut String, gpu: bool) -> bool {
     let mut changed = false;
     egui::ComboBox::from_id_salt(id).selected_text(sensors::label(value)).width(220.0).show_ui(ui, |ui| {
-        for (sid, label) in sensors::SENSORS {
+        let current = value.clone();
+        for (sid, label) in sensors::SENSORS.into_iter().filter(|(sid, _)| sensors::on_controller(sid, model()) || current == *sid) {
             let enabled = sid != "gpu" || gpu;
             let text = if enabled { tr(label).to_string() } else { trf("{} — needs NVIDIA driver", &[&label]) };
             if ui.add_enabled(enabled, egui::SelectableLabel::new(value == sid, text)).clicked() {
@@ -980,6 +1004,13 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
             ui.add_space(12.0);
             card(ui, |ui| {
                 egui::CollapsingHeader::new(RichText::new(tr("What's connected")).strong()).id_salt("devices").show(ui, |ui| {
+                    if let Some(m) = status.as_ref().and_then(Status::model) {
+                        ui.label(RichText::new(m.name()).strong());
+                        if m.experimental() {
+                            ui.label(RichText::new(tr("Support for this controller is new and untested. If something looks wrong, please report it.")).color(AMBER).small());
+                        }
+                        ui.add_space(4.0);
+                    }
                     let devices = status.as_ref().map(|s| s.devices.clone()).unwrap_or_default();
                     if devices.is_empty() {
                         ui.label(RichText::new(tr("The lighting service reports this when it starts.")).weak().small());
@@ -999,6 +1030,8 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
                     ui.label(RichText::new(tr("A different build can describe its ports as [layout] in the profiles file (see man coreglowctl).")).weak().small());
                 });
             });
+            ui.add_space(12.0);
+            card(ui, |ui| changed |= night_ui(ui, &mut app.cfg.night, status.as_ref()));
         });
         ui.vertical(|ui| {
             card(ui, |ui| match app.part.clone() {
@@ -1037,6 +1070,41 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
     changed
 }
 
+/// Night dimming: on/off, the hours, and how dim.
+fn night_ui(ui: &mut egui::Ui, night: &mut Option<Night>, status: Option<&Status>) -> bool {
+    let mut changed = false;
+    title(ui, tr("Dim at night"));
+    let mut on = night.as_ref().is_some_and(|n| n.enabled);
+    if ui.checkbox(&mut on, tr("Dim all lighting at night")).changed() {
+        night.get_or_insert_with(Night::default).enabled = on;
+        changed = true;
+    }
+    if let Some(n) = night.as_mut().filter(|n| n.enabled) {
+        for (label, value) in [(tr("From"), &mut n.from), (tr("To"), &mut n.to)] {
+            row(ui, label, |ui| {
+                let mut minutes = coreglow::config::parse_hm(value).unwrap_or(0) as i32;
+                let r = ui.add(
+                    egui::DragValue::new(&mut minutes)
+                        .range(0..=1439)
+                        .speed(5.0)
+                        .custom_formatter(|m, _| format!("{:02}:{:02}", m as i32 / 60, m as i32 % 60))
+                        .custom_parser(|t| coreglow::config::parse_hm(t).map(|m| m as f64)),
+                );
+                if r.changed() {
+                    *value = format!("{:02}:{:02}", minutes / 60, minutes % 60);
+                    changed = true;
+                }
+            });
+        }
+        row(ui, tr("Brightness"), |ui| {
+            changed |= ui.add(egui::Slider::new(&mut n.brightness.0, 0.0..=100.0).step_by(5.0).suffix(" %")).changed();
+        });
+        let note = if status.is_some_and(|s| s.night) { tr("Dimmed right now.") } else { tr("Drag the times, or click and type HH:MM.") };
+        ui.label(RichText::new(note).weak().small());
+    }
+    changed
+}
+
 fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
     let mut changed = false;
     let status = app.live().cloned();
@@ -1050,7 +1118,7 @@ fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
         ui.vertical(|ui| {
             ui.set_width(w);
             card(ui, |ui| {
-                title(ui, tr("Both radiator fans"));
+                title(ui, if model() == Model::Core { tr("Fans") } else { tr("Both radiator fans") });
                 ui.add_space(6.0);
                 changed |= fans_ui(ui, &mut p.fans, gpu, s, &mut app.drag);
                 if p.fan1.is_some() || p.fan2.is_some() {
@@ -1063,11 +1131,17 @@ fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
                 title(ui, tr("Right now"));
                 let rpm = |k: &str| s.and_then(|st| st.rpm.get(k)).copied().unwrap_or(0);
                 let duty = |k: &str| s.and_then(|st| st.fan_duty.get(k)).copied().unwrap_or(0);
-                ui.label(trf("Right fan   {} rpm · {} %", &[&rpm("fan1"), &duty("fan1")]));
-                ui.label(trf("Left fan    {} rpm · {} %", &[&rpm("fan2"), &duty("fan2")]));
+                let core = model() == Model::Core;
+                if core {
+                    ui.label(trf("Fan 1   {} rpm · {} %", &[&rpm("fan1"), &duty("fan1")]));
+                    ui.label(trf("Fan 2   {} rpm · {} %", &[&rpm("fan2"), &duty("fan2")]));
+                } else {
+                    ui.label(trf("Right fan   {} rpm · {} %", &[&rpm("fan1"), &duty("fan1")]));
+                    ui.label(trf("Left fan    {} rpm · {} %", &[&rpm("fan2"), &duty("fan2")]));
+                }
                 ui.add_space(4.0);
                 sparkline(ui, &s.and_then(|st| st.history.get("fan1_rpm")).cloned().unwrap_or_default(), SKY, 30.0);
-                ui.label(RichText::new(tr("right fan, last 10 minutes")).weak().small());
+                ui.label(RichText::new(if core { tr("fan 1, last 10 minutes") } else { tr("right fan, last 10 minutes") }).weak().small());
                 ui.add_space(6.0);
                 if s.is_some_and(|st| st.testing_fans) {
                     ui.label(RichText::new(tr("Testing: fans at full speed…")).color(AMBER));
@@ -1082,7 +1156,18 @@ fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
             card(ui, |ui| {
                 title(ui, tr("Pump"));
                 ui.label(RichText::new(trf("{} rpm", &[&s.and_then(|st| st.rpm.get("pump")).copied().unwrap_or(0)])).strong().size(22.0));
-                ui.label(RichText::new(tr("Runs at full speed while the lighting is controlled from the PC. That keeps the CPU cool and is normal.")).weak());
+                if model().pump_settable() {
+                    let mut duty = p.pump_duty() as f64;
+                    row(ui, tr("Speed"), |ui| {
+                        if ui.add(egui::Slider::new(&mut duty, PUMP_MIN as f64..=100.0).step_by(5.0).suffix(" %")).changed() {
+                            p.pump = Some(toml::Value::Integer(duty as i64));
+                            changed = true;
+                        }
+                    });
+                    ui.label(RichText::new(tr("Lower is quieter. It never goes below 50 %, so the CPU stays cool.")).weak());
+                } else {
+                    ui.label(RichText::new(tr("Runs at full speed while the lighting is controlled from the PC. That keeps the CPU cool and is normal.")).weak());
+                }
             });
         });
     });
@@ -1090,12 +1175,18 @@ fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
     ui.add_space(12.0);
     card(ui, |ui| {
         title(ui, tr("When Coreglow is closed"));
-        ui.label(RichText::new(tr("The controller keeps its own backup curve. It only reads case probe 1, and the pump always stays at full speed. Changes are stored in the controller within a second.")).weak());
+        let backup_sensor = if model() == Model::Core { "liquid" } else { "probe1" };
+        let text = if model() == Model::Core {
+            tr("The controller keeps its own backup curve. It only reads the liquid temperature, and the pump always stays at full speed. Changes are stored in the controller within a second.")
+        } else {
+            tr("The controller keeps its own backup curve. It only reads case probe 1, and the pump always stays at full speed. Changes are stored in the controller within a second.")
+        };
+        ui.label(RichText::new(text).weak());
         ui.add_space(6.0);
         egui::CollapsingHeader::new(tr("Edit backup curve")).id_salt("fallback-edit").show(ui, |ui| {
             let fb = app.cfg.fallback.get_or_insert_with(|| Fallback { curve: curve_of(&FALLBACK_DEFAULT) });
-            let now = s.and_then(|st| st.temps.get("probe1").copied());
-            let recent = s.and_then(|st| st.history.get("probe1")).filter(|h| h.len() > 1).map(|h| {
+            let now = s.and_then(|st| st.temps.get(backup_sensor).copied());
+            let recent = s.and_then(|st| st.history.get(backup_sensor)).filter(|h| h.len() > 1).map(|h| {
                 (h.iter().copied().fold(f64::MAX, f64::min), h.iter().copied().fold(f64::MIN, f64::max))
             });
             changed |= curve_ui(ui, &mut fb.curve, now, recent, &mut app.fallback_drag, FALLBACK_MAX_POINTS);

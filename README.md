@@ -3,6 +3,7 @@
 [![CI](https://github.com/Nexus-SvK/Coreglow/actions/workflows/ci.yml/badge.svg)](https://github.com/Nexus-SvK/Coreglow/actions/workflows/ci.yml)
 
 Lighting effects, profiles and fan control for the **Corsair iCUE Commander Core XT** on Linux, without iCUE.
+The **Commander CORE** (the hub of the ELITE CAPELLIX and ELITE LCD coolers) is supported experimentally.
 
 ![Coreglow home screen](docs/screenshots/home.png)
 
@@ -13,7 +14,8 @@ Lighting effects, profiles and fan control for the **Corsair iCUE Commander Core
 - `coreglowd`: user service that drives the controller (lighting at ~30 fps, fan duties for fans 1 and 2).
   When it stops, it stores a backup curve in the controller (fans 1 and 2 follow probe 1, pump at 100 %);
   the curve is editable on the Fans page or as `[fallback]` in the config.
-- `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `auto [on|off]`, `motherboard [on|off]`, `devices`, `test-fans`, `edit`, `fallback`, `gui`.
+- `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `auto [on|off]`, `motherboard [on|off]`, `night [off|FROM-TO [N]]`, `devices`, `test-fans`, `edit`, `fallback`, `gui`.
+- Night dimming: all lighting at a lower brightness between two times (Lighting page, or `[night]` in the config).
 - `coreglow`: window ("Coreglow" in the app menu) for profiles, effects, per-part lighting, fan curves and
   automatic profile switching (by temperature, running program, time of day or locked screen).
 - `coreglow-tray`: tray icon (starts at login) for switching profiles, automatic switching on/off and testing fans.
@@ -55,9 +57,22 @@ Device ids: rgb-strip, strip-15/21/27/40/49/84, triangle-9, ll-fan, ml-fan, hd-f
 Without `names`, parts are called external, external1…, port1…, port11…. Profiles may only use part names the
 layout has; the file is rejected otherwise, so rename profile parts when you change the layout.
 
+## Commander CORE (experimental)
+
+Written from iCUE's device manifest ([docs/corsair-devices.md](docs/corsair-devices.md)) and not yet tried
+on the hardware, so please [report](https://github.com/Nexus-SvK/Coreglow/issues) how it works. Differences
+from the Core XT:
+
+- USB IDs `1b1c:0c1c` and `1b1c:0c32` (the udev rule covers both).
+- Port 0 is the pump: its lighting ring (ELITE CAPELLIX, 29 LEDs; ELITE LCD, 24 LEDs) and its speed.
+  The pump speed is set per profile (`pump = 50`…`100`, or the slider on the Fans page; never below 50 %).
+- Without a `[layout]` the parts come from what the controller detects: `pump`, `all-fans`, `port1`…`port6`.
+  A `[layout]` for it uses `pump = ["capellix-pump"]` or `["lcd-pump-ring"]` and fans on port1…port6.
+- Its temperature sensor is the liquid (`liquid`); the backup curve follows it and drives all six fan ports.
+
 ## Hardware notes
 
-- The pump on fan port 6 runs at full speed whenever the lighting is driven from the PC (software mode).
+- On this build's Core XT the pump on fan port 6 runs at full speed whenever the lighting is driven from the PC (software mode).
   iCUE behaves the same way.
 - The lighting layout (4 LED strips on the external port, fans on ports 1 and 2, pump head on port 3)
   is fixed in `src/zones.rs` for this build.
@@ -70,6 +85,7 @@ liquidctl's `commander_core` driver. Lighting needs 384-byte reports.
 
 - [docs/icue-reverse-engineering.md](docs/icue-reverse-engineering.md): protocol facts from iCUE captures and binaries.
 - [docs/devlog-and-roadmap.md](docs/devlog-and-roadmap.md): how this was built, mistakes, testing checklist, roadmap.
+- [docs/corsair-devices.md](docs/corsair-devices.md): every device iCUE 5 supports, with USB IDs and protocol family.
 
 ## Upgrading from ccxt-control 0.1
 

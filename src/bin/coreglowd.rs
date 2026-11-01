@@ -1,7 +1,7 @@
-//! coreglowd: drives the Commander Core XT from the active profile.
+//! coreglowd: drives the Commander CORE XT (or, experimentally, a Commander CORE) from the active profile.
 //!
 //! Keeps the controller in software mode like iCUE: streams the lighting and
-//! sends fan duties for fans 1 and 2. On exit (or before taking over) it stores a
+//! sends fan duties (and, on a Core, the pump speed). On exit (or before taking over) it stores a
 //! hardware fallback curve, so the fans stay sensible without this daemon.
 //! Reconnects by itself when the controller disappears (unplugged, passed to a VM).
 
@@ -16,6 +16,7 @@ use coreglow::device::{self, Device};
 use coreglow::effects::Temps;
 use coreglow::sensors::Sensors;
 use coreglow::status::{self, Status};
+use coreglow::model::Model;
 use coreglow::{openrgb, paths, zones};
 
 const FPS: u64 = 30;
@@ -98,7 +99,7 @@ impl MotherboardSync {
         MotherboardSync { client: None, next_try: Instant::now(), last: Vec::new(), last_sent: Instant::now(), state: None }
     }
 
-    fn tick(&mut self, cfg: &OpenRgb, profile: &Profile, t: f64, temps: &Temps) {
+    fn tick(&mut self, cfg: &OpenRgb, profile: &Profile, t: f64, temps: &Temps, dim: f64) {
         if !cfg.enabled {
             if self.client.take().is_some() {
                 log("motherboard sync off");
@@ -133,7 +134,7 @@ impl MotherboardSync {
             }
         }
         let Some(c) = self.client.as_mut() else { return };
-        let colors = profile.motherboard(t, temps, c.total_leds());
+        let colors: Vec<[u8; 3]> = profile.motherboard(t, temps, c.total_leds()).into_iter().map(|c| c.map(|v| dimmed(v, dim))).collect();
         if colors == self.last && now - self.last_sent < STATIC_EVERY {
             return;
         }
@@ -161,10 +162,29 @@ impl MotherboardSync {
     }
 }
 
+fn dimmed(v: u8, factor: f64) -> u8 {
+    (v as f64 * factor).round() as u8
+}
+
+/// The layout for this controller: the config's [layout] if it fits, this build's on a
+/// Core XT, else what the controller detects. True when detected.
+fn choose_layout(dev: &mut Device, cfg: &Config, found: &[(u16, u16)]) -> (zones::Layout, bool) {
+    if let Some(l) = &cfg.layout {
+        match zones::Layout::from_config(dev.model, &l.ports, &l.names) {
+            Ok(layout) => return (layout, false),
+            Err(e) => log(format!("[layout] doesn't fit this {}: {e}; using what it detects", dev.model.name())),
+        }
+    } else if dev.model == Model::CoreXt {
+        return (zones::Layout::this_build(), false);
+    }
+    (zones::Layout::detected(dev.model, found), true)
+}
+
 /// What the controller reports on each RGB port, next to what the layout says.
-fn detected_devices(dev: &mut Device, layout: &zones::Layout) -> Vec<status::PortInfo> {
-    let found = dev.autodetected().unwrap_or_default();
-    zones::PORTS
+fn detected_devices(found: &[(u16, u16)], layout: &zones::Layout) -> Vec<status::PortInfo> {
+    layout
+        .model
+        .ports()
         .iter()
         .enumerate()
         .map(|(i, port)| {
@@ -188,18 +208,39 @@ fn testing_fans() -> bool {
         .is_some_and(|age| age < TEST_FANS_FOR)
 }
 
+/// Fan and pump duties to send: (channel, %). The Core XT gets this build's two fans
+/// (its pump on port 6 can't be slowed); the Core gets fan1/fan2, the shared setting on
+/// ports 3-6, and the profile's pump speed.
+fn duties(model: Model, profile: &Profile, temps: &Temps, testing: bool) -> Vec<(usize, u8)> {
+    let fans = profile.fan_settings();
+    let duty = |i: usize| if testing { 100 } else { fans[i].duty(temps) };
+    let mut out = vec![(model.fan_channel(1), duty(0)), (model.fan_channel(2), duty(1))];
+    if model.pump_settable() {
+        let shared = if testing { 100 } else { profile.fans.duty(temps) };
+        out.extend((3..=6).map(|n| (model.fan_channel(n), shared)));
+        out.push((model.pump_channel(), profile.pump_duty()));
+    }
+    out
+}
+
 /// Runs until `stop` is set or the device fails. Err = device error (reconnect).
 fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String> {
+    let model = dev.model;
     dev.wake()?;
     device::store_fallback(dev, &st.fallback)?;
+    let found = dev.autodetected().unwrap_or_default();
+    let (layout0, mut is_detected) = choose_layout(dev, &st.cfg, &found);
+    zones::set_current(layout0);
     let mut layout = zones::current();
     dev.init_lighting(&layout)?;
-    let devices = detected_devices(dev, &layout);
+    log(format!("lighting layout: {} LEDs{}", layout.frame_len(), if is_detected { " (detected)" } else { "" }));
+    let mut devices = detected_devices(&found, &layout);
     let mut all_parts: Vec<(&str, usize)> = zones::PICTURE_ZONES.iter().filter_map(|z| zones::zone(z).first().map(|i| (*z, *i))).collect();
     let t0 = Instant::now();
     let mut cfg_stamp = stamp();
     let mut temps = Temps::new();
-    let mut sent: Option<[u8; 2]> = None;
+    let mut sent: Option<Vec<(usize, u8)>> = None;
+    let mut night = false;
     let (mut last_fan, mut last_light) = (Instant::now() - RESEND_EVERY, Instant::now() - STATIC_EVERY);
     let mut next_sensor = Instant::now();
     let mut last_frame: Vec<u8> = Vec::new();
@@ -231,8 +272,13 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                     new.apply_rule(rule);
                     *st = new;
                     error = None;
+                    let found = dev.autodetected().unwrap_or_default();
+                    let (new_layout, d) = choose_layout(dev, &st.cfg, &found);
+                    is_detected = d;
+                    zones::set_current(new_layout);
                     if *zones::current() != *layout {
                         layout = zones::current();
+                        devices = detected_devices(&found, &layout);
                         dev.init_lighting(&layout)?;
                         all_parts = zones::PICTURE_ZONES.iter().filter_map(|z| zones::zone(z).first().map(|i| (*z, *i))).collect();
                         log(format!("lighting layout changed: {} LEDs", layout.frame_len()));
@@ -246,29 +292,38 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
         }
         if now >= next_sensor {
             next_sensor = now + SENSOR_EVERY;
-            let probes = dev.temps()?;
+            let readings = dev.temps()?;
+            let (probes, liquid) = match model {
+                Model::CoreXt => (readings, None),
+                Model::Core => (Vec::new(), readings.first().copied().flatten()),
+            };
             let mut wanted = st.profile.sensors();
             for p in st.cfg.profiles.values() {
                 wanted.extend(p.sensors());
             }
             wanted.extend(st.cfg.auto.rules.iter().filter_map(|r| r.sensor.clone()));
-            wanted.extend(["probe1", "probe2", "cpu"].map(String::from));
+            wanted.extend(["probe1", "probe2", "liquid", "cpu"].map(String::from));
             wanted.sort();
             wanted.dedup();
-            temps = st.sensors.read(&probes, &wanted);
+            temps = st.sensors.read(&probes, liquid, &wanted);
             let rule = auto.evaluate(&st.cfg.auto, &temps);
             st.apply_rule(rule);
-            let fans = st.profile.fan_settings();
             let testing = testing_fans();
-            let duties = if testing { [100, 100] } else { [fans[0].duty(&temps), fans[1].duty(&temps)] };
-            let moved = sent.is_none_or(|s| s.iter().zip(duties).any(|(a, b)| a.abs_diff(b) >= 2));
+            let duties = duties(model, &st.profile, &temps, testing);
+            let moved = sent.as_ref().is_none_or(|s| s.iter().zip(&duties).any(|(a, b)| a.1.abs_diff(b.1) >= 2));
             if moved || now - last_fan >= RESEND_EVERY {
-                dev.set_duties(&[(0, duties[0]), (1, duties[1])])?;
-                if sent != Some(duties) {
-                    log(format!("fans {}/{} %", duties[0], duties[1]));
+                dev.set_duties(&duties)?;
+                if sent.as_ref() != Some(&duties) {
+                    let pump = if model.pump_settable() { format!(", pump {} %", st.profile.pump_duty()) } else { String::new() };
+                    log(format!("fans {}/{} %{pump}", duties[0].1, duties[1].1));
                 }
-                sent = Some(duties);
+                sent = Some(duties.clone());
                 last_fan = now;
+            }
+            let dim_now = st.cfg.night_factor() < 1.0;
+            if dim_now != night {
+                log(if dim_now { "night dimming on" } else { "night dimming off" });
+                night = dim_now;
             }
             let rpm = dev.speeds()?;
             if now >= next_history {
@@ -286,12 +341,21 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                 }
             }
             let r = |i: usize| rpm.get(i).copied().unwrap_or(0);
+            let mut fan_duty: BTreeMap<String, u8> = [("fan1".into(), duties[0].1), ("fan2".into(), duties[1].1)].into();
+            if model.pump_settable() {
+                fan_duty.insert("pump".into(), st.profile.pump_duty());
+            }
             Status {
                 profile: st.name.clone(),
                 time: status::now(),
                 temps: temps.iter().map(|(k, v)| (k.clone(), (v * 10.0).round() / 10.0)).collect(),
-                fan_duty: [("fan1".into(), duties[0]), ("fan2".into(), duties[1])].into(),
-                rpm: [("fan1".into(), r(0)), ("fan2".into(), r(1)), ("pump".into(), r(device::PUMP_CHANNEL))].into(),
+                fan_duty,
+                rpm: [
+                    ("fan1".into(), r(model.fan_channel(1))),
+                    ("fan2".into(), r(model.fan_channel(2))),
+                    ("pump".into(), r(model.pump_channel())),
+                ]
+                .into(),
                 zones: if last_frame.is_empty() {
                     Default::default()
                 } else {
@@ -308,17 +372,24 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                 testing_fans: testing,
                 manual_profile: st.manual.clone(),
                 auto_rule: st.rule.map(|i| st.cfg.auto.rules[i].describe()),
+                controller: Some(model.id().to_string()),
+                detected: is_detected.then(|| layout.to_config()),
+                night,
             }
             .write();
         }
 
-        let frame = st.profile.frame((now - t0).as_secs_f64(), &temps);
+        let dim = st.cfg.night_factor();
+        let mut frame = st.profile.frame((now - t0).as_secs_f64(), &temps);
+        if dim < 1.0 {
+            frame.iter_mut().for_each(|v| *v = dimmed(*v, dim));
+        }
         if frame != last_frame || now - last_light >= STATIC_EVERY {
             dev.write_frame(&frame)?;
             last_frame = frame;
             last_light = now;
         }
-        board.tick(&st.cfg.openrgb, &st.profile, (now - t0).as_secs_f64(), &temps);
+        board.tick(&st.cfg.openrgb, &st.profile, (now - t0).as_secs_f64(), &temps, dim);
         let pause = if st.profile.animated() { Duration::from_millis(1000 / FPS) } else { Duration::from_millis(200) };
         std::thread::sleep(pause);
     }
@@ -361,7 +432,8 @@ fn main() {
             }
         };
         waiting_logged = false;
-        log(format!("controller at {}", dev.path.display()));
+        let note = if dev.model.experimental() { " (experimental support: please report how it works)" } else { "" };
+        log(format!("{} at {}{note}", dev.model.name(), dev.path.display()));
         let result = run(&mut dev, &mut st, &stop);
         // Hand the controller back to its own fallback curve, whatever happened.
         let _ = dev.wake().and_then(|_| device::store_fallback(&mut dev, &st.fallback)).and_then(|_| dev.sleep());
