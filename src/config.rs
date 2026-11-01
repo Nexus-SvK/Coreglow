@@ -225,6 +225,9 @@ impl Profile {
     }
 }
 
+/// Seconds night dimming takes to go all the way from full brightness to off (or back).
+pub const NIGHT_FADE_S: f64 = 60.0;
+
 /// `[night]`: dim all lighting between two times of day.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Night {
@@ -258,6 +261,13 @@ impl Night {
     /// Multiplier for colours at `now`: 1.0 outside the window.
     pub fn factor(&self, now: u32) -> f64 {
         if self.active(now) { self.brightness.0.clamp(0.0, 100.0) / 100.0 } else { 1.0 }
+    }
+
+    /// Move a brightness factor from `current` toward `target`, by at most the share of
+    /// the full range that `dt` seconds of a NIGHT_FADE_S fade cover.
+    pub fn fade(current: f64, target: f64, dt: f64) -> f64 {
+        let step = dt / NIGHT_FADE_S;
+        current + (target - current).clamp(-step, step)
     }
 
     fn validate(&self) -> Result<(), String> {
@@ -642,6 +652,10 @@ mod tests {
         assert!(day.active(9 * 60) && !day.active(10 * 60));
         assert!(!Night { enabled: false, ..Night::default() }.active(23 * 60));
         assert!(Night { from: "25:00".into(), ..Night::default() }.validate().is_err());
+        // a full fade to 30 % takes 0.7 of a minute; one second moves 1/60 of the range
+        assert!((Night::fade(1.0, 0.3, 1.0) - (1.0 - 1.0 / 60.0)).abs() < 1e-9);
+        assert_eq!(Night::fade(0.31, 0.3, 1.0), 0.3);
+        assert_eq!(Night::fade(0.3, 1.0, 120.0), 1.0);
 
         let mut p = Profile::default();
         assert_eq!(p.pump_duty(), 100);

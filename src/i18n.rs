@@ -263,7 +263,26 @@ static SK: &[(&str, &str)] = &[
     ("Use what the controller detects", "Použiť, čo zistí ovládač"),
     ("Back to the built-in layout", "Späť na vstavané zapojenie"),
     ("Removes [layout] from the profiles file", "Odstráni [layout] zo súboru profilov"),
-];fn slovak() -> bool {
+    // device kinds (layout)
+    ("RGB LED strip (10 LEDs)", "RGB LED pás (10 LED)"),
+    ("LED strip, 15 LEDs", "LED pás, 15 LED"),
+    ("LED strip, 21 LEDs", "LED pás, 21 LED"),
+    ("LED strip, 27 LEDs", "LED pás, 27 LED"),
+    ("LED strip, 40 LEDs", "LED pás, 40 LED"),
+    ("LED strip, 49 LEDs", "LED pás, 49 LED"),
+    ("LED strip, 84 LEDs", "LED pás, 84 LED"),
+    ("LED triangle (9 LEDs)", "LED trojuholník (9 LED)"),
+    ("LL fan (16 LEDs)", "Ventilátor LL (16 LED)"),
+    ("ML fan (4 LEDs)", "Ventilátor ML (4 LED)"),
+    ("HD fan (12 LEDs)", "Ventilátor HD (12 LED)"),
+    ("8-LED fan", "Ventilátor s 8 LED"),
+    ("QL fan (34 LEDs)", "Ventilátor QL (34 LED)"),
+    ("13-LED pump cap", "Kryt pumpy s 13 LED"),
+    ("ELITE CAPELLIX pump (29 LEDs)", "Pumpa ELITE CAPELLIX (29 LED)"),
+    ("ELITE LCD pump ring (24 LEDs)", "Prstenec pumpy ELITE LCD (24 LED)"),
+];
+
+fn slovak() -> bool {
     static SLOVAK: OnceLock<bool> = OnceLock::new();
     *SLOVAK.get_or_init(|| {
         let var = |k: &str| std::env::var(k).ok().filter(|v| !v.is_empty());
@@ -313,5 +332,8 @@ mod tests {
         let n = keys.len();
         keys.dedup();
         assert_eq!(n, keys.len(), "duplicate English text in the table");
+        for k in crate::zones::KINDS {
+            assert!(SK.iter().any(|(en, _)| *en == k.label), "no Slovak name for {}", k.id);
+        }
     }
 }

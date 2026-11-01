@@ -56,6 +56,11 @@ pub fn kind(id: &str) -> Option<&'static Kind> {
     KINDS.iter().find(|k| k.id == id)
 }
 
+/// A device id's name for the interface (the id itself when unknown).
+pub fn kind_label(id: &str) -> String {
+    kind(id).map_or(id.to_string(), |k| crate::i18n::tr(k.label).to_string())
+}
+
 /// Best guess for an auto-detected LED count on ports 1-6.
 pub fn kind_for_leds(leds: usize) -> Option<&'static Kind> {
     KINDS.iter().find(|k| k.byte != 0x01 && !PUMP_RINGS.contains(&k.byte) && k.leds == leds)

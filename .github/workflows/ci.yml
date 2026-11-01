@@ -32,6 +32,15 @@ jobs:
       - name: Build .deb
         run: packaging/build-deb.sh
 
+      - name: Packaging tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lintian apt-utils >/dev/null
+
+      - name: Lintian
+        run: lintian --info --display-info --fail-on error,warning --suppress-tags-from-file packaging/lintian-suppress target/debian/*.deb
+
+      - name: apt repository check
+        run: packaging/test-apt-repo.sh target/debian/*.deb
+
       - uses: actions/upload-artifact@v4
         with:
           name: coreglow-deb
@@ -60,3 +69,29 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release create "$GITHUB_REF_NAME" dist/*.deb --title "Coreglow $GITHUB_REF_NAME" --generate-notes
+
+  apt:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    concurrency: apt-repository
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: coreglow-deb
+          path: dist
+
+      - name: Update the apt repository (gh-pages)
+        env:
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+        run: |
+          if [ -z "$APT_SIGNING_KEY" ]; then
+            echo "::warning::APT_SIGNING_KEY isn't set; run packaging/apt-key-setup.sh once to publish the apt repository"
+            exit 0
+          fi
+          sudo apt-get update -qq && sudo apt-get install -y -qq apt-utils >/dev/null
+          packaging/apt-repo.sh dist/*.deb

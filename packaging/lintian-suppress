@@ -1,0 +1,2 @@
+# Lintian tags that don't apply to how Coreglow is built (plain dpkg-deb from a cargo build),
+# one per line. Empty for now.
