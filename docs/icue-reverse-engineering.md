@@ -138,11 +138,33 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
   right after a wake is reliable after a long hardware-mode stretch, but frequent wakes disturb it (halves and
   quarters of the real value).
 - **[test] (2026-11-01, watched, several runs)** Writing the lighting buffer (0x22) in hardware mode is accepted
-  (no error) but not shown. After `01 03 00 01` the LEDs go dark at once or within ~2 s, whatever was shown
-  before (held 3 s, streamed, with or without the fallback cooling stored in the same or a separate session) and
-  whether or not frames keep coming in hardware mode. Two early runs seemed to keep the colour; the later,
-  more careful ones didn't. So a colour can't be left on for while coreglow isn't running: the controller's own
-  (hardware) lighting is dark here.
+  (no error) but not shown. After `01 03 00 01` the LEDs switch to the controller's **stored hardware lighting**
+  (§7b) at once or within ~2 s, whatever was streamed before. On this controller that was static black, which
+  looked like "goes dark".
+
+## 7b. Stored hardware lighting (iCUE "Device Memory Mode")
+
+- **[capture] (2026-11-01, `captures/ccxt-icue-devmemory.txt`, iCUE 5 driven in the VM)** iCUE's Commander CORE XT
+  page has a **Device Memory Mode** switch; with it on, lighting set there is stored in the controller and shown in
+  hardware mode. **Save Changes** writes two free files (handle 1, as for the fallback cooling files):
+  - **0x6d64**: the external (3-pin) port; **0x6d65**: RGB ports 1–6. Written like any file (`len u16, 00 00`,
+    then two bytes where other files have their data type, then data):
+
+    | Effect | The two "type" bytes | Data |
+    |---|---|---|
+    | static colour 3c4bff, ports 1–6 | `7e 20` | `09 00 00 00 · 01 · ff ff 4b 3c · 06 01 02 03 04 05 06` |
+    | static black, external port | `7e 20` | `09 00 00 00 · 01 · ff 00 00 00 · 01 00` |
+    | rainbow (default speed), ports 1–6 | `02 a4` | `08 04 00 00 · 00 · 06 01 02 03 04 05 06` |
+
+    So the two bytes identify the effect (`7e 20` static colour, `02 a4` rainbow); then four setting bytes
+    (`09 00 00 00` / `08 04 00 00`, probably speed and direction or brightness), the colour count, colours as
+    `ff B G R` (alpha first), and the port count and port numbers (external = 0, RGB ports 1–6).
+  - At start-up these files held static **black** on every port (the factory or an earlier iCUE setting), which is
+    why the LEDs went dark whenever coreglow handed back.
+  - **[test]** Afterwards, with nothing running on Linux, the controller showed the stored rainbow (watched).
+  - Stored profile 2 (file 0x07) points at 0x6d66 and 0x6d63; the lighting files 0x6d64/0x6d65 weren't referenced
+    there. Other effects (colour shift, pulse, wave, temperature…) are listed in the manifest's
+    `SupportedLightingTypes.Hardware`; their parameters still need a capture each.
 
 ## 8. Behaviour notes
 
@@ -199,8 +221,8 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
    learn which real Corsair devices those types are.
 4. ~~Can the pump be slowed?~~ Not in the safe range (≥ 50 %), in either mode (§7, tests of 2026-11-01).
    Untried: a 0x18 mode byte other than 00.
-5. Hardware (stored) lighting: switching to hardware mode turns the LEDs off (§7), so it would need the controller's
-   own stored lighting, which iCUE doesn't use for this device. The enum names exist (`OnDeviceLighting`, `StaticColorLighting`…), but iCUE didn't use
+5. ~~Hardware (stored) lighting~~: answered (§7b): files 0x6d64/0x6d65, written by iCUE's Device Memory Mode.
+   Still open: the other effects' parameters. The enum names exist (`OnDeviceLighting`, `StaticColorLighting`…), but iCUE didn't use
    them for this device. Maybe the firmware doesn't support it, or iCUE exposes it elsewhere.
 6. Brightness file 0x1f: is 0xd9 a 0–255 scale or 0–1000? It might allow hardware dimming instead of scaling RGB.
 

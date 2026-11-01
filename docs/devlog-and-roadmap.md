@@ -103,9 +103,9 @@ Ordered by value for the user. The design canvas has screens for items marked �
 - [x] **Sync with motherboard RGB** (0.6.0): OpenRGB SDK client (protocol v0); the motherboard continues the whole-PC
       effect or gets its own part. Live colour sending still to be tried on the hardware.
 - [~] **Answer the open protocol questions** (icue-reverse-engineering.md §9): pump control answered (2026-11-01:
-      this build's pump can't be slowed between 50 and 100 %, in either mode). Lighting: hardware mode turns the
-      LEDs off within ~2 s, so no colour can be left on while coreglow isn't running (a "colour while closed"
-      setting was built and dropped). Stored hardware lighting remains unexplored.
+      this build's pump can't be slowed between 50 and 100 %, in either mode). Stored hardware lighting answered
+      (2026-11-01): files 0x6d64/0x6d65 hold the effect shown in hardware mode (static colour or rainbow decoded;
+      it was static black, hence "dark" without coreglow). Setting for it in 0.11.0.
 - [x] **Packaging polish**: man pages and CI build (0.6.0, 0.3.0); lintian in CI, `dpkg-shlibdeps`, md5sums,
       changelog and a signed apt repository on GitHub Pages (0.10.0).
 - [~] **Other Commander models**: Commander CORE (0x0c1c, and 0x0c32, which iCUE lists as a newer Commander
@@ -114,6 +114,15 @@ Ordered by value for the user. The design canvas has screens for items marked �
       commands' numbers still need a USB capture from an owner.
 
 ## Release notes
+
+### 0.11.0 (2026-11-01)
+- **Lighting while Coreglow isn't running**: off, one colour or rainbow, stored in the Core XT's own memory
+  (iCUE's "Device Memory Mode", files 0x6d64/0x6d65), so it shows at start-up and after shutdown too. Lighting page
+  card, `coreglowctl closed keep|off|rainbow|RRGGBB`, `closed_lighting` in the config. Written only when it differs
+  from what's stored. Bytes checked against an iCUE capture in a test; watched on the hardware.
+- **Findings**: the Core XT's pump can't be slowed (50–100 %, either mode); the controller's stored lighting was
+  black, which is why the lights went dark without Coreglow (icue-reverse-engineering.md §7, §7b).
+- **Packaging**: lintian-clean down to info level (stripped `.comment`, overrides for Rust and Slovak words).
 
 ### 0.10.0 (2026-11-01)
 - **Night dimming fades** over a minute (from full brightness to off would take 60 s) instead of switching at once;

@@ -1,4 +1,4 @@
-.TH COREGLOWCTL 1 "2026-11-01" "coreglow 0.10.0" "User Commands"
+.TH COREGLOWCTL 1 "2026-11-01" "coreglow 0.11.0" "User Commands"
 .SH NAME
 coreglowctl \- control Coreglow lighting and fan profiles from the command line
 .SH SYNOPSIS
@@ -39,6 +39,14 @@ Send the lighting to the motherboard too, through an OpenRGB server.
 .BR night " [" off " | \fIFROM\fB-\fITO\fR [\fIN\fR]]"
 Show night dimming, turn it off, or dim all lighting to \fIN\fR percent (default 30)
 between \fIFROM\fR and \fITO\fR, given as HH:MM (e.g. 22:00-07:00).
+.TP
+.BR closed " [" keep | off | rainbow | \fIRRGGBB\fR]
+What the lights show while
+.B coreglowd
+isn't running (at start-up, after shutdown): stored in the controller by
+.BR coreglowd .
+.B keep
+leaves the controller's own setting. Commander CORE XT only.
 .TP
 .B devices
 What's connected to each RGB port: the layout in use, and what the controller

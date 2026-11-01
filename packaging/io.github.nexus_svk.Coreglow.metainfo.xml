@@ -25,6 +25,7 @@
     <modalias>usb:v1B1Cp0C32d*</modalias>
   </provides>
   <releases>
+    <release version="0.11.0" date="2026-11-01"/>
     <release version="0.10.0" date="2026-11-01"/>
   </releases>
 </component>

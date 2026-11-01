@@ -27,6 +27,8 @@ const HEADER: &str = "\
 # fans: sensor + curve = [[temp, duty], ...], or fixed = duty. fan1 / fan2 override one fan.
 #   pump = 50-100 sets a Commander CORE's pump speed; the Core XT's pump runs at full speed.
 # sensors: probe1, probe2 (controller probes), liquid (Commander CORE), cpu, igpu (Ryzen graphics), gpu (needs nvidia-smi).
+# closed_lighting = \"off\" | \"rainbow\" | \"RRGGBB\": what the lights show while coreglow isn't running
+#   (stored in the controller; unset = leave what it has).
 # [night]: enabled, from = \"HH:MM\", to = \"HH:MM\", brightness = 0-100 dims all lighting in that window.
 ";
 
@@ -285,6 +287,10 @@ impl Night {
 pub struct Config {
     #[serde(default)]
     pub active: String,
+    /// What the lights show while coreglow isn't running, stored in the controller:
+    /// "off", "rainbow" or a colour "RRGGBB". Unset: whatever the controller has stored.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub closed_lighting: Option<String>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub sensors: BTreeMap<String, String>,
     /// Curve the controller uses on its own when coreglowd isn't running.
@@ -331,6 +337,19 @@ impl Config {
             None => Ok(crate::status::Status::read().and_then(|s| s.detected_layout()).unwrap_or_else(Layout::this_build)),
             Some(l) => Layout::from_config(Model::for_ports(l.ports.keys()), &l.ports, &l.names),
         }
+    }
+
+    /// The `closed_lighting` setting, parsed (None = leave the controller's own).
+    pub fn stored_lighting(&self) -> Result<Option<crate::device::StoredLighting>, String> {
+        use crate::device::StoredLighting;
+        Ok(match self.closed_lighting.as_deref() {
+            None => None,
+            Some("off") => Some(StoredLighting::Static([0, 0, 0])),
+            Some("rainbow") => Some(StoredLighting::Rainbow),
+            Some(c) => Some(StoredLighting::Static(
+                parse_color(c).map_err(|e| format!("closed_lighting: {e} (use off, rainbow or RRGGBB)"))?,
+            )),
+        })
     }
 
     /// Dimming factor right now (1.0 = none).
@@ -529,6 +548,9 @@ impl Config {
         if let Some(n) = &self.night {
             n.validate()?;
         }
+        if self.closed_lighting.is_some() {
+            self.stored_lighting()?;
+        }
         if let Some(f) = &self.fallback {
             if f.curve.len() < 2 || f.curve.len() > FALLBACK_MAX_POINTS {
                 return Err(format!("backup curve needs 2 to {FALLBACK_MAX_POINTS} points"));
@@ -652,6 +674,17 @@ mod tests {
         assert!(day.active(9 * 60) && !day.active(10 * 60));
         assert!(!Night { enabled: false, ..Night::default() }.active(23 * 60));
         assert!(Night { from: "25:00".into(), ..Night::default() }.validate().is_err());
+        use crate::device::StoredLighting;
+        let mut cfg: Config = toml::from_str("closed_lighting = \"203040\"\n[profiles.a]\n").unwrap();
+        assert_eq!(cfg.stored_lighting(), Ok(Some(StoredLighting::Static([0x20, 0x30, 0x40]))));
+        let saved = toml::to_string(&cfg).unwrap();
+        assert_eq!(toml::from_str::<Config>(&saved).unwrap().closed_lighting.as_deref(), Some("203040"));
+        cfg.closed_lighting = Some("rainbow".into());
+        assert_eq!(cfg.stored_lighting(), Ok(Some(StoredLighting::Rainbow)));
+        cfg.closed_lighting = Some("off".into());
+        assert_eq!(cfg.stored_lighting(), Ok(Some(StoredLighting::Static([0, 0, 0]))));
+        cfg.closed_lighting = Some("nope".into());
+        assert!(cfg.validate().is_err());
         // a full fade to 30 % takes 0.7 of a minute; one second moves 1/60 of the range
         assert!((Night::fade(1.0, 0.3, 1.0) - (1.0 - 1.0 / 60.0)).abs() < 1e-9);
         assert_eq!(Night::fade(0.31, 0.3, 1.0), 0.3);

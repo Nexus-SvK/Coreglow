@@ -1,6 +1,6 @@
 //! coreglowctl: list and switch profiles, show live values, restore the fallback curve.
 
-use coreglow::config::{parse_hm, Config, Night, Num};
+use coreglow::config::{parse_color, parse_hm, Config, Night, Num};
 use coreglow::control;
 use coreglow::device::{self, Device};
 use coreglow::status::Status;
@@ -19,6 +19,7 @@ usage: coreglowctl COMMAND
   auto [on|off]     show the automatic switching rules, or turn them on or off
   motherboard [on|off]  send the lighting to the motherboard too (through the OpenRGB server)
   night [off | FROM-TO [N]]  show night dimming, turn it off, or dim to N % (default 30) from FROM to TO (HH:MM)
+  closed [keep|off|rainbow|RRGGBB]  what the lights show while coreglow isn't running (stored in the controller)
   devices           what's connected to each RGB port: the layout in use and what the controller detects
   fallback          store the hardware fallback fan curve (only while coreglowd is stopped)
   gui               open the window (coreglow)";
@@ -188,6 +189,26 @@ fn main() {
                     println!("night dimming: {} % from {} to {}{now}", n.brightness.0, n.from, n.to);
                 }
                 _ => println!("night dimming is off"),
+            }
+        }
+        ("closed", 1) | ("closed", 2) => {
+            let mut cfg = Config::load().unwrap_or_else(|e| fail(e));
+            if let Some(arg) = args.get(1) {
+                cfg.closed_lighting = match arg.as_str() {
+                    "keep" => None,
+                    "off" | "rainbow" => Some(arg.clone()),
+                    hex => {
+                        let hex = hex.trim_start_matches('#');
+                        parse_color(hex).unwrap_or_else(|e| fail(format!("{e} (use keep, off, rainbow or RRGGBB)")));
+                        Some(hex.to_lowercase())
+                    }
+                };
+                cfg.active = cfg.active_name();
+                cfg.save().unwrap_or_else(|e| fail(e));
+            }
+            match cfg.closed_lighting.as_deref() {
+                None => println!("while coreglow isn't running: whatever the controller has stored (not changed)"),
+                Some(v) => println!("while coreglow isn't running: {v} (stored in the controller by coreglowd)"),
             }
         }
         ("test-fans", 1) => {
