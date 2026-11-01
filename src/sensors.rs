@@ -5,14 +5,16 @@ use std::path::PathBuf;
 use std::process::Command;
 
 use crate::effects::Temps;
+use crate::model::Model;
 
 /// Share of a new reading per second; CPU Tctl jumps a lot, fans shouldn't.
 const SMOOTHING: f64 = 0.3;
 
-pub const SENSORS: [(&str, &str); 5] = [
+pub const SENSORS: [(&str, &str); 6] = [
     ("cpu", "Processor (CPU)"),
     ("probe1", "Case probe 1"),
     ("probe2", "Case probe 2"),
+    ("liquid", "Liquid (pump)"),
     ("igpu", "Built-in graphics"),
     ("gpu", "Graphics card (RTX 3090)"),
 ];
@@ -21,10 +23,21 @@ pub fn label(id: &str) -> &str {
     SENSORS.iter().find(|(i, _)| *i == id).map_or(id, |(_, l)| crate::i18n::tr(l))
 }
 
+/// Whether a sensor exists with this controller: the Core XT has two case probes,
+/// the Core reads the liquid temperature instead.
+pub fn on_controller(id: &str, model: Model) -> bool {
+    match id {
+        "probe1" | "probe2" => model == Model::CoreXt,
+        "liquid" => model == Model::Core,
+        _ => true,
+    }
+}
+
 fn default_source(name: &str) -> Option<&'static str> {
     Some(match name {
         "probe1" => "controller:0",
         "probe2" => "controller:1",
+        "liquid" => "liquid",
         "cpu" => "hwmon:k10temp:Tctl",
         "igpu" => "hwmon:amdgpu:edge",
         "gpu" => "nvidia-smi",
@@ -69,8 +82,8 @@ impl Sensors {
         String::from_utf8_lossy(&out.stdout).split_whitespace().next()?.parse().ok()
     }
 
-    /// Read the named sensors; `probes` are the controller's own readings.
-    pub fn read(&mut self, probes: &[Option<f64>], wanted: &[String]) -> Temps {
+    /// Read the named sensors; `probes` are the Core XT's probes, `liquid` the Core's coolant temperature.
+    pub fn read(&mut self, probes: &[Option<f64>], liquid: Option<f64>, wanted: &[String]) -> Temps {
         let mut out = Temps::new();
         for name in wanted {
             let src = self.sources.get(name).cloned().or_else(|| default_source(name).map(String::from));
@@ -78,6 +91,7 @@ impl Sensors {
             let (kind, rest) = src.split_once(':').unwrap_or((src.as_str(), ""));
             let value = match kind {
                 "controller" | "ccxt" => rest.parse::<usize>().ok().and_then(|i| probes.get(i).copied().flatten()),
+                "liquid" => liquid,
                 "hwmon" => {
                     let (chip, label) = rest.split_once(':').unwrap_or((rest, ""));
                     self.hwmon(chip, label)

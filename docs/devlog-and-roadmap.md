@@ -90,7 +90,8 @@ Ordered by value for the user. The design canvas has screens for items marked �
       autostarts at login (0.5.0). Brightness isn't in the menu (tray menus have no sliders).
 - [~] **Control socket** (`$XDG_RUNTIME_DIR/coreglowd.sock`) instead of file polling: instant switching, "test fans",
       status push to the GUI.
-- [ ] **Night dimming** 🎨 (brightness schedule), perhaps via the 0x1f brightness file instead of scaling RGB.
+- [x] **Night dimming** 🎨 (0.8.0): `[night]` from/to/brightness, card on the Lighting page, `coreglowctl night`.
+      Colours are scaled in software (the 0x1f brightness file is still untried).
 - [ ] **GPU temperature without NVIDIA's driver**: nouveau doesn't report it; consider the proprietary driver,
       or NVML if installed.
 
@@ -103,10 +104,25 @@ Ordered by value for the user. The design canvas has screens for items marked �
 - [ ] **Answer the open protocol questions** (icue-reverse-engineering.md §9), especially pump control in
       software mode and stored (hardware) lighting.
 - [~] **Packaging polish**: man pages and CI build done (0.6.0, 0.3.0); still lintian, `dpkg-shlibdeps`, a signed apt repo.
-- [ ] **Other Commander models** (Core 0x0c1c, ST 0x0c32): same Bragi protocol; needs their geometry and
-      the pump on channel 0.
+- [~] **Other Commander models**: Commander CORE (0x0c1c, and 0x0c32, which iCUE lists as a newer Commander
+      CORE rather than an "ST") supported experimentally in 0.8.0 from its manifest; needs a hardware report.
+      Next candidates in [corsair-devices.md](corsair-devices.md): the iCUE LINK System Hub (0x0c3f).
 
 ## Release notes
+
+### 0.8.0 (2026-11-01)
+- **Commander CORE (experimental)**, the hub of the ELITE CAPELLIX and ELITE LCD coolers (USB 0c1c, 0c32), written
+  from iCUE's device manifest (`aio_pro_cooler`, `aio_pro_cooler_screen`) and not yet tried on hardware:
+  - pump on cooling port 0 with a per-profile speed (`pump = 50`…`100`, slider on the Fans page), fans on ports 1–6;
+  - lighting: port 0 is the pump ring (CAPELLIX: geometry byte 0x08, 29 LEDs in the frame; ELITE LCD: 0x0e, 24 LEDs),
+    ports 1–6 take fans; no apply command (the manifest doesn't ask for one);
+  - without a `[layout]`, the layout comes from the controller's detection and is shared with the window and CLI
+    through the status file; parts `pump`, `all-fans`, `port1`…;
+  - the `liquid` temperature sensor; the backup curve follows it and drives all six fan ports.
+- **Night dimming**: dim all lighting (and the motherboard) between two times; Lighting page card, `[night]`,
+  `coreglowctl night 22:00-07:00 30`.
+- The udev rule covers the Commander CORE; `coreglowctl status`/`devices` and the window name the controller.
+- **Device catalogue**: [corsair-devices.md](corsair-devices.md), 385 devices from iCUE 5's device packages.
 
 ### 0.7.0 (2026-10-31)
 - **Lighting layout**: device kinds and LED counts from iCUE's device manifest (`commander_core_xt.rcc`). Without a

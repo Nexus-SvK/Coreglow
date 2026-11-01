@@ -8,12 +8,13 @@ use std::fmt;
 use std::path::Path;
 
 use crate::paths;
+use crate::model::Model;
 use crate::zones::Layout;
 
 pub const BUILTIN_DEFAULT: &str = include_str!("../assets/config.toml");
 
 const HEADER: &str = "\
-# Commander Core XT profiles (coreglow). Edited by coreglow; editing by hand works too.
+# Commander CORE XT / CORE profiles (coreglow). Edited by coreglow; editing by hand works too.
 # Switch with: coreglowctl set NAME    List: coreglowctl list    Live values: coreglowctl status
 # Saving applies the change within a second.
 #
@@ -22,10 +23,11 @@ const HEADER: &str = "\
 #   color_wave (colors = [a, b], period, waves),
 #   temperature (sensor, stops = [[temp, colour], ...], alarm = degrees C to flash above).
 #   Every effect also takes brightness (0-100). Colours are \"RRGGBB\", period is seconds.
-# zones: strip1 ... strip4, strips, right-fan, left-fan, fans, pump, all
+# zones: strip1 ... strip4, strips, right-fan, left-fan, fans, pump, all (Commander CORE: pump, all-fans, port1 ...)
 # fans: sensor + curve = [[temp, duty], ...], or fixed = duty. fan1 / fan2 override one fan.
-#   The pump always runs at full speed while the lighting is driven from the PC.
-# sensors: probe1, probe2 (controller probes), cpu, igpu (Ryzen graphics), gpu (needs nvidia-smi).
+#   pump = 50-100 sets a Commander CORE's pump speed; the Core XT's pump runs at full speed.
+# sensors: probe1, probe2 (controller probes), liquid (Commander CORE), cpu, igpu (Ryzen graphics), gpu (needs nvidia-smi).
+# [night]: enabled, from = \"HH:MM\", to = \"HH:MM\", brightness = 0-100 dims all lighting in that window.
 ";
 
 /// A number that may be written as 45 or 45.0 in TOML.
@@ -202,9 +204,71 @@ pub struct Profile {
     pub fan1: Option<Fans>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fan2: Option<Fans>,
-    /// Accepted for compatibility and ignored: the pump can't be slowed in software mode.
+    /// Pump speed in % (50-100) on a Commander CORE. Ignored on the Core XT, whose pump
+    /// can't be slowed in software mode (older configs may hold other values here).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pump: Option<toml::Value>,
+}
+
+/// Lowest pump speed coreglow sends: a stopped pump overheats the CPU.
+pub const PUMP_MIN: u8 = 50;
+
+impl Profile {
+    /// The pump speed this profile asks for (100 % when not set).
+    pub fn pump_duty(&self) -> u8 {
+        let v = match &self.pump {
+            Some(toml::Value::Integer(i)) => *i as f64,
+            Some(toml::Value::Float(f)) => *f,
+            _ => 100.0,
+        };
+        v.clamp(PUMP_MIN as f64, 100.0).round() as u8
+    }
+}
+
+/// `[night]`: dim all lighting between two times of day.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Night {
+    #[serde(default)]
+    pub enabled: bool,
+    pub from: String,
+    pub to: String,
+    /// Brightness in % while dimmed.
+    pub brightness: Num,
+}
+
+impl Default for Night {
+    fn default() -> Self {
+        Night { enabled: true, from: "22:00".into(), to: "07:00".into(), brightness: Num(30.0) }
+    }
+}
+
+impl Night {
+    /// True at `now` (minutes after midnight) when dimming is on and the window covers it.
+    pub fn active(&self, now: u32) -> bool {
+        if !self.enabled {
+            return false;
+        }
+        match (parse_hm(&self.from), parse_hm(&self.to)) {
+            (Some(a), Some(b)) if a <= b => now >= a && now < b,
+            (Some(a), Some(b)) => now >= a || now < b, // across midnight
+            _ => false,
+        }
+    }
+
+    /// Multiplier for colours at `now`: 1.0 outside the window.
+    pub fn factor(&self, now: u32) -> f64 {
+        if self.active(now) { self.brightness.0.clamp(0.0, 100.0) / 100.0 } else { 1.0 }
+    }
+
+    fn validate(&self) -> Result<(), String> {
+        if parse_hm(&self.from).is_none() || parse_hm(&self.to).is_none() {
+            return Err("night dimming needs from and to as HH:MM".into());
+        }
+        if !(0.0..=100.0).contains(&self.brightness.0) {
+            return Err("night dimming brightness must be 0-100".into());
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
@@ -222,9 +286,13 @@ pub struct Config {
     /// Drive other RGB devices (the motherboard) through an OpenRGB server.
     #[serde(default, skip_serializing_if = "OpenRgb::is_default")]
     pub openrgb: OpenRgb,
-    /// What's connected to the RGB ports (experimental; without it, this build's layout).
+    /// What's connected to the RGB ports (experimental; without it, this build's layout,
+    /// or on a Commander CORE what the controller detects).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub layout: Option<LayoutConfig>,
+    /// Dim the lighting at night.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub night: Option<Night>,
     #[serde(default)]
     pub profiles: IndexMap<String, Profile>,
 }
@@ -235,7 +303,7 @@ pub struct Fallback {
     pub curve: Vec<(Num, Num)>,
 }
 
-/// `[layout]`: port name ("external", "port1" … "port6") → device ids in chain order,
+/// `[layout]`: port name ("external" or, on a Commander CORE, "pump"; "port1" … "port6") → device ids in chain order,
 /// plus optional `names` (part name → selector such as "port1" or "external:0-9").
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
 pub struct LayoutConfig {
@@ -246,12 +314,18 @@ pub struct LayoutConfig {
 }
 
 impl Config {
-    /// The layout this config describes.
+    /// The layout this config describes. Without [layout]: the one coreglowd detected on a
+    /// Commander CORE (published in the status file), else this build's.
     pub fn layout(&self) -> Result<Layout, String> {
         match &self.layout {
-            None => Ok(Layout::this_build()),
-            Some(l) => Layout::from_config(&l.ports, &l.names),
+            None => Ok(crate::status::Status::read().and_then(|s| s.detected_layout()).unwrap_or_else(Layout::this_build)),
+            Some(l) => Layout::from_config(Model::for_ports(l.ports.keys()), &l.ports, &l.names),
         }
+    }
+
+    /// Dimming factor right now (1.0 = none).
+    pub fn night_factor(&self) -> f64 {
+        self.night.as_ref().map_or(1.0, |n| n.factor(crate::auto::local_minutes()))
     }
 }
 
@@ -442,6 +516,9 @@ impl Config {
             r.validate(&self.profiles)?;
         }
         let zone_names = self.layout()?.zone_names();
+        if let Some(n) = &self.night {
+            n.validate()?;
+        }
         if let Some(f) = &self.fallback {
             if f.curve.len() < 2 || f.curve.len() > FALLBACK_MAX_POINTS {
                 return Err(format!("backup curve needs 2 to {FALLBACK_MAX_POINTS} points"));
@@ -456,7 +533,9 @@ impl Config {
             }
             p.lighting.validate(&format!("{name}: lighting"))?;
             for (zone, e) in &p.zones {
-                if !zone_names.contains(zone) {
+                // Without a [layout] the parts depend on the controller found, so a profile
+                // may name parts of another one (they're simply not lit).
+                if self.layout.is_some() && !zone_names.contains(zone) {
                     return Err(format!("{name}: unknown part '{zone}' (use {})", zone_names.join(", ")));
                 }
                 e.validate(&format!("{name}: {zone}"))?;
@@ -551,5 +630,26 @@ mod tests {
         cfg.validate().unwrap();
         let again: Config = toml::from_str(&toml::to_string(&cfg).unwrap()).unwrap();
         assert_eq!(cfg, again);
+    }
+
+    #[test]
+    fn night_window_and_pump_speed() {
+        let n = Night::default(); // 22:00-07:00 at 30 %
+        assert!(n.active(23 * 60) && n.active(6 * 60 + 59) && !n.active(7 * 60) && !n.active(12 * 60));
+        assert_eq!(n.factor(23 * 60), 0.3);
+        assert_eq!(n.factor(12 * 60), 1.0);
+        let day = Night { from: "08:00".into(), to: "09:30".into(), ..Night::default() };
+        assert!(day.active(9 * 60) && !day.active(10 * 60));
+        assert!(!Night { enabled: false, ..Night::default() }.active(23 * 60));
+        assert!(Night { from: "25:00".into(), ..Night::default() }.validate().is_err());
+
+        let mut p = Profile::default();
+        assert_eq!(p.pump_duty(), 100);
+        p.pump = Some(toml::Value::Integer(70));
+        assert_eq!(p.pump_duty(), 70);
+        p.pump = Some(toml::Value::Integer(10));
+        assert_eq!(p.pump_duty(), PUMP_MIN);
+        p.pump = Some(toml::Value::String("full".into())); // older configs
+        assert_eq!(p.pump_duty(), 100);
     }
 }

@@ -1,4 +1,4 @@
-//! Commander Core XT over Linux hidraw, Bragi protocol.
+//! Commander CORE XT (and, experimentally, Commander CORE) over Linux hidraw, Bragi protocol.
 //!
 //! Every command is one 384-byte output report: `08 <cmd> <args…>`; the device
 //! answers with one input report `00 <cmd> <status> …`. Data lives in numbered
@@ -11,12 +11,12 @@ use std::io::{Read, Write};
 use std::os::fd::AsRawFd;
 use std::path::PathBuf;
 
+use crate::model::Model;
 use crate::zones::Layout;
 
 pub type Result<T> = std::result::Result<T, String>;
 
 const VENDOR: u32 = 0x1b1c;
-const PRODUCT: u32 = 0x0c2a;
 const REPORT: usize = 384;
 const TIMEOUT_MS: i32 = 1000;
 
@@ -57,27 +57,33 @@ const T_HW_CURVE: [u8; 2] = [0x05, 0x00];
 const HW_FIXED_PERCENT: u8 = 0x00;
 const HW_CURVE_PERCENT: u8 = 0x02;
 
-/// Channel of the AIO pump (fan port 6).
-pub const PUMP_CHANNEL: usize = 5;
-
 pub struct Device {
     file: File,
     pub path: PathBuf,
+    pub model: Model,
 }
 
-/// Find the controller's hidraw node (USB interface 0).
-pub fn find() -> Option<PathBuf> {
-    let want = format!("HID_ID=0003:{VENDOR:08X}:{PRODUCT:08X}");
+/// The model of a hidraw node's `HID_ID=0003:0000VVVV:0000PPPP` uevent line.
+fn model_of(uevent: &str) -> Option<Model> {
+    let id = uevent.lines().find_map(|l| l.strip_prefix("HID_ID="))?;
+    let mut parts = id.split(':');
+    let (_bus, vid, pid) = (parts.next()?, parts.next()?, parts.next()?);
+    if u32::from_str_radix(vid, 16).ok()? != VENDOR {
+        return None;
+    }
+    Model::from_pid(u32::from_str_radix(pid, 16).ok()?)
+}
+
+/// Find a supported controller's hidraw node (USB interface 0).
+pub fn find() -> Option<(PathBuf, Model)> {
     let mut nodes: Vec<_> = std::fs::read_dir("/sys/class/hidraw").ok()?.flatten().collect();
     nodes.sort_by_key(|e| e.file_name());
     for e in nodes {
         let uevent = std::fs::read_to_string(e.path().join("device/uevent")).unwrap_or_default();
-        if !uevent.lines().any(|l| l == want) {
-            continue;
-        }
+        let Some(model) = model_of(&uevent) else { continue };
         let real = std::fs::canonicalize(e.path().join("device")).unwrap_or_default();
         if real.to_string_lossy().contains(":1.0/") {
-            return Some(PathBuf::from("/dev").join(e.file_name()));
+            return Some((PathBuf::from("/dev").join(e.file_name()), model));
         }
     }
     None
@@ -85,13 +91,13 @@ pub fn find() -> Option<PathBuf> {
 
 impl Device {
     pub fn open() -> Result<Device> {
-        let path = find().ok_or("Commander Core XT not found (is it plugged in, or passed to a VM?)")?;
+        let (path, model) = find().ok_or("no Commander CORE XT or CORE found (is it plugged in, or passed to a VM?)")?;
         let file = OpenOptions::new()
             .read(true)
             .write(true)
             .open(&path)
             .map_err(|e| format!("{}: {e} (is the udev rule installed and are you logged in at the seat?)", path.display()))?;
-        Ok(Device { file, path })
+        Ok(Device { file, path, model })
     }
 
     fn readable(&self, timeout_ms: i32) -> Result<bool> {
@@ -190,6 +196,9 @@ impl Device {
             self.write_data(F_STRIP_QUANTITIES, T_STRIP_QUANTITIES, &q)?;
         }
         self.write_data(F_GEOMETRIES, T_GEOMETRIES, &layout.geometry())?;
+        if !self.model.needs_apply() {
+            return Ok(());
+        }
         self.send(&CMD_APPLY_LIGHTING, &[]).map(drop)
     }
 
@@ -210,7 +219,7 @@ impl Device {
         self.write_data(F_LIGHTING_BUFFER, T_LIGHTING_BUFFER, rgb)
     }
 
-    /// Duty in % per channel (0-based). Only works in software mode, and the pump ignores it.
+    /// Duty in % per channel (0-based). Only works in software mode; the Core XT's pump ignores it.
     pub fn set_duties(&mut self, duties: &[(usize, u8)]) -> Result<()> {
         let mut data = vec![duties.len() as u8];
         for &(ch, d) in duties {
@@ -219,7 +228,8 @@ impl Device {
         self.write_data(F_TARGET_ROTATION, T_TARGET_ROTATION, &data)
     }
 
-    /// Probe temperatures in °C (None = probe not connected).
+    /// Controller temperatures in °C (None = not connected): the Core XT's probes 1 and 2,
+    /// or the Core's liquid temperature.
     pub fn temps(&mut self) -> Result<Vec<Option<f64>>> {
         let d = self.read_data(F_TEMPERATURES, T_TEMPERATURES)?;
         let n = *d.first().unwrap_or(&0) as usize;
@@ -239,7 +249,7 @@ impl Device {
 
     // ---- hardware mode (fallback when no software is running) ----
 
-    /// Store a fan curve (driven by probe 1) for `channels` and a fixed duty for
+    /// Store a fan curve (driven by sensor 0: probe 1, or the Core's liquid) for `channels` and a fixed duty for
     /// `fixed` channels, used by the controller on its own in hardware mode.
     pub fn store_hardware_cooling(&mut self, channels: &[usize], curve: &[(f64, f64)], fixed: &[(usize, u8)]) -> Result<()> {
         let modes = self.read_data(F_HW_MODE, T_HW_MODE)?;
@@ -285,7 +295,23 @@ impl Device {
     }
 }
 
-/// The controller's fallback: fans 1 and 2 on `curve` (probe 1), pump at 100 %.
+/// The controller's fallback: fans on `curve` (sensor 0), pump at 100 %.
 pub fn store_fallback(dev: &mut Device, curve: &[(f64, f64)]) -> Result<()> {
-    dev.store_hardware_cooling(&[0, 1], curve, &[(PUMP_CHANNEL, 100)])
+    let m = dev.model;
+    dev.store_hardware_cooling(&m.fallback_fans(), curve, &[(m.pump_channel(), 100)])
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn models_from_uevent() {
+        let ev = |id: &str| format!("DRIVER=hid-generic\nHID_ID={id}\nHID_NAME=Corsair\n");
+        assert_eq!(model_of(&ev("0003:00001B1C:00000C2A")), Some(Model::CoreXt));
+        assert_eq!(model_of(&ev("0003:00001B1C:00000C1C")), Some(Model::Core));
+        assert_eq!(model_of(&ev("0003:00001B1C:00000C32")), Some(Model::Core));
+        assert_eq!(model_of(&ev("0003:00001B1C:00000C1D")), None); // bootloader
+        assert_eq!(model_of(&ev("0003:0000046D:00000C2A")), None);
+    }
 }

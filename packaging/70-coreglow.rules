@@ -1,2 +1,5 @@
-# Corsair iCUE Commander Core XT: let the logged-in desktop user talk to it (coreglowd).
+# Corsair Commander CORE XT (0c2a) and Commander CORE (0c1c, 0c32): let the logged-in
+# desktop user talk to them (coreglowd).
 SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1b1c", ATTRS{idProduct}=="0c2a", TAG+="uaccess"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1b1c", ATTRS{idProduct}=="0c1c", TAG+="uaccess"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1b1c", ATTRS{idProduct}=="0c32", TAG+="uaccess"

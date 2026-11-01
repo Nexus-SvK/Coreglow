@@ -3,7 +3,10 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
+use crate::config::LayoutConfig;
+use crate::model::Model;
 use crate::paths;
+use crate::zones::Layout;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Status {
@@ -35,6 +38,15 @@ pub struct Status {
     /// Per RGB port: the layout in use and what the controller detected (read at start).
     #[serde(default)]
     pub devices: Vec<PortInfo>,
+    /// Model id of the connected controller ("core-xt", "core").
+    #[serde(default)]
+    pub controller: Option<String>,
+    /// The layout coreglowd built from detection (Commander CORE without a [layout]).
+    #[serde(default)]
+    pub detected: Option<LayoutConfig>,
+    /// Night dimming is on right now.
+    #[serde(default)]
+    pub night: bool,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -64,6 +76,16 @@ impl Status {
     /// The daemon writes every second; older than a few seconds means it isn't running.
     pub fn fresh(&self) -> bool {
         now() - self.time < 6.0
+    }
+
+    pub fn model(&self) -> Option<Model> {
+        self.controller.as_deref().and_then(Model::from_id)
+    }
+
+    /// The detected layout, for the window and CLI (they don't talk to the controller).
+    pub fn detected_layout(&self) -> Option<Layout> {
+        let d = self.detected.as_ref()?;
+        Layout::from_config(self.model()?, &d.ports, &d.names).ok()
     }
 
     pub fn write(&self) {

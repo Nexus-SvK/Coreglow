@@ -1,4 +1,4 @@
-.TH COREGLOWCTL 1 "2026-10-31" "coreglow 0.7.0" "User Commands"
+.TH COREGLOWCTL 1 "2026-11-01" "coreglow 0.8.0" "User Commands"
 .SH NAME
 coreglowctl \- control Coreglow lighting and fan profiles from the command line
 .SH SYNOPSIS
@@ -8,7 +8,7 @@ coreglowctl \- control Coreglow lighting and fan profiles from the command line
 .B coreglowctl
 lists and switches the profiles that
 .BR coreglowd (1)
-runs on a Corsair iCUE Commander Core XT, shows live temperatures and fan
+runs on a Corsair iCUE Commander Core XT (or, experimentally, a Commander CORE), shows live temperatures and fan
 speeds, and changes a few settings. Changes apply within a frame; the
 profiles themselves live in
 .IR ~/.config/coreglow/config.toml .
@@ -36,11 +36,16 @@ Show the automatic switching rules, or turn automatic switching on or off.
 .BR motherboard " [" on | off ]
 Send the lighting to the motherboard too, through an OpenRGB server.
 .TP
+.BR night " [" off " | \fIFROM\fB-\fITO\fR [\fIN\fR]]"
+Show night dimming, turn it off, or dim all lighting to \fIN\fR percent (default 30)
+between \fIFROM\fR and \fITO\fR, given as HH:MM (e.g. 22:00-07:00).
+.TP
 .B devices
 What's connected to each RGB port: the layout in use, and what the controller
 detected when
 .B coreglowd
-started (ports 1\(en6; the external port isn't auto-detected).
+started (ports 1\(en6; the Core XT's external port isn't auto-detected), and which
+controller it is.
 .TP
 .B edit
 Open the profiles file in \fB$EDITOR\fR (nano by default) and check it afterwards.
@@ -71,6 +76,9 @@ names = { fans = "port1", strips = "external" }
 .PP
 Device ids: rgb-strip, strip-15, strip-21, strip-27, strip-40, strip-49,
 strip-84, triangle-9, ll-fan, ml-fan, hd-fan, 8-led-fan, ql-fan, pump-cap.
+.PP
+On a Commander CORE the ports are \fBpump\fR (capellix-pump or lcd-pump-ring) and
+port1\(enport6 (fans only). Without a table its layout is what the controller detects.
 Name selectors: a port ("port1"), a device on it ("external2"), a range of its
 LEDs ("external:0-9"), joined with "+". This is experimental.
 .SH FILES
@@ -90,6 +98,7 @@ every second.
 coreglowctl set rainbow
 coreglowctl auto on
 coreglowctl brightness white 40
+coreglowctl night 22:00-07:00 30
 .fi
 .SH SEE ALSO
 .BR coreglowd (1),

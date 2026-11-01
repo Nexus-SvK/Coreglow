@@ -10,8 +10,13 @@
 //! stored in the controller): external port = 6 QL-fan slots of which the 4 LED
 //! strips use the first 40 LEDs, ports 1-2 = 8-LED fans, port 3 = pump cap. Its part
 //! names were mapped with a colour test.
+//!
+//! On a Commander CORE (experimental) port 0 is the pump's own ring and ports 1-6 take
+//! fans; without a [layout] the layout is built from what the controller detects.
 
 use indexmap::IndexMap;
+
+use crate::model::Model;
 use std::ops::Range;
 use std::sync::{Arc, RwLock};
 
@@ -24,7 +29,7 @@ pub struct Kind {
     pub label: &'static str,
 }
 
-pub const KINDS: [Kind; 14] = [
+pub const KINDS: [Kind; 16] = [
     Kind { id: "rgb-strip", byte: 0x01, leds: 10, label: "RGB LED strip (10 LEDs)" },
     Kind { id: "strip-15", byte: 0x01, leds: 15, label: "LED strip, 15 LEDs" },
     Kind { id: "strip-21", byte: 0x01, leds: 21, label: "LED strip, 21 LEDs" },
@@ -39,7 +44,13 @@ pub const KINDS: [Kind; 14] = [
     Kind { id: "8-led-fan", byte: 0x05, leds: 8, label: "8-LED fan" },
     Kind { id: "ql-fan", byte: 0x06, leds: 34, label: "QL fan (34 LEDs)" },
     Kind { id: "pump-cap", byte: 0x0c, leds: 13, label: "13-LED pump cap" },
+    // Commander CORE port 0 only. The CAPELLIX ring is CoolerPump21Leds: 21 lights on the
+    // pump picture, 29 LEDs in the frame (the manifest maps the first 9 to the centre light).
+    Kind { id: "capellix-pump", byte: 0x08, leds: 29, label: "ELITE CAPELLIX pump (29 LEDs)" },
+    Kind { id: "lcd-pump-ring", byte: 0x0e, leds: 24, label: "ELITE LCD pump ring (24 LEDs)" },
 ];
+
+const PUMP_RINGS: [u8; 2] = [0x08, 0x0e];
 
 pub fn kind(id: &str) -> Option<&'static Kind> {
     KINDS.iter().find(|k| k.id == id)
@@ -47,10 +58,19 @@ pub fn kind(id: &str) -> Option<&'static Kind> {
 
 /// Best guess for an auto-detected LED count on ports 1-6.
 pub fn kind_for_leds(leds: usize) -> Option<&'static Kind> {
-    KINDS.iter().find(|k| k.byte != 0x01 && k.leds == leds)
+    KINDS.iter().find(|k| k.byte != 0x01 && !PUMP_RINGS.contains(&k.byte) && k.leds == leds)
 }
 
-/// "external", then "port1" … "port6" (controller order).
+/// Can `k` go on port `i` of `model`?
+fn allowed(model: Model, i: usize, k: &Kind) -> bool {
+    match model {
+        Model::CoreXt => !PUMP_RINGS.contains(&k.byte),
+        Model::Core if i == 0 => PUMP_RINGS.contains(&k.byte),
+        Model::Core => (0x02..=0x06).contains(&k.byte),
+    }
+}
+
+/// The Core XT's port names ("external", then "port1" … "port6"); see Model::ports.
 pub const PORTS: [&str; 7] = ["external", "port1", "port2", "port3", "port4", "port5", "port6"];
 
 /// Parts that aren't on the Corsair controller: "motherboard" is sent through OpenRGB.
@@ -61,6 +81,7 @@ pub const PICTURE_ZONES: [&str; 7] = ["strip1", "strip2", "strip3", "strip4", "r
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Layout {
+    pub model: Model,
     /// Devices on each of the 7 ports.
     pub ports: Vec<Vec<&'static Kind>>,
     /// Part name → selector: "port1", "external2" (2nd device), "external:0-9" (LEDs of a port), joined with "+".
@@ -95,21 +116,62 @@ impl Layout {
             ("pump", "port3"),
         ];
         Layout {
+            model: Model::CoreXt,
             ports: vec![vec![k("ql-fan"); 6], vec![k("8-led-fan")], vec![k("8-led-fan")], vec![k("pump-cap")], vec![], vec![], vec![]],
             names: names.iter().map(|(a, b)| (a.to_string(), b.to_string())).collect(),
         }
     }
 
+    /// What a Commander CORE reports (file 0x20: status, LED count per port; 2 = found).
+    /// Port 0 holds the pump ring: 24 LEDs means the ELITE LCD one, anything else the CAPELLIX one.
+    /// On the Core XT this is this build's layout (its external port isn't detected).
+    pub fn detected(model: Model, found: &[(u16, u16)]) -> Layout {
+        if model == Model::CoreXt {
+            return Layout::this_build();
+        }
+        let get = |i: usize| found.get(i).copied().unwrap_or((0, 0));
+        let mut ports = vec![Vec::new(); 7];
+        match get(0) {
+            (3, _) => {}
+            (2, 24) => ports[0].push(kind("lcd-pump-ring").unwrap()),
+            _ => ports[0].push(kind("capellix-pump").unwrap()),
+        }
+        for (i, port) in ports.iter_mut().enumerate().skip(1) {
+            if let (2, n) = get(i) {
+                port.extend(kind_for_leds(n as usize));
+            }
+        }
+        let mut names = IndexMap::new();
+        if !ports[0].is_empty() {
+            names.insert("pump".to_string(), "pump".to_string());
+        }
+        let fans: Vec<&str> = (1..7).filter(|i| !ports[*i].is_empty()).map(|i| model.ports()[i]).collect();
+        if fans.len() > 1 {
+            names.insert("all-fans".to_string(), fans.join("+"));
+        }
+        for f in fans {
+            names.insert(f.to_string(), f.to_string());
+        }
+        Layout { model, ports, names }
+    }
+
     /// From the config's [layout] table (port name → device ids, plus `names`).
-    pub fn from_config(ports: &IndexMap<String, Vec<String>>, names: &IndexMap<String, String>) -> Result<Layout, String> {
-        let mut out = vec![Vec::new(); PORTS.len()];
+    pub fn from_config(model: Model, ports: &IndexMap<String, Vec<String>>, names: &IndexMap<String, String>) -> Result<Layout, String> {
+        let port_names = model.ports();
+        let mut out = vec![Vec::new(); port_names.len()];
         for (port, devices) in ports {
-            let i = PORTS.iter().position(|p| p == port).ok_or(format!("layout: unknown port '{port}' (use {})", PORTS.join(", ")))?;
+            let i = port_names
+                .iter()
+                .position(|p| p == port)
+                .ok_or(format!("layout: unknown port '{port}' on a {} (use {})", model.name(), port_names.join(", ")))?;
             for d in devices {
                 let k = kind(d).ok_or(format!(
                     "layout: unknown device '{d}' (use {})",
                     KINDS.iter().map(|k| k.id).collect::<Vec<_>>().join(", ")
                 ))?;
+                if !allowed(model, i, k) {
+                    return Err(format!("layout: a {d} can't go on {port} of a {}", model.name()));
+                }
                 out[i].push(k);
             }
             let strips = out[i].iter().filter(|k| k.byte == 0x01).count();
@@ -117,14 +179,29 @@ impl Layout {
                 return Err(format!("layout: {port} mixes LED strips with other devices; the controller can't"));
             }
         }
-        let layout = Layout { ports: out, names: names.clone() };
+        let layout = Layout { model, ports: out, names: names.clone() };
         for (name, sel) in &layout.names {
-            if PORTS.contains(&name.as_str()) || name == "all" {
+            // a port's own name may only stand for that port
+            if (port_names.contains(&name.as_str()) && sel != name) || name == "all" {
                 return Err(format!("layout: '{name}' is already a part name"));
             }
             layout.select(sel).map_err(|e| format!("layout name '{name}': {e}"))?;
         }
         Ok(layout)
+    }
+
+    /// As a [layout] table (port name → device ids, plus names).
+    pub fn to_config(&self) -> crate::config::LayoutConfig {
+        crate::config::LayoutConfig {
+            names: self.names.clone(),
+            ports: self
+                .ports
+                .iter()
+                .enumerate()
+                .filter(|(_, d)| !d.is_empty())
+                .map(|(i, d)| (self.model.ports()[i].to_string(), d.iter().map(|k| k.id.to_string()).collect()))
+                .collect(),
+        }
     }
 
     /// Frame slice of each port, in frame order.
@@ -174,8 +251,9 @@ impl Layout {
     /// LED indices for one selector term: "port1", "external2", "external:0-9".
     fn term(&self, t: &str) -> Result<Vec<usize>, String> {
         let ranges = self.port_ranges();
+        let ports = self.model.ports();
         if let Some((port, span)) = t.split_once(':') {
-            let i = PORTS.iter().position(|p| *p == port).ok_or(format!("unknown port '{port}'"))?;
+            let i = ports.iter().position(|p| *p == port).ok_or(format!("unknown port '{port}'"))?;
             let (a, b) = span.split_once('-').ok_or("use port:FIRST-LAST")?;
             let (a, b): (usize, usize) = (a.parse().map_err(|_| "bad LED number")?, b.parse().map_err(|_| "bad LED number")?);
             let r = &ranges[i];
@@ -184,10 +262,10 @@ impl Layout {
             }
             return Ok((r.start + a..=r.start + b).collect());
         }
-        if let Some(i) = PORTS.iter().position(|p| *p == t) {
+        if let Some(i) = ports.iter().position(|p| *p == t) {
             return Ok(ranges[i].clone().collect());
         }
-        for (i, port) in PORTS.iter().enumerate() {
+        for (i, port) in ports.iter().enumerate() {
             if let Some(n) = t.strip_prefix(port).and_then(|n| n.parse::<usize>().ok()) {
                 let devs = &self.ports[i];
                 if n == 0 || n > devs.len() {
@@ -215,9 +293,10 @@ impl Layout {
             if devs.is_empty() {
                 continue;
             }
-            out.push(PORTS[i].to_string());
+            let port = self.model.ports()[i];
+            out.push(port.to_string());
             if devs.len() > 1 {
-                out.extend((1..=devs.len()).map(|n| format!("{}{n}", PORTS[i])));
+                out.extend((1..=devs.len()).map(|n| format!("{port}{n}")));
             }
         }
         out
@@ -236,7 +315,8 @@ impl Layout {
     pub fn zone(&self, name: &str) -> Vec<usize> {
         if name == "all" {
             let mut out = Vec::new();
-            let parts: Vec<String> = if self.names.is_empty() { PORTS.iter().map(|p| p.to_string()).collect() } else { self.names.keys().cloned().collect() };
+            let parts: Vec<String> =
+                if self.names.is_empty() { self.model.ports().iter().map(|p| p.to_string()).collect() } else { self.names.keys().cloned().collect() };
             for p in parts {
                 for i in self.zone(&p) {
                     if !out.contains(&i) {
@@ -293,6 +373,7 @@ pub fn label(name: &str) -> String {
         "right-fan" => "Right fan",
         "left-fan" => "Left fan",
         "fans" => "Both radiator fans",
+        "all-fans" => "All fans",
         "pump" => "Pump head",
         "motherboard" => "Motherboard (via OpenRGB)",
         "all" => "Everything",
@@ -302,10 +383,8 @@ pub fn label(name: &str) -> String {
     if !known.is_empty() {
         return crate::i18n::tr(known).to_string();
     }
-    for (i, p) in PORTS.iter().enumerate().skip(1) {
-        if name == *p {
-            return crate::i18n::trf("RGB port {}", &[&i]);
-        }
+    if let Some(n) = name.strip_prefix("port").and_then(|n| n.parse::<usize>().ok()) {
+        return crate::i18n::trf("RGB port {}", &[&n]);
     }
     if let Some(n) = name.strip_prefix("external") {
         return crate::i18n::trf("External device {}", &[&n]);
@@ -348,13 +427,44 @@ mod tests {
             ("port1".to_string(), vec!["ll-fan".to_string(), "ll-fan".to_string()]),
         ]
         .into();
-        let l = Layout::from_config(&ports, &IndexMap::new()).unwrap();
+        let l = Layout::from_config(Model::CoreXt, &ports, &IndexMap::new()).unwrap();
         assert_eq!(l.geometry(), vec![7, 1, 0x01, 2, 0x02, 0x02, 0, 0, 0, 0, 0]);
         assert_eq!(l.strip_quantities().unwrap()[..3], [7, 40, 0]);
         assert_eq!(l.frame_len(), 72);
         assert_eq!(l.zone("port12"), (56..72).collect::<Vec<_>>());
         assert!(l.zone_names().contains(&"external3".to_string()));
         let bad: IndexMap<String, Vec<String>> = [("port1".to_string(), vec!["rgb-strip".to_string(), "ll-fan".to_string()])].into();
-        assert!(Layout::from_config(&bad, &IndexMap::new()).is_err());
+        assert!(Layout::from_config(Model::CoreXt, &bad, &IndexMap::new()).is_err());
+    }
+
+    #[test]
+    fn commander_core_layouts() {
+        // pump ring found, 8-LED fans on ports 1 and 2, nothing on 3-6
+        let found = [(2, 29), (2, 8), (2, 8), (3, 0), (3, 0), (3, 0), (3, 0)];
+        let l = Layout::detected(Model::Core, &found);
+        assert_eq!(l.geometry(), vec![7, 1, 0x08, 1, 0x05, 1, 0x05, 0, 0, 0, 0]);
+        assert_eq!(l.strip_quantities(), None);
+        assert_eq!(l.frame_len(), 45);
+        assert_eq!(l.zone("pump"), (0..29).collect::<Vec<_>>());
+        assert_eq!(l.zone("port2"), (37..45).collect::<Vec<_>>());
+        assert_eq!(l.zone("all-fans"), (29..45).collect::<Vec<_>>());
+        assert_eq!(l.zone_names(), ["pump", "all-fans", "port1", "port2", "motherboard", "all"]);
+        assert_eq!(l.zone("all").len(), 45);
+        assert_eq!(l.zone("fans"), Vec::<usize>::new());
+        let lcd = Layout::detected(Model::Core, &[(2, 24)]);
+        assert_eq!(lcd.geometry()[..3], [7, 1, 0x0e]);
+
+        let ports: IndexMap<String, Vec<String>> =
+            [("pump".to_string(), vec!["lcd-pump-ring".to_string()]), ("port1".to_string(), vec!["ql-fan".to_string(); 3])].into();
+        let names: IndexMap<String, String> = [("pump".to_string(), "pump".to_string())].into();
+        assert_eq!(Model::for_ports(ports.keys()), Model::Core);
+        let l = Layout::from_config(Model::Core, &ports, &names).unwrap();
+        assert_eq!(l.frame_len(), 24 + 3 * 34);
+        let bad: IndexMap<String, String> = [("pump".to_string(), "port1".to_string())].into();
+        assert!(Layout::from_config(Model::Core, &ports, &bad).is_err());
+        let strip: IndexMap<String, Vec<String>> = [("port1".to_string(), vec!["rgb-strip".to_string()])].into();
+        assert!(Layout::from_config(Model::Core, &strip, &IndexMap::new()).is_err());
+        let ring: IndexMap<String, Vec<String>> = [("port1".to_string(), vec!["capellix-pump".to_string()])].into();
+        assert!(Layout::from_config(Model::CoreXt, &ring, &IndexMap::new()).is_err());
     }
 }

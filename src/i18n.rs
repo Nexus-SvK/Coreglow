@@ -235,8 +235,22 @@ static SK: &[(&str, &str)] = &[
     ("not auto-detected", "nezisťuje sa automaticky"),
     ("nothing detected", "nič nezistené"),
     ("A different build can describe its ports as [layout] in the profiles file (see man coreglowctl).", "Iná zostava môže opísať svoje porty ako [layout] v súbore profilov (pozri man coreglowctl)."),
+    // 0.8: Commander CORE, night dimming
+    ("All fans", "Všetky ventilátory"),
+    ("Liquid (pump)", "Kvapalina (pumpa)"),
+    ("Fan 1   {} rpm · {} %", "Ventilátor 1   {} ot./min · {} %"),
+    ("Fan 2   {} rpm · {} %", "Ventilátor 2   {} ot./min · {} %"),
+    ("fan 1, last 10 minutes", "ventilátor 1, posledných 10 minút"),
+    ("Lower is quieter. It never goes below 50 %, so the CPU stays cool.", "Nižšia je tichšia. Nikdy neklesne pod 50 %, aby procesor zostal chladný."),
+    ("The controller keeps its own backup curve. It only reads the liquid temperature, and the pump always stays at full speed. Changes are stored in the controller within a second.", "Ovládač si drží vlastnú záložnú krivku. Číta len teplotu kvapaliny a pumpa vždy beží naplno. Zmeny sa do ovládača uložia do sekundy."),
+    ("Support for this controller is new and untested. If something looks wrong, please report it.", "Podpora tohto ovládača je nová a zatiaľ neodskúšaná. Ak niečo nevyzerá správne, dajte nám vedieť."),
+    ("Dim at night", "Stlmiť v noci"),
+    ("Dim all lighting at night", "V noci stlmiť všetko osvetlenie"),
+    ("From", "Od"),
+    ("To", "Do"),
+    ("Dimmed right now.", "Práve je stlmené."),
+    ("Drag the times, or click and type HH:MM.", "Časy posuňte myšou, alebo kliknite a napíšte HH:MM."),
 ];
-
 fn slovak() -> bool {
     static SLOVAK: OnceLock<bool> = OnceLock::new();
     *SLOVAK.get_or_init(|| {

@@ -1,22 +1,29 @@
-.TH COREGLOWD 1 "2026-10-31" "coreglow 0.7.0" "User Commands"
+.TH COREGLOWD 1 "2026-11-01" "coreglow 0.8.0" "User Commands"
 .SH NAME
-coreglowd \- lighting and fan service for the Corsair iCUE Commander Core XT
+coreglowd \- lighting and fan service for the Corsair iCUE Commander Core XT and Commander CORE
 .SH SYNOPSIS
 .B coreglowd
 .SH DESCRIPTION
 .B coreglowd
 runs as a systemd user service
 .RB ( coreglowd.service )
-and drives a Corsair iCUE Commander Core XT over hidraw: it streams the
+and drives a Corsair iCUE Commander Core XT (or, experimentally, a Commander CORE)
+over hidraw: it streams the
 lighting of the profile in use (about 30 frames per second for moving
 effects), sets the duty of fans 1 and 2 from their curves, and evaluates the
 automatic switching rules. With motherboard sync on, it also sends the
-lighting to an OpenRGB server.
+lighting to an OpenRGB server. With night dimming on
+.RB ( [night] ),
+it lowers the brightness of everything between the two times.
 .PP
-While it runs, the pump (fan port 6) stays at full speed; the controller does
-that whenever the lighting is driven from the PC. When the service stops, it
-stores the backup curve in the controller (fans 1 and 2 follow case probe 1,
-pump at 100 %) and returns it to hardware mode.
+On the Core XT the pump (fan port 6) stays at full speed while it runs; the
+controller does that whenever the lighting is driven from the PC. On a
+Commander CORE the pump has its own port and runs at the profile's
+.B pump
+speed (50\(en100 %), and the fans on ports 3\(en6 follow the profile's shared fan
+setting. When the service stops, it stores the backup curve in the controller
+(Core XT: fans 1 and 2 follow case probe 1; CORE: fans 1\(en6 follow the liquid
+temperature; pump at 100 %) and returns it to hardware mode.
 .PP
 It notices changes to its files on every frame, and reconnects by itself when
 the controller disappears (unplugged, or passed to a virtual machine).
