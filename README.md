@@ -16,8 +16,9 @@ The **Commander CORE** (the hub of the ELITE CAPELLIX and ELITE LCD coolers) is 
   the curve is editable on the Fans page or as `[fallback]` in the config.
 - `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `auto [on|off]`, `motherboard [on|off]`, `night [off|FROM-TO [N]]`, `devices`, `test-fans`, `edit`, `fallback`, `gui`.
 - Night dimming: all lighting at a lower brightness between two times (Lighting page, or `[night]` in the config).
-- `coreglow`: window ("Coreglow" in the app menu) for profiles, effects, per-part lighting, fan curves and
-  automatic profile switching (by temperature, running program, time of day or locked screen).
+- `coreglow`: window ("Coreglow" in the app menu) for profiles, effects, per-part lighting, fan curves,
+  automatic profile switching (by temperature, running program, time of day or locked screen) and what's connected
+  to each port (layout editor).
 - `coreglow-tray`: tray icon (starts at login) for switching profiles, automatic switching on/off and testing fans.
 - Optional motherboard sync through OpenRGB's server, so effects span the whole PC.
 - English and Slovak interface (from the system language; `COREGLOW_LANG=en|sk` overrides it). Man pages for all commands.
@@ -42,8 +43,9 @@ Download the `.deb` from the [latest release](https://github.com/Nexus-SvK/Coreg
 
 ## Other builds (experimental)
 
-Without a `[layout]` table Coreglow uses this build's layout. Another build can describe its RGB ports in
-`~/.config/coreglow/config.toml`; `coreglowctl devices` shows what the controller detects:
+Without a `[layout]` table Coreglow uses this build's layout. Another build can describe its RGB ports in the
+window (Lighting → What's connected → Change what's connected…) or in `~/.config/coreglow/config.toml`;
+`coreglowctl devices` shows what the controller detects:
 
 ```toml
 [layout]
@@ -77,6 +79,9 @@ from the Core XT:
 - The lighting layout (4 LED strips on the external port, fans on ports 1 and 2, pump head on port 3)
   is fixed in `src/zones.rs` for this build.
 - GPU temperature needs `nvidia-smi` (NVIDIA's driver); nouveau doesn't report it.
+
+Scripts can talk to coreglowd through `$XDG_RUNTIME_DIR/coreglowd.sock`, one line per request: `set NAME`,
+`test-fans`, `status` (JSON), `watch` (a JSON line per update). For example `echo status | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/coreglowd.sock`.
 
 Protocol notes: Bragi file IDs from iCUE's `BragiProtocols.dll`, framing from USB captures and
 liquidctl's `commander_core` driver. Lighting needs 384-byte reports.

@@ -56,8 +56,9 @@ GUI ideas for the next version are drawn in the design canvas "PC Lighting & Fan
 | `src/bin/coreglow.rs` | egui window, autosave after 400 ms, reads status every second |
 | `packaging/` | service, udev rule, desktop entry, icon, maintainer scripts, `build-deb.sh` |
 
-Interfaces between the parts are files only: `config.toml` + `active` (written by the GUI and CLI, watched by coreglowd)
-and `coreglow-status.json` (written by coreglowd). No socket or D-Bus yet.
+Interfaces between the parts: `config.toml` + `active` (written by the GUI and CLI, watched by coreglowd),
+`coreglow-status.json` (written by coreglowd every second), and since 0.9.0 the control socket `coreglowd.sock`
+(`src/control.rs`: one text line per request; `watch` streams each status as JSON). Clients fall back to the files.
 
 ## Testing checklist (until there are hardware tests)
 
@@ -88,8 +89,8 @@ Ordered by value for the user. The design canvas has screens for items marked ðŸ
       locked screen; first match wins; editor on the Profiles page, `coreglowctl auto` (0.5.0).
 - [x] **Tray menu** ðŸŽ¨: `coreglow-tray` (ksni, pure-Rust D-Bus): profiles, automatic on/off, test fans, open window;
       autostarts at login (0.5.0). Brightness isn't in the menu (tray menus have no sliders).
-- [~] **Control socket** (`$XDG_RUNTIME_DIR/coreglowd.sock`) instead of file polling: instant switching, "test fans",
-      status push to the GUI.
+- [x] **Control socket** (`$XDG_RUNTIME_DIR/coreglowd.sock`, 0.9.0): `set`, `test-fans`, `status`, `watch`; the window
+      and tray get each status pushed, the CLI asks directly. The files stay the fallback.
 - [x] **Night dimming** ðŸŽ¨ (0.8.0): `[night]` from/to/brightness, card on the Lighting page, `coreglowctl night`.
       Colours are scaled in software (the 0x1f brightness file is still untried).
 - [ ] **GPU temperature without NVIDIA's driver**: nouveau doesn't report it; consider the proprietary driver,
@@ -97,8 +98,8 @@ Ordered by value for the user. The design canvas has screens for items marked ðŸ
 
 ### Later / research
 - [x] **Configurable hardware layout** (0.7.0, experimental): device table from iCUE's manifest, `[layout]` in the
-      config, detection report (`coreglowctl devices`). Still to do: a layout editor in the window; trying a custom
-      layout (especially LED strips via 0x1d) on hardware.
+      config, detection report (`coreglowctl devices`). Layout editor in the window (0.9.0). Still to do: trying a
+      custom layout (especially LED strips via 0x1d) on hardware.
 - [x] **Sync with motherboard RGB** (0.6.0): OpenRGB SDK client (protocol v0); the motherboard continues the whole-PC
       effect or gets its own part. Live colour sending still to be tried on the hardware.
 - [ ] **Answer the open protocol questions** (icue-reverse-engineering.md Â§9), especially pump control in
@@ -109,6 +110,15 @@ Ordered by value for the user. The design canvas has screens for items marked ðŸ
       Next candidates in [corsair-devices.md](corsair-devices.md): the iCUE LINK System Hub (0x0c3f).
 
 ## Release notes
+
+### 0.9.0 (2026-11-01)
+- **Control socket** `$XDG_RUNTIME_DIR/coreglowd.sock` (mode 0600): `set NAME`, `test-fans`, `status`, `watch`.
+  "Test fans" starts at once (was up to a second), a profile switch is published at once, and the window and tray
+  get every status pushed instead of polling the file. Older daemons and a stopped one fall back to the files.
+- **Layout editor** in the window ("What's connected" â†’ "Change what's connectedâ€¦"): devices per port (only kinds the
+  port takes), a part name per port, "use what the controller detects", back to the built-in layout. Applying shows
+  which profile parts would disappear and removes them, so the file stays valid.
+- `coreglow --page layout` opens the editor (for screenshots).
 
 ### 0.8.0 (2026-11-01)
 - **Commander CORE (experimental)**, the hub of the ELITE CAPELLIX and ELITE LCD coolers (USB 0c1c, 0c32), written

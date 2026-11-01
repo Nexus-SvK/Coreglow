@@ -7,11 +7,13 @@
 
 use std::collections::{BTreeMap, VecDeque};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc::Receiver;
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
 
 use coreglow::auto::AutoState;
 use coreglow::config::{Config, OpenRgb, Profile};
+use coreglow::control::{self, Hub, Request};
 use coreglow::device::{self, Device};
 use coreglow::effects::Temps;
 use coreglow::sensors::Sensors;
@@ -224,7 +226,7 @@ fn duties(model: Model, profile: &Profile, temps: &Temps, testing: bool) -> Vec<
 }
 
 /// Runs until `stop` is set or the device fails. Err = device error (reconnect).
-fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String> {
+fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool, hub: &Hub, requests: &Receiver<Request>) -> Result<(), String> {
     let model = dev.model;
     dev.wake()?;
     device::store_fallback(dev, &st.fallback)?;
@@ -241,6 +243,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
     let mut temps = Temps::new();
     let mut sent: Option<Vec<(usize, u8)>> = None;
     let mut night = false;
+    let mut test_until = Instant::now();
     let (mut last_fan, mut last_light) = (Instant::now() - RESEND_EVERY, Instant::now() - STATIC_EVERY);
     let mut next_sensor = Instant::now();
     let mut last_frame: Vec<u8> = Vec::new();
@@ -252,6 +255,14 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
 
     while !stop.load(Ordering::Relaxed) {
         let now = Instant::now();
+        for r in requests.try_iter() {
+            match r {
+                Request::TestFans => {
+                    test_until = now + TEST_FANS_FOR;
+                    next_sensor = now; // fans and status right away
+                }
+            }
+        }
         // Checked every frame (two stat calls), so edits and profile switches show at once.
         if stamp() != cfg_stamp {
             cfg_stamp = stamp();
@@ -272,6 +283,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                     new.apply_rule(rule);
                     *st = new;
                     error = None;
+                    next_sensor = now; // publish the new profile right away
                     let found = dev.autodetected().unwrap_or_default();
                     let (new_layout, d) = choose_layout(dev, &st.cfg, &found);
                     is_detected = d;
@@ -308,7 +320,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
             temps = st.sensors.read(&probes, liquid, &wanted);
             let rule = auto.evaluate(&st.cfg.auto, &temps);
             st.apply_rule(rule);
-            let testing = testing_fans();
+            let testing = testing_fans() || now < test_until;
             let duties = duties(model, &st.profile, &temps, testing);
             let moved = sent.as_ref().is_none_or(|s| s.iter().zip(&duties).any(|(a, b)| a.1.abs_diff(b.1) >= 2));
             if moved || now - last_fan >= RESEND_EVERY {
@@ -345,7 +357,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
             if model.pump_settable() {
                 fan_duty.insert("pump".into(), st.profile.pump_duty());
             }
-            Status {
+            let status = Status {
                 profile: st.name.clone(),
                 time: status::now(),
                 temps: temps.iter().map(|(k, v)| (k.clone(), (v * 10.0).round() / 10.0)).collect(),
@@ -375,8 +387,9 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool) -> Result<(), String
                 controller: Some(model.id().to_string()),
                 detected: is_detected.then(|| layout.to_config()),
                 night,
-            }
-            .write();
+            };
+            status.write();
+            hub.publish(&status);
         }
 
         let dim = st.cfg.night_factor();
@@ -417,6 +430,13 @@ fn main() {
         zones::zone("all").len()
     ));
 
+    let hub = Arc::new(Hub::default());
+    let (tx, requests) = std::sync::mpsc::channel();
+    match control::serve(hub.clone(), tx) {
+        Ok(()) => log(format!("listening on {}", control::socket_path().display())),
+        Err(e) => log(format!("control socket not available ({e}); the files still work")),
+    }
+
     let mut waiting_logged = false;
     while !stop.load(Ordering::Relaxed) {
         let mut dev = match Device::open() {
@@ -426,7 +446,9 @@ fn main() {
                     log(format!("waiting for the controller: {e}"));
                     waiting_logged = true;
                 }
-                Status { profile: st.name.clone(), time: status::now(), error: Some(e), ..Default::default() }.write();
+                let status = Status { profile: st.name.clone(), time: status::now(), error: Some(e), ..Default::default() };
+                status.write();
+                hub.publish(&status);
                 std::thread::sleep(RETRY_EVERY);
                 continue;
             }
@@ -434,7 +456,7 @@ fn main() {
         waiting_logged = false;
         let note = if dev.model.experimental() { " (experimental support: please report how it works)" } else { "" };
         log(format!("{} at {}{note}", dev.model.name(), dev.path.display()));
-        let result = run(&mut dev, &mut st, &stop);
+        let result = run(&mut dev, &mut st, &stop, &hub, &requests);
         // Hand the controller back to its own fallback curve, whatever happened.
         let _ = dev.wake().and_then(|_| device::store_fallback(&mut dev, &st.fallback)).and_then(|_| dev.sleep());
         match result {
@@ -445,4 +467,5 @@ fn main() {
             }
         }
     }
+    let _ = std::fs::remove_file(control::socket_path());
 }

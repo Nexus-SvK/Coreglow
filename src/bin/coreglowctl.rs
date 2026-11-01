@@ -1,6 +1,7 @@
 //! coreglowctl: list and switch profiles, show live values, restore the fallback curve.
 
 use coreglow::config::{parse_hm, Config, Night, Num};
+use coreglow::control;
 use coreglow::device::{self, Device};
 use coreglow::status::Status;
 use coreglow::{paths, sensors};
@@ -51,8 +52,8 @@ fn main() {
             if !cfg.profiles.contains_key(name) {
                 fail(format!("no profile '{name}'; try: {}", cfg.profiles.keys().cloned().collect::<Vec<_>>().join(", ")));
             }
-            std::fs::write(paths::active_file(), format!("{name}\n")).unwrap_or_else(|e| fail(e));
-            println!("profile {name} (applies within a second)");
+            control::set_profile_or_file(name).unwrap_or_else(|e| fail(e));
+            println!("profile {name}");
         }
         ("brightness", 3) => {
             let mut cfg = Config::load().unwrap_or_else(|e| fail(e));
@@ -193,7 +194,7 @@ fn main() {
             if !Status::read().is_some_and(|s| s.fresh()) {
                 fail("coreglowd isn't running; start it first: systemctl --user start coreglowd");
             }
-            paths::request_fan_test().unwrap_or_else(|e| fail(e));
+            control::test_fans().unwrap_or_else(|e| fail(e));
             println!("fans at full speed for 5 seconds");
         }
         ("gui", 1) => {
@@ -210,7 +211,7 @@ fn main() {
 }
 
 fn status() {
-    let Some(s) = Status::read() else { fail("no status: is coreglowd running? (systemctl --user status coreglowd)") };
+    let Some(s) = control::status() else { fail("no status: is coreglowd running? (systemctl --user status coreglowd)") };
     if !s.fresh() {
         println!("coreglowd isn't running (last status is old): systemctl --user start coreglowd");
     }

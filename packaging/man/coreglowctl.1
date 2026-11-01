@@ -1,4 +1,4 @@
-.TH COREGLOWCTL 1 "2026-11-01" "coreglow 0.8.0" "User Commands"
+.TH COREGLOWCTL 1 "2026-11-01" "coreglow 0.9.0" "User Commands"
 .SH NAME
 coreglowctl \- control Coreglow lighting and fan profiles from the command line
 .SH SYNOPSIS
@@ -62,7 +62,7 @@ is stopped; it does this by itself otherwise.
 Open the window,
 .BR coreglow (1).
 .SH LAYOUT
-Without a
+The window edits this table too (Lighting, What's connected). Without a
 .B [layout]
 table the built-in layout is used. A table lists the devices on each port in
 chain order, and may name parts:
@@ -88,6 +88,11 @@ Profiles, automatic rules, backup curve, motherboard sync.
 .TP
 .I ~/.config/coreglow/active
 Name of the profile chosen by hand.
+.TP
+.I $XDG_RUNTIME_DIR/coreglowd.sock
+Control socket of
+.BR coreglowd ;
+used for set, test-fans and status when it's there.
 .TP
 .I $XDG_RUNTIME_DIR/coreglow-status.json
 Live values written by

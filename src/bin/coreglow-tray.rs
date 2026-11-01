@@ -2,7 +2,7 @@
 //! and on GNOME with the AppIndicator extension).
 //!
 //! Profile switching, automatic switching on/off, test fans, open the window. Talks to
-//! coreglowd through the same files as the GUI and CLI.
+//! coreglowd through its control socket (live status), falling back to the files.
 
 use std::time::Duration;
 
@@ -11,8 +11,8 @@ use ksni::menu::{CheckmarkItem, RadioGroup, RadioItem, StandardItem};
 use ksni::MenuItem;
 
 use coreglow::config::Config;
+use coreglow::control;
 use coreglow::i18n::{tr, trf};
-use coreglow::paths;
 use coreglow::status::Status;
 
 #[derive(Default)]
@@ -30,7 +30,7 @@ impl Tray {
             self.profiles = cfg.profiles.keys().cloned().collect();
             self.auto_enabled = cfg.auto.enabled;
         }
-        self.status = Status::read().filter(|s| s.fresh());
+        self.status = self.status.take().or_else(Status::read).filter(|s| s.fresh());
     }
 
     fn summary(&self) -> String {
@@ -88,7 +88,7 @@ impl ksni::Tray for Tray {
                 selected,
                 select: Box::new(|this: &mut Self, i| {
                     if let Some(name) = this.profiles.get(i).cloned() {
-                        if std::fs::write(paths::active_file(), format!("{name}\n")).is_ok() {
+                        if control::set_profile_or_file(&name).is_ok() {
                             this.manual = name;
                         }
                     }
@@ -120,7 +120,7 @@ impl ksni::Tray for Tray {
                 label: tr("Test fans (full speed for 5 s)").into(),
                 enabled: self.status.is_some(),
                 activate: Box::new(|_: &mut Self| {
-                    let _ = paths::request_fan_test();
+                    let _ = control::test_fans();
                 }),
                 ..Default::default()
             }
@@ -143,6 +143,15 @@ fn main() {
             std::process::exit(1);
         }
     };
+    // live status from coreglowd (pushed through the control socket)
+    let live = handle.clone();
+    std::thread::spawn(move || {
+        control::watch(|st| {
+            if live.update(|t: &mut Tray| t.status = Some(st).filter(Status::fresh)).is_none() {
+                std::process::exit(0);
+            }
+        })
+    });
     loop {
         std::thread::sleep(Duration::from_secs(2));
         if handle.update(|t: &mut Tray| t.refresh()).is_none() {

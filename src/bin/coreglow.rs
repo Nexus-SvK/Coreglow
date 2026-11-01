@@ -5,14 +5,16 @@
 //! Layout follows the "GUI updates" design: a sidebar with Home, Lighting, Fans and
 //! Profiles pages.
 
+use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant, SystemTime};
 
 use eframe::egui::{self, Align2, Color32, FontId, Pos2, Rect, RichText, Sense, Stroke, Vec2};
 
 use coreglow::config::{
-    color_hex, curve_of, parse_color, Config, Effect, EffectKind, Fans, Night, Num, Profile, PRESET_BALANCED,
+    color_hex, curve_of, parse_color, Config, Effect, EffectKind, Fans, LayoutConfig, Night, Num, Profile, PRESET_BALANCED,
     PRESET_PERFORMANCE, PRESET_QUIET, Fallback, FALLBACK_DEFAULT, FALLBACK_MAX_POINTS, PUMP_MIN,
 };
+use coreglow::control;
 use coreglow::model::Model;
 use coreglow::effects::Temps;
 use coreglow::status::{Status, HISTORY_EVERY_S};
@@ -77,11 +79,15 @@ struct App {
     part: Option<String>,
     name_edit: String,
     status: Option<Status>,
+    /// Newest status pushed by coreglowd (control socket), filled by a background thread.
+    pushed: Arc<Mutex<Option<Status>>>,
     last_poll: Instant,
     changed_at: Option<Instant>,
     save_msg: (String, bool),
     file_stamp: (Option<SystemTime>, Option<SystemTime>),
     confirm_delete: bool,
+    /// The layout editor window, while open.
+    layout_edit: Option<LayoutDraft>,
     drag: Option<usize>,
     fallback_drag: Option<usize>,
     recent: Recent,
@@ -90,7 +96,7 @@ struct App {
 }
 
 impl App {
-    fn new(page: Page) -> Self {
+    fn new(page: Page, pushed: Arc<Mutex<Option<Status>>>) -> Self {
         let (cfg, load_error) = match Config::load() {
             Ok(mut c) => {
                 c.active = c.active_name();
@@ -106,11 +112,13 @@ impl App {
             part: None,
             cfg,
             status: Status::read(),
+            pushed,
             last_poll: Instant::now(),
             changed_at: None,
             save_msg: (String::new(), false),
             file_stamp: stamp(),
             confirm_delete: false,
+            layout_edit: None,
             drag: None,
             fallback_drag: None,
             recent: Recent::load(),
@@ -140,11 +148,12 @@ impl App {
     }
 
     fn poll(&mut self) {
-        if self.last_poll.elapsed() < Duration::from_millis(1000) {
+        let pushed = self.pushed.lock().unwrap().take();
+        if pushed.is_none() && self.last_poll.elapsed() < Duration::from_millis(1000) {
             return;
         }
         self.last_poll = Instant::now();
-        self.status = Status::read();
+        self.status = pushed.or_else(Status::read);
         if let Some(s) = &self.status {
             if let Some(m) = s.model() {
                 MODEL.with(|c| c.set(m));
@@ -1026,8 +1035,10 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
                         ui.label(RichText::new(zones::label(&d.port)).strong().small());
                         ui.label(RichText::new(format!("{configured} · {detected}")).weak().small());
                     }
-                    ui.add_space(4.0);
-                    ui.label(RichText::new(tr("A different build can describe its ports as [layout] in the profiles file (see man coreglowctl).")).weak().small());
+                    ui.add_space(6.0);
+                    if ui.button(tr("Change what's connected…")).clicked() {
+                        app.layout_edit = Some(LayoutDraft::from_layout(&zones::current()));
+                    }
                 });
             });
             ui.add_space(12.0);
@@ -1067,6 +1078,198 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
             });
         });
     });
+    changed
+}
+
+// ---------- layout editor ----------
+
+/// What's connected, being edited: device ids and a part name per port, plus names
+/// from the file that cover more than one whole port (kept as they are).
+struct LayoutDraft {
+    model: Model,
+    ports: Vec<Vec<String>>,
+    names: Vec<String>,
+    other_names: Vec<(String, String)>,
+    adding: Vec<String>,
+}
+
+impl LayoutDraft {
+    fn from_layout(l: &zones::Layout) -> Self {
+        let port_names = l.model.ports();
+        let name_of = |p: &str| l.names.iter().find(|(_, sel)| *sel == p).map(|(n, _)| n.clone()).unwrap_or_default();
+        LayoutDraft {
+            model: l.model,
+            ports: l.ports.iter().map(|d| d.iter().map(|k| k.id.to_string()).collect()).collect(),
+            names: port_names.iter().map(|p| name_of(p)).collect(),
+            other_names: l
+                .names
+                .iter()
+                .filter(|(n, sel)| !port_names.contains(&sel.as_str()) || port_names.iter().any(|p| name_of(p) != **n && *p == sel.as_str()))
+                .map(|(n, sel)| (n.clone(), sel.clone()))
+                .collect(),
+            adding: vec![String::new(); port_names.len()],
+        }
+    }
+
+    /// Fill the ports the controller detected something on (keeps the others).
+    fn use_detected(&mut self, devices: &[coreglow::status::PortInfo]) {
+        for d in devices {
+            if let (Some(i), Some(kind)) = (self.model.ports().iter().position(|p| *p == d.port), &d.detected_kind) {
+                self.ports[i] = vec![kind.clone()];
+            }
+        }
+    }
+
+    /// The [layout] table, checked; Err explains what's wrong.
+    fn to_config(&self) -> Result<LayoutConfig, String> {
+        let port_names = self.model.ports();
+        let mut cfg = LayoutConfig::default();
+        for (i, devs) in self.ports.iter().enumerate() {
+            if devs.is_empty() {
+                continue;
+            }
+            cfg.ports.insert(port_names[i].to_string(), devs.clone());
+            let name = self.names[i].trim();
+            let name = if name.is_empty() { port_names[i] } else { name };
+            if name == "all" || name.contains('"') || cfg.names.insert(name.to_string(), port_names[i].to_string()).is_some() {
+                return Err(trf("“{}” can't be used as a name here", &[&name]));
+            }
+        }
+        for (n, sel) in &self.other_names {
+            if cfg.names.insert(n.clone(), sel.clone()).is_some() {
+                return Err(trf("“{}” can't be used as a name here", &[&n]));
+            }
+        }
+        zones::Layout::from_config(self.model, &cfg.ports, &cfg.names)?;
+        Ok(cfg)
+    }
+}
+
+/// The editor window. Applying writes [layout] (and drops profile parts the new layout doesn't have).
+fn layout_window(app: &mut App, ctx: &egui::Context) -> bool {
+    let Some(draft) = app.layout_edit.as_mut() else { return false };
+    let mut changed = false;
+    let mut open = true;
+    let mut close = false;
+    let devices = app.status.as_ref().map(|s| s.devices.clone()).unwrap_or_default();
+    egui::Window::new(tr("What's connected"))
+        .open(&mut open)
+        .collapsible(false)
+        .resizable(false)
+        .default_width(560.0)
+        .anchor(Align2::CENTER_CENTER, Vec2::ZERO)
+        .show(ctx, |ui| {
+            ui.label(RichText::new(trf("{}: devices on each RGB port, in the order they're chained. The name is what the Lighting page calls the part.", &[&draft.model.name()])).weak());
+            ui.add_space(8.0);
+            egui::Grid::new("layout-grid").num_columns(3).spacing([12.0, 8.0]).show(ui, |ui| {
+                for (i, port) in draft.model.ports().iter().enumerate() {
+                    ui.label(RichText::new(zones::label(port)).strong());
+                    ui.vertical(|ui| {
+                        let mut remove = None;
+                        for (j, id) in draft.ports[i].iter().enumerate() {
+                            ui.horizontal(|ui| {
+                                ui.label(zones::kind(id).map_or(id.as_str(), |k| tr(k.label)));
+                                if ui.small_button("×").on_hover_text(tr("Remove")).clicked() {
+                                    remove = Some(j);
+                                }
+                            });
+                        }
+                        if let Some(j) = remove {
+                            draft.ports[i].remove(j);
+                        }
+                        let fits: Vec<&zones::Kind> = zones::KINDS.iter().filter(|k| zones::allowed(draft.model, i, k)).collect();
+                        egui::ComboBox::from_id_salt(("layout-add", i)).selected_text(tr("Add…")).width(220.0).show_ui(ui, |ui| {
+                            for k in fits {
+                                ui.selectable_value(&mut draft.adding[i], k.id.to_string(), tr(k.label));
+                            }
+                        });
+                        if !draft.adding[i].is_empty() {
+                            draft.ports[i].push(std::mem::take(&mut draft.adding[i]));
+                        }
+                        if let Some(d) = devices.iter().find(|d| d.port == *port) {
+                            if let Some(n) = d.detected_leds {
+                                let what = d.detected_kind.as_deref().and_then(zones::kind).map_or(String::new(), |k| format!(": {}", tr(k.label)));
+                                ui.label(RichText::new(trf("controller sees {} LEDs{}", &[&n, &what])).weak().small());
+                            }
+                        }
+                    });
+                    ui.add(egui::TextEdit::singleline(&mut draft.names[i]).hint_text(*port).desired_width(130.0));
+                    ui.end_row();
+                }
+            });
+            if !draft.other_names.is_empty() {
+                ui.add_space(6.0);
+                ui.label(RichText::new(tr("Other parts from the profiles file:")).weak().small());
+                let mut remove = None;
+                for (j, (n, sel)) in draft.other_names.iter().enumerate() {
+                    ui.horizontal(|ui| {
+                        ui.label(RichText::new(format!("{n} = {sel}")).small());
+                        if ui.small_button("×").clicked() {
+                            remove = Some(j);
+                        }
+                    });
+                }
+                if let Some(j) = remove {
+                    draft.other_names.remove(j);
+                }
+            }
+            ui.add_space(8.0);
+            let result = draft.to_config();
+            let lost: Vec<String> = match &result {
+                Ok(cfg) => {
+                    let names = zones::Layout::from_config(draft.model, &cfg.ports, &cfg.names).map(|l| l.zone_names()).unwrap_or_default();
+                    let mut lost: Vec<String> =
+                        app.cfg.profiles.values().flat_map(|p| p.zones.keys()).filter(|z| !names.contains(z)).cloned().collect();
+                    lost.sort();
+                    lost.dedup();
+                    lost
+                }
+                Err(_) => Vec::new(),
+            };
+            match &result {
+                Err(e) => {
+                    ui.label(RichText::new(e).color(AMBER));
+                }
+                Ok(_) if !lost.is_empty() => {
+                    ui.label(RichText::new(trf("Profiles lose their own lighting for: {}", &[&lost.join(", ")])).color(AMBER));
+                }
+                Ok(_) => {}
+            }
+            ui.horizontal(|ui| {
+                if ui.add_enabled(result.is_ok(), egui::Button::new(RichText::new(tr("Apply")).strong())).clicked() {
+                    if let Ok(cfg) = result {
+                        for p in app.cfg.profiles.values_mut() {
+                            p.zones.retain(|z, _| !lost.contains(z));
+                        }
+                        app.cfg.layout = Some(cfg);
+                        app.part = None;
+                        changed = true;
+                        close = true;
+                    }
+                }
+                if ui.button(tr("Use what the controller detects")).clicked() {
+                    draft.use_detected(&devices);
+                }
+                if app.cfg.layout.is_some() && ui.button(tr("Back to the built-in layout")).on_hover_text(tr("Removes [layout] from the profiles file")).clicked() {
+                    app.cfg.layout = None;
+                    app.part = None;
+                    changed = true;
+                    close = true;
+                }
+                if ui.button(tr("Cancel")).clicked() {
+                    close = true;
+                }
+            });
+        });
+    if !open || close {
+        app.layout_edit = None;
+    }
+    if changed {
+        // the Lighting page lists the new parts at once (coreglowd picks the file up itself)
+        if let Ok(l) = app.cfg.layout() {
+            zones::set_current(l);
+        }
+    }
     changed
 }
 
@@ -1148,7 +1351,7 @@ fn fans_page(app: &mut App, ui: &mut egui::Ui) -> bool {
                 } else {
                     let btn = egui::Button::new(tr("Test fans (full speed for 5 s)")).min_size(Vec2::new(ui.available_width(), 36.0));
                     if ui.add_enabled(s.is_some(), btn).on_disabled_hover_text(tr("The lighting service isn't running")).clicked() {
-                        let _ = paths::request_fan_test();
+                        let _ = control::test_fans();
                     }
                 }
             });
@@ -1479,6 +1682,7 @@ impl eframe::App for App {
                     Page::Profiles => changed |= profiles_page(self, ui),
                 });
             });
+        changed |= layout_window(self, ctx);
         if changed {
             self.changed();
         }
@@ -1486,10 +1690,11 @@ impl eframe::App for App {
 }
 
 fn main() -> eframe::Result {
-    // `coreglow --page lighting|fans|profiles` opens on that page (handy for screenshots).
+    // `coreglow --page lighting|fans|profiles|layout` opens on that page (handy for screenshots);
+    // layout = the Lighting page with the layout editor open.
     let args: Vec<String> = std::env::args().collect();
     let page = match args.iter().position(|a| a == "--page").and_then(|i| args.get(i + 1)).map(String::as_str) {
-        Some("lighting") => Page::Lighting,
+        Some("lighting") | Some("layout") => Page::Lighting,
         Some("fans") => Page::Fans,
         Some("profiles") => Page::Profiles,
         _ => Page::Home,
@@ -1502,5 +1707,24 @@ fn main() -> eframe::Result {
             .with_min_inner_size([900.0, 600.0]),
         ..Default::default()
     };
-    eframe::run_native("Coreglow", options, Box::new(move |_cc| Ok(Box::new(App::new(page)))))
+    eframe::run_native(
+        "Coreglow",
+        options,
+        Box::new(move |cc| {
+            // live values: coreglowd pushes each status through its control socket
+            let pushed = Arc::new(Mutex::new(None));
+            let (slot, ctx) = (pushed.clone(), cc.egui_ctx.clone());
+            std::thread::spawn(move || {
+                control::watch(|st| {
+                    *slot.lock().unwrap() = Some(st);
+                    ctx.request_repaint();
+                })
+            });
+            let mut app = App::new(page, pushed);
+            if args.iter().any(|a| a == "layout") {
+                app.layout_edit = Some(LayoutDraft::from_layout(&zones::current()));
+            }
+            Ok(Box::new(app))
+        }),
+    )
 }

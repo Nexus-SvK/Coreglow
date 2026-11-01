@@ -7,6 +7,7 @@
 
 pub mod auto;
 pub mod config;
+pub mod control;
 pub mod device;
 pub mod effects;
 pub mod i18n;
