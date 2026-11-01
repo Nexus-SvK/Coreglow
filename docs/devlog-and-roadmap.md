@@ -115,6 +115,15 @@ Ordered by value for the user. The design canvas has screens for items marked ðŸ
 
 ## Release notes
 
+### 0.12.0 (2026-11-01)
+- **13 built-in effects for while Coreglow isn't running** (rainbow, rainbow wave, spiral rainbow, colour warp,
+  colour cycle, colour pulse, colour wave, arc, heartbeat, rain, sequential, strobing, visor), each at slow, medium
+  or fast speed: "Efekt" in the "When Coreglow isn't running" card, `coreglowctl closed EFFECT [SPEED]`,
+  `closed_lighting` + `closed_speed`. Decoded from iCUE saving every preset (driven in the VM); rainbow wave
+  watched on the hardware.
+- **Finding**: the controller's brightness setting (file 0x1f) barely affects the streamed lighting, so night
+  dimming stays in software (icue-reverse-engineering.md Â§7b).
+
 ### 0.11.0 (2026-11-01)
 - **Lighting while Coreglow isn't running**: off, one colour or rainbow, stored in the Core XT's own memory
   (iCUE's "Device Memory Mode", files 0x6d64/0x6d65), so it shows at start-up and after shutdown too. Lighting page

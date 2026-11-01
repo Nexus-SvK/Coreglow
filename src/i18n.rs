@@ -287,6 +287,21 @@ static SK: &[(&str, &str)] = &[
     ("Lights stay off", "Svetlá ostanú zhasnuté"),
     ("One colour", "Jedna farba"),
     ("Stored in the controller, so it also shows at start-up and after shutdown, until Coreglow takes over.", "Uloží sa do ovládača, takže sa zobrazí aj pri štarte a po vypnutí, kým ho neprevezme Coreglow."),
+    // 0.12: stored effects
+    ("An effect", "Efekt"),
+    ("Effect", "Efekt"),
+    ("Slow", "Pomaly"),
+    ("Medium", "Stredne"),
+    ("Fast", "Rýchlo"),
+    ("Spiral rainbow", "Špirálová dúha"),
+    ("Colour warp", "Farebná deformácia"),
+    ("Colour pulse", "Farebný pulz"),
+    ("Colour wave", "Farebná vlna"),
+    ("Arc", "Oblúk"),
+    ("Heartbeat", "Tlkot srdca"),
+    ("Rain", "Dážď"),
+    ("Sequential", "Postupne"),
+    ("Strobing", "Stroboskop"),
 ];
 
 fn slovak() -> bool {

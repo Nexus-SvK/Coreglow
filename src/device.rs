@@ -61,13 +61,55 @@ const F_HW_LIGHT_PORTS: &[u8] = &[0x65, 0x6d];
 const HW_FIXED_PERCENT: u8 = 0x00;
 const HW_CURVE_PERCENT: u8 = 0x02;
 
+/// A built-in effect the controller can play by itself (iCUE's Device Memory Mode presets
+/// that need no colour choice). `code` names it in the file's data-type slot; `colours` is
+/// 0x08 (the effect's own colours) or 0x0a (random colours); `variant` is the per-effect
+/// default iCUE writes (direction or style). From captures/ccxt-icue-effects-writes.txt.
+#[derive(Debug, PartialEq)]
+pub struct HwEffect {
+    pub id: &'static str,
+    pub label: &'static str,
+    code: [u8; 2],
+    colours: u8,
+    variant: u8,
+}
+
+pub const HW_EFFECTS: [HwEffect; 13] = [
+    HwEffect { id: "rainbow", label: "Rainbow", code: [0x02, 0xa4], colours: 0x08, variant: 0x00 },
+    HwEffect { id: "rainbow-wave", label: "Rainbow wave", code: [0x4c, 0xb9], colours: 0x08, variant: 0x04 },
+    HwEffect { id: "spiral-rainbow", label: "Spiral rainbow", code: [0x87, 0xab], colours: 0x08, variant: 0x06 },
+    HwEffect { id: "color-warp", label: "Colour warp", code: [0x18, 0x00], colours: 0x08, variant: 0x04 },
+    HwEffect { id: "color-shift", label: "Colour cycle", code: [0xfa, 0xa5], colours: 0x0a, variant: 0x00 },
+    HwEffect { id: "color-pulse", label: "Colour pulse", code: [0x4f, 0xad], colours: 0x0a, variant: 0x00 },
+    HwEffect { id: "color-wave", label: "Colour wave", code: [0xff, 0x7b], colours: 0x0a, variant: 0x04 },
+    HwEffect { id: "arc", label: "Arc", code: [0x1b, 0x00], colours: 0x0a, variant: 0x06 },
+    HwEffect { id: "heartbeat", label: "Heartbeat", code: [0x1c, 0x00], colours: 0x0a, variant: 0x08 },
+    HwEffect { id: "rain", label: "Rain", code: [0x7e, 0xa0], colours: 0x0a, variant: 0x01 },
+    HwEffect { id: "sequential", label: "Sequential", code: [0x17, 0x00], colours: 0x0a, variant: 0x04 },
+    HwEffect { id: "strobing", label: "Strobing", code: [0x1a, 0x00], colours: 0x0a, variant: 0x00 },
+    HwEffect { id: "visor", label: "Visor", code: [0xc0, 0x90], colours: 0x0a, variant: 0x04 },
+];
+
+pub fn hw_effect(id: &str) -> Option<&'static HwEffect> {
+    HW_EFFECTS.iter().find(|e| e.id == id)
+}
+
+/// Speed byte of a stored effect (iCUE's slider has three steps).
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
+pub enum HwSpeed {
+    Slow = 0x03,
+    #[default]
+    Medium = 0x04,
+    Fast = 0x05,
+}
+
 /// Lighting the controller shows by itself while no software drives it.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum StoredLighting {
     /// One colour (black = off).
     Static([u8; 3]),
-    /// The controller's own rainbow, at iCUE's default speed.
-    Rainbow,
+    /// A built-in effect.
+    Effect(&'static HwEffect, HwSpeed),
 }
 
 impl StoredLighting {
@@ -76,7 +118,7 @@ impl StoredLighting {
     pub fn encode(self, ports: &[u8]) -> ([u8; 2], Vec<u8>) {
         let (id, mut data) = match self {
             StoredLighting::Static([r, g, b]) => ([0x7e, 0x20], vec![0x09, 0, 0, 0, 1, 0xff, b, g, r]),
-            StoredLighting::Rainbow => ([0x02, 0xa4], vec![0x08, 0x04, 0, 0, 0]),
+            StoredLighting::Effect(e, speed) => (e.code, vec![e.colours, speed as u8, e.variant, 0, 0]),
         };
         data.push(ports.len() as u8);
         data.extend_from_slice(ports);
@@ -368,9 +410,18 @@ mod tests {
         let (id, data) = StoredLighting::Static([0, 0, 0]).encode(&[0]);
         assert_eq!(id, [0x7e, 0x20]);
         assert_eq!(data, [0x09, 0, 0, 0, 0x01, 0xff, 0, 0, 0, 0x01, 0x00]);
-        let (id, data) = StoredLighting::Rainbow.encode(&[1, 2, 3, 4, 5, 6]);
+        let rainbow = hw_effect("rainbow").unwrap();
+        let (id, data) = StoredLighting::Effect(rainbow, HwSpeed::Medium).encode(&[1, 2, 3, 4, 5, 6]);
         assert_eq!(id, [0x02, 0xa4]);
         assert_eq!(data, [0x08, 0x04, 0, 0, 0x00, 0x06, 1, 2, 3, 4, 5, 6]);
+        // speed slider at its ends, and two more presets, from captures/ccxt-icue-effects-writes.txt
+        assert_eq!(StoredLighting::Effect(rainbow, HwSpeed::Slow).encode(&[1]).1[..2], [0x08, 0x03]);
+        assert_eq!(StoredLighting::Effect(rainbow, HwSpeed::Fast).encode(&[1]).1[..2], [0x08, 0x05]);
+        let (id, data) = StoredLighting::Effect(hw_effect("arc").unwrap(), HwSpeed::Medium).encode(&[1, 2, 3, 4, 5, 6]);
+        assert_eq!((id, &data[..5]), ([0x1b, 0x00], &[0x0a, 0x04, 0x06, 0, 0][..]));
+        let (id, data) = StoredLighting::Effect(hw_effect("visor").unwrap(), HwSpeed::Medium).encode(&[0]);
+        assert_eq!((id, data), ([0xc0, 0x90], vec![0x0a, 0x04, 0x04, 0, 0, 0x01, 0x00]));
+        assert!(HW_EFFECTS.iter().all(|e| hw_effect(e.id) == Some(e)));
     }
 
     #[test]

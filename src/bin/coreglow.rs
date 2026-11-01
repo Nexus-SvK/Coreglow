@@ -1044,7 +1044,7 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
             ui.add_space(12.0);
             card(ui, |ui| changed |= night_ui(ui, &mut app.cfg.night, status.as_ref()));
             ui.add_space(12.0);
-            card(ui, |ui| changed |= closed_ui(ui, &mut app.cfg.closed_lighting, &mut app.recent));
+            card(ui, |ui| changed |= closed_ui(ui, &mut app.cfg.closed_lighting, &mut app.cfg.closed_speed, &mut app.recent));
         });
         ui.vertical(|ui| {
             card(ui, |ui| match app.part.clone() {
@@ -1276,7 +1276,7 @@ fn layout_window(app: &mut App, ctx: &egui::Context) -> bool {
 }
 
 /// What the lights show while coreglow isn't running (stored in the controller).
-fn closed_ui(ui: &mut egui::Ui, closed: &mut Option<String>, recent: &mut Recent) -> bool {
+fn closed_ui(ui: &mut egui::Ui, closed: &mut Option<String>, speed: &mut Option<String>, recent: &mut Recent) -> bool {
     let mut changed = false;
     title(ui, tr("When Coreglow isn't running"));
     if model() != Model::CoreXt {
@@ -1284,7 +1284,8 @@ fn closed_ui(ui: &mut egui::Ui, closed: &mut Option<String>, recent: &mut Recent
         return false;
     }
     let current = closed.clone();
-    let is_colour = current.as_deref().is_some_and(|c| c != "off" && c != "rainbow");
+    let effect = current.as_deref().and_then(coreglow::device::hw_effect);
+    let is_colour = current.as_deref().is_some_and(|c| c != "off") && effect.is_none();
     let mut choose = |label: &'static str, selected: bool, value: Option<&str>, ui: &mut egui::Ui| {
         if ui.radio(selected, tr(label)).clicked() && !selected {
             *closed = value.map(String::from);
@@ -1294,8 +1295,30 @@ fn closed_ui(ui: &mut egui::Ui, closed: &mut Option<String>, recent: &mut Recent
     choose("Leave as it is", current.is_none(), None, ui);
     choose("Lights stay off", current.as_deref() == Some("off"), Some("off"), ui);
     choose("One colour", is_colour, Some("404040"), ui);
-    choose("Rainbow", current.as_deref() == Some("rainbow"), Some("rainbow"), ui);
-    if let Some(hex) = closed.as_mut().filter(|c| c.as_str() != "off" && c.as_str() != "rainbow") {
+    choose("An effect", effect.is_some(), Some("rainbow"), ui);
+    if let Some(e) = effect {
+        ui.horizontal(|ui| {
+            ui.label(RichText::new(tr("Effect")).weak());
+            egui::ComboBox::from_id_salt("closed-effect").selected_text(tr(e.label)).width(130.0).show_ui(ui, |ui| {
+                for option in &coreglow::device::HW_EFFECTS {
+                    if ui.selectable_label(option.id == e.id, tr(option.label)).clicked() && option.id != e.id {
+                        *closed = Some(option.id.to_string());
+                        changed = true;
+                    }
+                }
+            });
+        });
+        ui.horizontal(|ui| {
+            ui.label(RichText::new(tr("Speed")).weak());
+            let now = speed.clone().unwrap_or_else(|| "medium".into());
+            for (value, label) in [("slow", "Slow"), ("medium", "Medium"), ("fast", "Fast")] {
+                if ui.selectable_label(now == value, tr(label)).clicked() && now != value {
+                    *speed = (value != "medium").then(|| value.to_string());
+                    changed = true;
+                }
+            }
+        });
+    } else if let Some(hex) = closed.as_mut().filter(|c| c.as_str() != "off") {
         changed |= color_choice(ui, hex, recent);
     }
     ui.label(RichText::new(tr("Stored in the controller, so it also shows at start-up and after shutdown, until Coreglow takes over.")).weak().small());
