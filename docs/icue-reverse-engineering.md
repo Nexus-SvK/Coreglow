@@ -148,6 +148,23 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
 - **[test]** File 0x20 on this controller: ports 1–3 report (status 2, 8), (2, 8), (2, 13); ports 4–6 status 3
   (nothing); the external port 0 (not auto-detected).
 
+## 8c. Other Corsair devices (device packages)
+
+- **[code]** iCUE 5 keeps per-device support in packages listed in `cuepkg.registry` (SQLite, table
+  `packages` joined with `repository_info`). Each `dev-*` package is a ZIP from
+  `https://www3.corsair.com/software/CUE_V5/public/modules/windows/packages/` holding
+  `meta/package` (name, version, depends), `meta/auxiliary.json` (display name, USB VID:PID, device type,
+  `lister-stage2`) and `data/InstallDirectory/devices/*.rcc` (the manifest, as in 8b).
+- **[code]** In the manifest, `DeviceEnumerator` names the protocol family (Bragi, CLink, Legacy, LLAccess, …)
+  and `HidProto` the driver flavour (`Bragi_lighting_node`, `ClinkPsu`, `Nxp2000_kbd`, …).
+- All 389 packages (566 MB) were fetched once; 9 are empty placeholders for obsolete devices. The facts are
+  in [corsair-devices.md](corsair-devices.md) / `corsair-devices.json`, built by `tools/icue-catalogue/`.
+- Notable: the **5000T RGB** case uses the Commander CORE XT's USB ID `1b1c:0c2a`, depends on
+  `dev-commander-core-xt` and is emulated as `CommanderCoreXt`, so coreglow should already drive it. The
+  **Commander CORE** (`0c1c`/`0c1d`/`0c32`/`0c3c`, ELITE CAPELLIX/LCD coolers) is a Bragi lighting node with
+  the same fan kinds plus a pump ring (geometry index 8, 21 LEDs) or LCD ring (index 14, 24 LEDs): the most
+  likely next device. The **iCUE LINK System Hub** (`0c3f`) is Bragi too but has its own sub-device protocol.
+
 ## 9. Open questions (worth a look next time)
 
 1. What do `09 <h>`, `14 0N 01` and the extra `15 01` at start-up do? Possibly autodetection subcommands

@@ -1,0 +1,7946 @@
+[
+ {
+  "package": "dev-5000t-rgb",
+  "name": "5000T RGB",
+  "type": "led-controller",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c2a",
+    "cue_mid": 33751041
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_lighting_node",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "CommanderPro",
+  "EmulatedDeviceType": "CommanderCoreXt",
+  "led_channel_kinds": {
+   "Autodetect": 0,
+   "Chassis5000T": 1,
+   "Fan8LedSeries": 5,
+   "HdFanHub": 4,
+   "LlFanHub": 2,
+   "MlFanHub": 3,
+   "QlRgbFanHub": 6,
+   "Strip25Leds": 1,
+   "Strip30Leds": 1
+  },
+  "led_counts": {
+   "Chassis5000T": 0,
+   "Fan8LedSeries": 8,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4,
+   "QlRgbFanHub": 34,
+   "Strip25Leds": 25,
+   "Strip30Leds": 30
+  },
+  "channels": 2,
+  "led_autodetection": true
+ },
+ {
+  "package": "dev-aio-pro-cooler-screen-v2",
+  "name": "ELITE LCD Cooler",
+  "type": "led-controller",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c32",
+    "cue_mid": 50593794
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0c32",
+    "cue_mid": 50593793
+   }
+  ],
+  "coolers": [
+   [
+    "H100i ELITE CAPELLIX",
+    240
+   ],
+   [
+    "H100i ELITE LCD",
+    240
+   ],
+   [
+    "H100i ELITE LCD XT",
+    240
+   ],
+   [
+    "H115i ELITE CAPELLIX",
+    280
+   ],
+   [
+    "H115i ELITE LCD XT",
+    280
+   ],
+   [
+    "H150i ELITE CAPELLIX",
+    360
+   ],
+   [
+    "H150i ELITE LCD",
+    360
+   ],
+   [
+    "H150i ELITE LCD XT",
+    360
+   ],
+   [
+    "H170i ELITE CAPELLIX",
+    420
+   ],
+   [
+    "H170i ELITE LCD",
+    420
+   ],
+   [
+    "H170i ELITE LCD XT",
+    420
+   ]
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_lighting_node",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "EmulatedDeviceType": "CapellixLcd",
+  "led_channel_kinds": {
+   "Autodetect": 0,
+   "CoolerScreen24Leds": 14,
+   "Fan8LedSeries": 5,
+   "HdFanHub": 4,
+   "LlFanHub": 2,
+   "MlFanHub": 3,
+   "QlRgbFanHub": 6
+  },
+  "led_counts": {
+   "CoolerScreen24Leds": 24,
+   "Fan8LedSeries": 8,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4,
+   "QlRgbFanHub": 34
+  },
+  "channels": 1,
+  "led_autodetection": true
+ },
+ {
+  "package": "dev-aio-pro-cooler-screen",
+  "name": "ELITE LCD Cooler",
+  "type": "led-controller",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c1c",
+    "cue_mid": 50593794
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0c1c",
+    "cue_mid": 50593793
+   }
+  ],
+  "coolers": [
+   [
+    "H100i ELITE CAPELLIX",
+    240
+   ],
+   [
+    "H100i ELITE LCD",
+    240
+   ],
+   [
+    "H100i ELITE LCD XT",
+    240
+   ],
+   [
+    "H115i ELITE CAPELLIX",
+    280
+   ],
+   [
+    "H115i ELITE LCD XT",
+    280
+   ],
+   [
+    "H150i ELITE CAPELLIX",
+    360
+   ],
+   [
+    "H150i ELITE LCD",
+    360
+   ],
+   [
+    "H150i ELITE LCD XT",
+    360
+   ],
+   [
+    "H170i ELITE CAPELLIX",
+    420
+   ],
+   [
+    "H170i ELITE LCD",
+    420
+   ],
+   [
+    "H170i ELITE LCD XT",
+    420
+   ]
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_lighting_node",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "EmulatedDeviceType": "CapellixLcd",
+  "led_channel_kinds": {
+   "Autodetect": 0,
+   "CoolerScreen24Leds": 14,
+   "Fan8LedSeries": 5,
+   "HdFanHub": 4,
+   "LlFanHub": 2,
+   "MlFanHub": 3,
+   "QlRgbFanHub": 6
+  },
+  "led_counts": {
+   "CoolerScreen24Leds": 24,
+   "Fan8LedSeries": 8,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4,
+   "QlRgbFanHub": 34
+  },
+  "channels": 1,
+  "led_autodetection": true
+ },
+ {
+  "package": "dev-aio-pro-cooler-v2",
+  "name": "Commander CORE",
+  "type": "led-controller",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c32",
+    "cue_mid": 16842753
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0c32",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0c3c",
+    "cue_mid": null
+   }
+  ],
+  "coolers": [
+   [
+    "H100i ELITE CAPELLIX",
+    240
+   ],
+   [
+    "H100i ELITE CAPELLIX XT",
+    240
+   ],
+   [
+    "H115i ELITE CAPELLIX",
+    280
+   ],
+   [
+    "H115i ELITE CAPELLIX XT",
+    280
+   ],
+   [
+    "H150i ELITE CAPELLIX",
+    360
+   ],
+   [
+    "H150i ELITE CAPELLIX XT",
+    360
+   ],
+   [
+    "H170i ELITE CAPELLIX",
+    420
+   ],
+   [
+    "H170i ELITE CAPELLIX XT",
+    420
+   ]
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_lighting_node",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "EmulatedDeviceType": "Capellix",
+  "led_channel_kinds": {
+   "Autodetect": 0,
+   "CoolerPump21Leds": 8,
+   "Fan8LedSeries": 5,
+   "HdFanHub": 4,
+   "LlFanHub": 2,
+   "MlFanHub": 3,
+   "QlRgbFanHub": 6
+  },
+  "led_counts": {
+   "CoolerPump21Leds": 21,
+   "Fan8LedSeries": 8,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4,
+   "QlRgbFanHub": 34
+  },
+  "channels": 1,
+  "led_autodetection": true
+ },
+ {
+  "package": "dev-aio-pro-cooler",
+  "name": "Commander CORE",
+  "type": "led-controller",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c1c",
+    "cue_mid": 16842753
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0c1c",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0c1d",
+    "cue_mid": null
+   }
+  ],
+  "coolers": [
+   [
+    "H100i ELITE CAPELLIX",
+    240
+   ],
+   [
+    "H100i ELITE CAPELLIX XT",
+    240
+   ],
+   [
+    "H115i ELITE CAPELLIX",
+    280
+   ],
+   [
+    "H115i ELITE CAPELLIX XT",
+    280
+   ],
+   [
+    "H150i ELITE CAPELLIX",
+    360
+   ],
+   [
+    "H150i ELITE CAPELLIX XT",
+    360
+   ],
+   [
+    "H170i ELITE CAPELLIX",
+    420
+   ],
+   [
+    "H170i ELITE CAPELLIX XT",
+    420
+   ]
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_lighting_node",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "EmulatedDeviceType": "Capellix",
+  "led_channel_kinds": {
+   "Autodetect": 0,
+   "CoolerPump21Leds": 8,
+   "Fan8LedSeries": 5,
+   "HdFanHub": 4,
+   "LlFanHub": 2,
+   "MlFanHub": 3,
+   "QlRgbFanHub": 6
+  },
+  "led_counts": {
+   "CoolerPump21Leds": 21,
+   "Fan8LedSeries": 8,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4,
+   "QlRgbFanHub": 34
+  },
+  "channels": 1,
+  "led_autodetection": true
+ },
+ {
+  "package": "dev-arachnid",
+  "name": "ARACHNID",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-ax1200i",
+  "name": "AX1200i",
+  "type": "power-supply",
+  "lister": "clink-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c0002",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1c00",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-ax1500i",
+  "name": "AX1500i",
+  "type": "power-supply",
+  "lister": "clink-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c02",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1c0001",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1c0201",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1c00",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-ax1600i",
+  "name": "AX1600i",
+  "type": "power-supply",
+  "lister": "clink-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c11",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1c1108",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-ax760i",
+  "name": "AX760i",
+  "type": "power-supply",
+  "lister": "clink-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c0004",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1c00",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-ax860i",
+  "name": "AX860i",
+  "type": "power-supply",
+  "lister": "clink-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c0003",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1c00",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-commander-core-xt",
+  "name": "Commander CORE XT",
+  "type": "led-controller",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c2a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_lighting_node",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "CommanderPro",
+  "EmulatedDeviceType": "CommanderCoreXt",
+  "led_channel_kinds": {
+   "Autodetect": 0,
+   "CompanionTriangle9Leds": 1,
+   "ExternalRGBLightStrip": 1,
+   "Fan8LedSeries": 5,
+   "HdFanHub": 4,
+   "LSAuroraSeries": 1,
+   "LlFanHub": 2,
+   "MasterTriangle9Leds": 1,
+   "MlFanHub": 3,
+   "QlRgbFanHub": 6,
+   "RgbPowerExtensionCable": 1,
+   "RgbPumpCap13Leds": 12,
+   "RgbStrip": 1,
+   "Strip15Leds": 1,
+   "Strip21Leds": 1,
+   "Strip27Leds": 1,
+   "Strip40Leds": 1,
+   "Strip49Leds": 1,
+   "Strip84Leds": 1
+  },
+  "led_counts": {
+   "CompanionTriangle9Leds": 9,
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "Fan8LedSeries": 8,
+   "GpuBlock": 16,
+   "GpuBlock_x2": 0,
+   "HdFanHub": 12,
+   "HydroXComplex": 0,
+   "LlFanHub": 16,
+   "MasterTriangle9Leds": 9,
+   "MlFanHub": 4,
+   "PumpResCombo": 10,
+   "PumpResCombo_x2": 0,
+   "QlRgbFanHub": 34,
+   "RgbPowerExtensionCable": 25,
+   "RgbPumpCap13Leds": 13,
+   "RgbStrip": 10,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49,
+   "Strip84Leds": 84,
+   "XD3PumpResCombo": 16,
+   "XD7PumpResCombo": 36
+  },
+  "channels": 2,
+  "led_autodetection": true
+ },
+ {
+  "package": "dev-commander-duo",
+  "name": "Commander DUO",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c56",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-commander-duo",
+  "name": "Commander DUO",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c56",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-commander-pro",
+  "name": "Commander PRO",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c10",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "CommanderPro",
+  "EmulatedDeviceType": "CommanderPro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CompanionTriangle9Leds": 9,
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "Fan8LedSeries": 8,
+   "GpuBlock": 16,
+   "GpuBlock_x2": 0,
+   "HdFanHub": 12,
+   "HydroXComplex": 0,
+   "LlFanHub": 16,
+   "MasterTriangle9Leds": 9,
+   "MlFanHub": 4,
+   "PumpResCombo": 10,
+   "PumpResCombo_x2": 0,
+   "QlRgbFanHub": 34,
+   "RgbPowerExtensionCable": 25,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49,
+   "Strip84Leds": 84,
+   "XD3PumpResCombo": 16,
+   "XD7PumpResCombo": 36
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-cooler-pump-lcd-v2",
+  "name": "Elite LCD",
+  "type": "pump-display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c39",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Touchscreen",
+  "HidProto": "PumpDisplay",
+  "DeviceType": "PumpDisplay"
+ },
+ {
+  "package": "dev-cooler-pump-lcd",
+  "name": "Elite LCD",
+  "type": "pump-display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c33",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Touchscreen",
+  "HidProto": "PumpDisplay",
+  "DeviceType": "PumpDisplay"
+ },
+ {
+  "package": "dev-corsair-one-pro",
+  "name": "CORSAIR ONE PRO",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "200002",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkCorsairOne",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-corsair-one",
+  "name": "CORSAIR ONE",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "200001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkCorsairOne",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-dark-core-rgb-pro-dongle",
+  "name": "DARK CORE PRO WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b81",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-dark-core-rgb-pro-se-dongle",
+  "name": "DARK CORE PRO SE WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b7f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-dark-core-rgb-pro-se",
+  "name": "DARK CORE PRO SE",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b7e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-dark-core-rgb-pro",
+  "name": "DARK CORE PRO",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b80",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-dark-core-rgb",
+  "name": "DARK CORE RGB",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b35",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1b64",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse_rf",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-dark-core-se",
+  "name": "DARK CORE SE",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b4b",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1b51",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse_rf",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-darkstar-wireless",
+  "name": "DARKSTAR WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bb2",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-dash-accessory-lcd",
+  "name": "XENEON EDGE",
+  "type": "dashboardLCD",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1d0d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "DashAccessory",
+  "HidProto": "DashAccessory",
+  "DeviceType": "DashboardLCD"
+ },
+ {
+  "package": "dev-dominator-platinum-rgb-ddr5",
+  "name": "DOMINATOR PLATINUM RGB DDR5",
+  "type": "dram",
+  "lister": "llaccess-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0408",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "MemoryModule",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Kopis",
+  "led_counts": {
+   "DramCooler": 0,
+   "DramModuleEmptySlot": 0,
+   "DramPro0_2": 0,
+   "DramPro0_4": 0,
+   "DramPro2_2": 0,
+   "DramPro4_4": 0,
+   "DramProModule": 12
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-dominator-platinum-rgb",
+  "name": "DOMINATOR PLATINUM RGB",
+  "type": "dram",
+  "lister": "llaccess-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0404",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "MemoryModule",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Kopis",
+  "led_counts": {
+   "DramCooler": 0,
+   "DramModuleEmptySlot": 0,
+   "DramPro0_2": 0,
+   "DramPro0_4": 0,
+   "DramPro2_2": 0,
+   "DramPro4_4": 0,
+   "DramProModule": 12
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-dominator-titanium",
+  "name": "DOMINATOR TITANIUM",
+  "type": "dram",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "040b",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "MemoryModule",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Kopis",
+  "led_counts": {
+   "DramCooler": 0,
+   "DramModuleEmptySlot": 0,
+   "DramPro0_2": 0,
+   "DramPro0_4": 0,
+   "DramPro2_2": 0,
+   "DramPro4_4": 0,
+   "DramProModule": 11
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-envision-pro-dongle",
+  "name": "SCUF ENVISION PRO WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "2e95",
+    "pid": "434e",
+    "cue_mid": null
+   },
+   {
+    "vid": "2e95",
+    "pid": "5046",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-envision-pro-v2-dongle",
+  "name": "SCUF ENVISION PRO WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "3a08",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "3a09",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-envision-pro-v2",
+  "name": "SCUF ENVISION PRO V2",
+  "type": "gamepad",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "3a05",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "3a08",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_gamepad",
+  "DeviceType": "Gamepad",
+  "SdkDeviceType": "Gamepad",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-envision-pro",
+  "name": "SCUF ENVISION PRO",
+  "type": "gamepad",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "2e95",
+    "pid": "434d",
+    "cue_mid": null
+   },
+   {
+    "vid": "2e95",
+    "pid": "434e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_gamepad",
+  "DeviceType": "Gamepad",
+  "SdkDeviceType": "Gamepad",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-envision-v2",
+  "name": "SCUF ENVISION V2",
+  "type": "gamepad",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "3a04",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_gamepad",
+  "DeviceType": "Gamepad",
+  "SdkDeviceType": "Gamepad"
+ },
+ {
+  "package": "dev-envision",
+  "name": "SCUF ENVISION",
+  "type": "gamepad",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "2e95",
+    "pid": "434b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_gamepad",
+  "DeviceType": "Gamepad",
+  "SdkDeviceType": "Gamepad"
+ },
+ {
+  "package": "dev-fake-widget-display",
+  "name": "Fake Widget Display",
+  "type": "display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-064",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "DeviceType": "Display"
+ },
+ {
+  "package": "dev-generic-commander-pro",
+  "name": "COMMANDER PRO",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c11",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "CommanderPro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "GpuBlock": 16,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "PumpResCombo": 10,
+   "QlRgbFanHub": 34,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip84Leds": 84
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-generic-headset",
+  "name": "GENERIC HEADSET",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "170d",
+    "pid": "0100",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Generic_wireless_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-generic-lighting-node-core",
+  "name": "LIGHTING NODE CORE",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c1b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4,
+   "QlRgbFanHub": 34,
+   "SpFanHub": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-generic-lighting-node-pro",
+  "name": "LIGHTING NODE PRO",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c0c",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "GpuBlock": 16,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "PumpResCombo": 10,
+   "QlRgbFanHub": 34,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip84Leds": 84
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-generic-ls100-starter-kit",
+  "name": "LS100 STARTER KIT",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c1f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "Strip15Leds": 15,
+   "Strip15Leds_Vertical": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip84Leds": 84
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-generic-lt100-starter-kit",
+  "name": "LT100 STARTER KIT",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c24",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "channels": 1,
+  "led_autodetection": true
+ },
+ {
+  "package": "dev-generic-obsidian-1000d",
+  "name": "OBSIDIAN 1000D",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1d01",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "CommanderPro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "GpuBlock": 16,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4,
+   "PumpResCombo": 10,
+   "QlRgbFanHub": 34,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip84Leds": 84
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-generic-spec-omega-rgb",
+  "name": "SPEC-OMEGA RGB",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1d05",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "GpuBlock": 16,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "PumpResCombo": 10,
+   "QlRgbFanHub": 34,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "SpecOmegaStrip": 30,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip84Leds": 84
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-glaive-rgb-pro",
+  "name": "GLAIVE RGB PRO",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b74",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-glaive-rgb",
+  "name": "GLAIVE RGB",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b34",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-govee",
+  "name": "GOVEE",
+  "type": "govee",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-402",
+    "pid": "-402",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Govee",
+  "HidProto": "Govee",
+  "DeviceType": "Govee",
+  "SdkDeviceType": "LightingNodePro",
+  "led_counts": {
+   "GoveeGamingLightBar": 1,
+   "GoveeLightBar": 1,
+   "GoveeShapeHexagon": 1,
+   "GoveeStripLight": 1,
+   "GoveeYLight": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h100i-elite-white",
+  "name": "H100i ELITE WHITE",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c40",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h100i-elite",
+  "name": "H100i ELITE",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c35",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h100i-gtx",
+  "name": "H100iGTX",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c03",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkGeneric",
+  "DeviceType": "LiquidCooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h100i-platinum-se",
+  "name": "H100i PLATINUM SE",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c19",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h100i-platinum",
+  "name": "H100i PLATINUM",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c18",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h100i-pro-xt-5v",
+  "name": "H100i RGB PRO XT",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c2d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h100i-pro-xt",
+  "name": "H100i RGB PRO XT",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c20",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h100i-pro",
+  "name": "H100i PRO",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c15",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkStarCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h100i-v2",
+  "name": "H100i v2",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c09",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkGeneric",
+  "DeviceType": "LiquidCooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h110i-gt",
+  "name": "H110iGT",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "c0441",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkGeneric",
+  "DeviceType": "LiquidCooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h110i-gtx",
+  "name": "H110iGTX",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c07",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkGeneric",
+  "DeviceType": "LiquidCooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h110i",
+  "name": "H110i",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "c0442",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkGeneric",
+  "DeviceType": "LiquidCooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h115i-elite",
+  "name": "H115i ELITE",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c36",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h115i-platinum",
+  "name": "H115i PLATINUM",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c17",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h115i-pro-xt-5v",
+  "name": "H115i RGB PRO XT",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c2e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h115i-pro-xt",
+  "name": "H115i RGB PRO XT",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c21",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h115i-pro",
+  "name": "H115i PRO",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c13",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkStarCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h115i",
+  "name": "H115i",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c0a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkGeneric",
+  "DeviceType": "LiquidCooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h150i-elite-white",
+  "name": "H150i ELITE WHITE",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c41",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h150i-elite",
+  "name": "H150i ELITE",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c37",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h150i-pro-xt-5v",
+  "name": "H150i RGB PRO XT",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c2f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h150i-pro-xt",
+  "name": "H150i RGB PRO XT",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c22",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h150i-pro",
+  "name": "H150i PRO",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c12",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkStarCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h60i-pro-xt-5v",
+  "name": "H60i RGB PRO XT",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c30",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h60i-pro-xt",
+  "name": "H60i RGB PRO XT",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c29",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPlatinumCoolers",
+  "DeviceType": "LiquidCooler",
+  "SdkDeviceType": "Cooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump16Leds": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h80i-gt",
+  "name": "H80iGT",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c02",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkGeneric",
+  "DeviceType": "LiquidCooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-h80i-v2",
+  "name": "H80i v2",
+  "type": "liquid-cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c08",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkGeneric",
+  "DeviceType": "LiquidCooler",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CoolerPump1Led": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-harpoon-rgb-pro",
+  "name": "HARPOON RGB PRO",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b75",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-harpoon-rgb-wireless-dongle",
+  "name": "HARPOON WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b65",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-harpoon-rgb-wireless",
+  "name": "HARPOON RGB WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b5e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-harpoon-rgb",
+  "name": "HARPOON RGB",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b3c",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-hs35-surround-v2",
+  "name": "HS35 SURROUND V2",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a0a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs45-surround",
+  "name": "HS45 SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a58",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs55-surround",
+  "name": "HS55 SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a86",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs55-wireless-core-dongle",
+  "name": "HS55 WIRELESS CORE RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a94",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a95",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-hs55-wireless-core",
+  "name": "HS55 WIRELESS CORE",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a94",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a95",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-hs55-wireless-dongle",
+  "name": "HS55 WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a8e",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a8f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-hs55-wireless",
+  "name": "HS55 WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a8e",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a8f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-hs60-haptic",
+  "name": "HS60 HAPTIC",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a5f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs60-pro-surround",
+  "name": "HS60 PRO SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a4d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs60-surround",
+  "name": "HS60 SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a3b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs65-surround",
+  "name": "HS65 SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a87",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs65-wireless-dongle",
+  "name": "HS65 WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a91",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a92",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-hs65-wireless",
+  "name": "HS65 WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a91",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a92",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-hs70-bluetooth",
+  "name": "HS70 BLUETOOTH",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a61",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs70-pro-wireless",
+  "name": "HS70 PRO WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a4f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-hs70-wireless",
+  "name": "HS70 WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a38",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-hs75-xb-wireless",
+  "name": "HS75 XB WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a5d",
+    "cue_mid": null
+   },
+   {
+    "vid": "170d",
+    "pid": "0526",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "AvneraAccessory",
+  "HidProto": "AvneraAccessory",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-hs80-dongle",
+  "name": "HS80 WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a6b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-hs80-max-wireless-dongle",
+  "name": "HS80 MAX WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a96",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a97",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-hs80-max-wireless-for-xbox-dongle",
+  "name": "HS80 MAX WIRELESS FOR XBOX RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a0b",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a0c",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a0d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-hs80-max-wireless-for-xbox",
+  "name": "HS80 MAX WIRELESS FOR XBOX",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a0b",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a0c",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a0d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Gip",
+  "DeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs80-max-wireless-for-xbox",
+  "name": "HS80 MAX WIRELESS FOR XBOX",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a0b",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a0c",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a0d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Gip",
+  "DeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs80-max-wireless-ss-dongle",
+  "name": "HS80 MAX WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a0e",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a0f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-hs80-max-wireless-ss",
+  "name": "HS80 MAX WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a0e",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a0f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-hs80-max-wireless",
+  "name": "HS80 MAX WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a96",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a97",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-hs80-rgb-usb",
+  "name": "HS80 RGB USB",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a88",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-hs80-v2-max-wireless-dongle",
+  "name": "HS80 V2 MAX WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a1a",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a1b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-hs80-v2-max-wireless",
+  "name": "HS80 V2 MAX WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a1a",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a1b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-hs80-white-dongle",
+  "name": "HS80 WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a73",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-hs80-white",
+  "name": "HS80",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a71",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-hs80",
+  "name": "HS80",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a69",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-hx1000i-v2",
+  "name": "HX1000i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c1e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-hx1000i",
+  "name": "HX1000i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c07",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-hx1200i-v2",
+  "name": "HX1200i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c23",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-hx1200i-v3",
+  "name": "HX1200i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c27",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-hx1200i",
+  "name": "HX1200i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c08",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-hx1500i",
+  "name": "HX1500i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c1f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-hx750i",
+  "name": "HX750i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c05",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-hx850i",
+  "name": "HX850i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c06",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-icue-nexus",
+  "name": "iCUE NEXUS",
+  "type": "touchscreen",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b8e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Touchscreen",
+  "HidProto": "Touchscreen",
+  "DeviceType": "Touchscreen"
+ },
+ {
+  "package": "dev-ironclaw-rgb-wireless-dongle",
+  "name": "IRONCLAW WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b66",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-ironclaw-rgb-wireless",
+  "name": "IRONCLAW RGB WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b4c",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-ironclaw-rgb",
+  "name": "IRONCLAW RGB",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b5d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-ironclaw-wireless-se",
+  "name": "IRONCLAW WIRELESS SE",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b32",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k100-rgb-hr-ss",
+  "name": "K100 RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bc5",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k100-rgb-hr",
+  "name": "K100 RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b7c",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k100-rgb-hs",
+  "name": "K100 RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b7d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k100-rgb-wireless",
+  "name": "K100 RGB Air Wireless",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bab",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k55-core-rgb-gray",
+  "name": "K55 CORE RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b05",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k55-core-rgb-tkl",
+  "name": "K55 CORE RGB TKL",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b20",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k55-core-rgb",
+  "name": "K55 CORE RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bfe",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k55-rgb-pro-xt",
+  "name": "K55 RGB PRO XT",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1ba1",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k55-rgb-pro",
+  "name": "K55 RGB PRO",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1ba4",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k55-rgb",
+  "name": "K55 RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b3d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k57-harpoon-rgb-wireless-bundle",
+  "name": "K57 HARPOON RGB WIRELESS BUNDLE",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bb0",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-k57-rgb-wireless-dongle",
+  "name": "K57 WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b62",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-k57-rgb-wireless",
+  "name": "K57 RGB WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b6e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k60-pro",
+  "name": "K60 PRO",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b83",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k60-rgb-pro-lp",
+  "name": "K60 RGB PRO LP",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bad",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k60-rgb-pro-se",
+  "name": "K60 RGB PRO SE",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b8d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k60-rgb-pro-tkl-white",
+  "name": "K60 PRO TKL RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bed",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k60-rgb-pro-tkl",
+  "name": "K60 PRO TKL RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bc7",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k60-rgb-pro",
+  "name": "K60 RGB PRO",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1ba0",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k63-wireless",
+  "name": "K63 WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b8c",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1b8f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd_rf",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k63-wireless",
+  "name": "K63 WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b45",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1b50",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd_rf",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k63",
+  "name": "K63",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b40",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k65-lux-rgb",
+  "name": "K65 LUX RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b37",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k65-plus-wireless-dongle",
+  "name": "K65 PLUS WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b07",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle"
+ },
+ {
+  "package": "dev-k65-plus-wireless-jp",
+  "name": "K65 PLUS WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b12",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k65-plus-wireless-na",
+  "name": "K65 PLUS WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b10",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k65-plus-wireless-uk",
+  "name": "K65 PLUS WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b11",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k65-plus-wireless-v2-jp",
+  "name": "K65 PLUS WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b37",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k65-plus-wireless-v2-uk",
+  "name": "K65 PLUS WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b36",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k65-plus-wireless-v2",
+  "name": "K65 PLUS WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b23",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k65-rgb-mini-ss",
+  "name": "K65 RGB Mini",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bc3",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k65-rgb-mini-white-ss",
+  "name": "K65 RGB Mini",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bcf",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k65-rgb-mini-white",
+  "name": "K65 RGB Mini",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bbd",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k65-rgb-mini",
+  "name": "K65 RGB Mini",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1baf",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k65-rgb-pro-mini",
+  "name": "K65 PRO Mini",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bd7",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k65-rgb-rapidfire",
+  "name": "K65 RGB RAPIDFIRE",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b39",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k65-rgb",
+  "name": "K65 RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b17",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k66",
+  "name": "K66",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b41",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k68-rgb",
+  "name": "K68 RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b4f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k68-se",
+  "name": "K68 SE",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1ba5",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k68",
+  "name": "K68",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b3f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-core-rgb-gray-3b",
+  "name": "K70 CORE RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b0a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-core-rgb-gray",
+  "name": "K70 CORE RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bff",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-core-rgb-tkl-wireless",
+  "name": "K70 CORE RGB TKL WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b02",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k70-core-rgb-tkl",
+  "name": "K70 CORE RGB TKL",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b01",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-core-rgb",
+  "name": "K70 CORE RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bfd",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-core-se-rgb",
+  "name": "K70 CORE SE RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b09",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-lux-rgb",
+  "name": "K70 LUX RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b33",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-lux",
+  "name": "K70 LUX",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b36",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-max",
+  "name": "K70 MAX",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bc0",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-pro-rgb-tkl",
+  "name": "K70 PRO RGB TKL",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b14",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rapidfire",
+  "name": "K70 RAPIDFIRE",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b3a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-mk-2-ig",
+  "name": "K70 RGB MK.2 IG",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b87",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-mk-2-lp",
+  "name": "K70 RGB MK.2 LP",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b55",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-mk-2-se",
+  "name": "K70 RGB MK.2 SE",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b6b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-mk-2",
+  "name": "K70 RGB MK.2",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b49",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-pro-mini-wireless-white",
+  "name": "K70 RGB PRO Mini Wireless",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bd3",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k70-rgb-pro-mini",
+  "name": "K70 RGB PRO Mini Wireless",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bb6",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k70-rgb-pro-optical-white",
+  "name": "K70 RGB PRO",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bd4",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-pro-optical",
+  "name": "K70 RGB PRO",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bc6",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-pro-ss",
+  "name": "K70 RGB PRO",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bc4",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-pro",
+  "name": "K70 RGB PRO",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bb3",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-rapidfire",
+  "name": "K70 RGB RAPIDFIRE",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b38",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-se-rapidfire",
+  "name": "K70 RGB SE RAPIDFIRE",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b59",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb-tkl",
+  "name": "K70 RGB TKL Champion Series",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b73",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k70-rgb",
+  "name": "K70 RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b13",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k83-wireless",
+  "name": "K83 WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b42",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1b6d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd_rf",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-k95-rgb-platinum-se",
+  "name": "K95 RGB PLATINUM SE",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b82",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k95-rgb-platinum-xt",
+  "name": "K95 RGB PLATINUM XT",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b89",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k95-rgb-platinum",
+  "name": "K95 RGB PLATINUM",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b2d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-k95-rgb",
+  "name": "K95 RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b11",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-katar-elite-wireless",
+  "name": "KATAR ELITE Wireless",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bba",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-katar-pro-wireless-dongle",
+  "name": "KATAR PRO WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b94",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1bae",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-katar-pro-wireless",
+  "name": "KATAR PRO WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b94",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1bae",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-katar-pro-xt",
+  "name": "KATAR PRO XT",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bac",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-katar-pro",
+  "name": "KATAR PRO",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b93",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-katar",
+  "name": "KATAR",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b22",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-lighting-node-core",
+  "name": "LIGHTING NODE CORE",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "210000",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0c1a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "Fan8LedSeries": 8,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4,
+   "QlRgbFanHub": 34,
+   "SpFanHub": 1,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-lighting-node-pro",
+  "name": "LIGHTING NODE PRO",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c0b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CompanionTriangle9Leds": 9,
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "Fan8LedSeries": 8,
+   "GpuBlock": 16,
+   "GpuBlock_x2": 0,
+   "HdFanHub": 12,
+   "HydroXComplex": 0,
+   "LlFanHub": 16,
+   "MasterTriangle9Leds": 9,
+   "MlFanHub": 4,
+   "PumpResCombo": 10,
+   "PumpResCombo_x2": 0,
+   "QlRgbFanHub": 34,
+   "RgbPowerExtensionCable": 25,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49,
+   "Strip84Leds": 84,
+   "XD3PumpResCombo": 16,
+   "XD7PumpResCombo": 36
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-link-5000t-rgb",
+  "name": "iCUE LINK 5000T RGB",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice",
+  "led_counts": {
+   "CompanionTriangle9Leds": 9,
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "Fan8LedSeries": 8,
+   "GpuBlock": 16,
+   "GpuBlock_x2": 0,
+   "HdFanHub": 12,
+   "HydroXComplex": 0,
+   "Link5000tRgbChassis": 0,
+   "Link9000dRgbAirflowChassis": 0,
+   "Link9000dRgbAirflowIoPanel": 18,
+   "Link9000dRgbAirflowLogo": 4,
+   "LlFanHub": 16,
+   "MasterTriangle9Leds": 9,
+   "MlFanHub": 4,
+   "PumpResCombo": 10,
+   "PumpResCombo_x2": 0,
+   "QlRgbFanHub": 34,
+   "RgbPowerExtensionCable": 25,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip32Leds": 32,
+   "Strip38Leds": 38,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49,
+   "Strip84Leds": 84,
+   "XD3PumpResCombo": 16,
+   "XD7PumpResCombo": 36
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-link-9000d-rgb-airflow",
+  "name": "iCUE LINK 9000D RGB AIRFLOW",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice",
+  "led_counts": {
+   "CompanionTriangle9Leds": 9,
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "Fan8LedSeries": 8,
+   "GpuBlock": 16,
+   "GpuBlock_x2": 0,
+   "HdFanHub": 12,
+   "HydroXComplex": 0,
+   "Link5000tRgbChassis": 0,
+   "Link9000dRgbAirflowChassis": 0,
+   "Link9000dRgbAirflowIoPanel": 18,
+   "Link9000dRgbAirflowLogo": 4,
+   "LlFanHub": 16,
+   "MasterTriangle9Leds": 9,
+   "MlFanHub": 4,
+   "PumpResCombo": 10,
+   "PumpResCombo_x2": 0,
+   "QlRgbFanHub": 34,
+   "RgbPowerExtensionCable": 25,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip32Leds": 32,
+   "Strip38Leds": 38,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49,
+   "Strip84Leds": 84,
+   "XD3PumpResCombo": 16,
+   "XD7PumpResCombo": 36
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-link-adapter",
+  "name": "iCUE LINK ADAPTER",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "EmulatedDeviceType": "LinkSystemSubdevice",
+  "led_counts": {
+   "CompanionTriangle9Leds": 9,
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "Fan8LedSeries": 8,
+   "GpuBlock": 16,
+   "GpuBlock_x2": 0,
+   "HdFanHub": 12,
+   "HydroXComplex": 0,
+   "Link5000tRgbChassis": 0,
+   "Link9000dRgbAirflowChassis": 0,
+   "Link9000dRgbAirflowIoPanel": 18,
+   "Link9000dRgbAirflowLogo": 4,
+   "LlFanHub": 16,
+   "MasterTriangle9Leds": 9,
+   "MlFanHub": 4,
+   "PumpResCombo": 10,
+   "PumpResCombo_x2": 0,
+   "QlRgbFanHub": 34,
+   "RgbPowerExtensionCable": 25,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip32Leds": 32,
+   "Strip38Leds": 38,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49,
+   "Strip84Leds": 84,
+   "XD3PumpResCombo": 16,
+   "XD7PumpResCombo": 36
+  },
+  "channels": 1,
+  "led_autodetection": true
+ },
+ {
+  "package": "dev-link-ax1600i",
+  "name": "AX1600i SHIFT",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "1c25",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-link-cooler-pump-lcd-screen",
+  "name": "iCUE LINK LCD Cap for LINK coolers",
+  "type": "pump-display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c4e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Touchscreen",
+  "HidProto": "PumpDisplay",
+  "DeviceType": "PumpDisplay"
+ },
+ {
+  "package": "dev-link-cooler-pump-lcd",
+  "name": "iCUE LINK COOLER PUMP LCD",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdeviceLcd"
+ },
+ {
+  "package": "dev-link-generic-fan-v2",
+  "name": "iCUE LINK FANS v2",
+  "type": "fan",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "Fan",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-generic-fan",
+  "name": "iCUE LINK FANS",
+  "type": "fan",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "Fan",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-generic-lcd",
+  "name": "iCUE LINK GENERIC LCD",
+  "type": "dashboardLCD",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "DashboardLCD",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-generic-pump",
+  "name": "iCUE LINK GENERIC AIO PUMP",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h100ci-rgb-white",
+  "name": "iCUE LINK TITAN 240",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h100ci-rgb",
+  "name": "iCUE LINK TITAN 240",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h100i-rgb-white",
+  "name": "iCUE LINK H100i RGB",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h100i-rgb",
+  "name": "iCUE LINK H100i RGB",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h115ci-rgb",
+  "name": "iCUE LINK TITAN 280",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h115i-rgb",
+  "name": "iCUE LINK H115i RGB",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h150ci-rgb-white",
+  "name": "iCUE LINK TITAN 360",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h150ci-rgb",
+  "name": "iCUE LINK TITAN 360",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h150i-rgb-white",
+  "name": "iCUE LINK H150i RGB",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h150i-rgb",
+  "name": "iCUE LINK H150i RGB",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h170ci-rgb",
+  "name": "iCUE LINK TITAN 420",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-h170i-rgb",
+  "name": "iCUE LINK H170i RGB",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-hx1000i-crystal",
+  "name": "HX1000i SHIFT CRYSTAL",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "PSU",
+  "EmulatedDeviceType": "LinkSystemSubdevice",
+  "led_counts": {
+   "RxRgbFan": 8
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-link-hx1000i",
+  "name": "HX1000i SHIFT",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "PSU",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-hx1200i",
+  "name": "HX1200i SHIFT",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "PSU",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-hx1500i",
+  "name": "HX1500i SHIFT",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "PSU",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-link-system-hub",
+  "name": "iCUE LINK System Hub",
+  "type": "led-controller",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c3f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_lighting_node",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "EmulatedDeviceType": "LinkSystemHub",
+  "led_channel_kinds": {
+   "Autodetect": 0,
+   "CompanionTriangle9Leds": 1,
+   "CoolerPump20Leds": 19,
+   "CpuBlock": 1,
+   "CpuBlockXC5": 1,
+   "CpuBlockXC7Elite": 16,
+   "EliteLCDXD": 17,
+   "ExternalRGBLightStrip": 1,
+   "Fan8LedSeries": 1,
+   "GenericRgbFan": 0,
+   "GenericRgbStrip": 0,
+   "GpuBlock": 1,
+   "GpuBlock_x2": 1,
+   "HydroXComplex": 1,
+   "LSAuroraSeries": 1,
+   "Link5000tRgbChassis": 28,
+   "Link9000dRgbAirflowChassis": 1,
+   "Link9000dRgbAirflowIoPanel": 1,
+   "Link9000dRgbAirflowLogo": 1,
+   "LinkCoolerScreen40Leds": 20,
+   "LinkGenericCombinedFanRgb": 29,
+   "LinkGenericDisplayRgb": 29,
+   "LinkGenericFanRgb": 29,
+   "LinkGenericPumpRgb": 29,
+   "LinkGenericRGBStrip": 1,
+   "LinkTitanPump": 26,
+   "LlFanHub": 1,
+   "LxRgbFan": 24,
+   "MasterTriangle9Leds": 1,
+   "OriginOA": 27,
+   "PumpResCombo": 1,
+   "PumpResCombo_x2": 1,
+   "QlRgbFanHub": 1,
+   "QxRgbFanHub": 15,
+   "RgbPowerExtensionCable": 1,
+   "RgbStrip": 1,
+   "RxRgbFan": 23,
+   "RxRgbMax": 25,
+   "Strip15Leds": 1,
+   "Strip21Leds": 1,
+   "Strip27Leds": 1,
+   "Strip32Leds": 28,
+   "Strip38Leds": 28,
+   "Strip40Leds": 1,
+   "Strip49Leds": 1,
+   "Strip84Leds": 1,
+   "TriangleComplex": 1,
+   "UsbArgbFanController": 1,
+   "XD3PumpResCombo": 1,
+   "XD3PumpResCombo_x2": 1,
+   "XD5ElitePumpRes": 17,
+   "XD6ElitePumpRes": 17,
+   "XD7PumpResCombo": 1,
+   "XG3Hybrid": 18,
+   "XG7Rgb": 22
+  },
+  "led_counts": {
+   "CoolerPump20Leds": 20,
+   "CpuBlockXC7Elite": 24,
+   "EliteLCDXD": 22,
+   "LinkCoolerScreen40Leds": 40,
+   "LinkTitanPump": 20,
+   "LxRgbFan": 18,
+   "OriginOA": 32,
+   "QxRgbFanHub": 34,
+   "RxFanNoLeds": 0,
+   "RxMaxNoLeds": 0,
+   "RxRgbFan": 8,
+   "RxRgbMax": 8,
+   "UsbArgbFanController": 0,
+   "XD5ElitePumpRes": 22,
+   "XD6ElitePumpRes": 22,
+   "XG3Hybrid": 18,
+   "XG7Rgb": 16
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-link-vrm-cooler-module",
+  "name": "VRM COOLER MODULE",
+  "type": "fan",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "Fan",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-ls100-starter-kit",
+  "name": "LS100 STARTER KIT",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c1e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "LS100DualMonitor": 0,
+   "LS100SingleMonitor": 0,
+   "LS100SingleUltrawideMonitor": 0,
+   "RgbPowerExtensionCable": 25,
+   "Strip15Leds": 15,
+   "Strip15Leds_Vertical": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip84Leds": 84
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-lt100-starter-kit",
+  "name": "LT100 STARTER KIT",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c23",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "EmulatedDeviceType": "LT100Tower",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "LT100LightingTower": 27
+  },
+  "channels": 1,
+  "led_autodetection": true
+ },
+ {
+  "package": "dev-lx-rgb",
+  "name": "iCUE LINK LX RGB",
+  "type": "fan",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "Fan",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-m55-rgb-pro",
+  "name": "M55 RGB PRO",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b70",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-m55-wireless-gray",
+  "name": "M55 WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b1e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-m55-wireless",
+  "name": "M55 WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bfb",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-m55",
+  "name": "M55",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b03",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-m65-pro-rgb",
+  "name": "M65 PRO RGB",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b2e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-m65-rgb-elite-ig",
+  "name": "M65 RGB ELITE IG",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b88",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-m65-rgb-elite",
+  "name": "M65 RGB ELITE",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b5a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-m65-rgb-ultra-ts",
+  "name": "M65 RGB ULTRA",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bef",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-m65-rgb-ultra-wireless-white",
+  "name": "M65 RGB ULTRA Wireless",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bd6",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-m65-rgb-ultra-wireless",
+  "name": "M65 RGB ULTRA Wireless",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bb5",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-m65-rgb-ultra",
+  "name": "M65 RGB ULTRA",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b9e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-m65-rgb",
+  "name": "M65 RGB",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b12",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-m75-air-wireless",
+  "name": "M75 AIR WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bf2",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-m75-wireless-white",
+  "name": "M75 WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b08",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-m75-wireless",
+  "name": "M75 WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bf1",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-m75",
+  "name": "M75",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bf0",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-makr-75",
+  "name": "MAKR 75",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b04",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-makr-pro-75-ss",
+  "name": "MAKR PRO 75",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b5b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-makr-pro-75",
+  "name": "MAKR PRO 75",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b1a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-mm700-rgb-galangal",
+  "name": "MM700 RGB",
+  "type": "mouse-pad",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bc9",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mousemat",
+  "DeviceType": "MouseMat",
+  "SdkDeviceType": "MouseMat"
+ },
+ {
+  "package": "dev-mm700-rgb",
+  "name": "MM700 RGB",
+  "type": "mouse-pad",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b9b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mousemat",
+  "DeviceType": "MouseMat",
+  "SdkDeviceType": "MouseMat"
+ },
+ {
+  "package": "dev-mm800-rgb",
+  "name": "MM800 RGB POLARIS",
+  "type": "mouse-pad",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b3b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mousemat",
+  "DeviceType": "MouseMat",
+  "SdkDeviceType": "MouseMat"
+ },
+ {
+  "package": "dev-nanoleaf",
+  "name": "NANOLEAF",
+  "type": "nanoleaf",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-401",
+    "pid": "-401",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Nanoleaf",
+  "HidProto": "Nanoleaf",
+  "DeviceType": "Nanoleaf",
+  "SdkDeviceType": "Unknown",
+  "led_counts": {
+   "NanoleafCanvas": 1,
+   "NanoleafLightPanel": 1,
+   "NanoleafLineConnector": 0,
+   "NanoleafLineSingleZone": 1,
+   "NanoleafShapeHexagon": 1,
+   "NanoleafShapeMiniTriangle": 1,
+   "NanoleafShapeTriangle": 1,
+   "NanoleafSquareConnector": 0
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-nautilus-lcd-cap-v2",
+  "name": "NAUTILUS LCD CAP",
+  "type": "pump-display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c57",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Touchscreen",
+  "HidProto": "PumpDisplay_al021",
+  "DeviceType": "PumpDisplay",
+  "SdkDeviceType": "Cooler"
+ },
+ {
+  "package": "dev-nautilus-lcd-cap",
+  "name": "NAUTILUS LCD CAP",
+  "type": "pump-display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c55",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Touchscreen",
+  "HidProto": "PumpDisplay_al021",
+  "DeviceType": "PumpDisplay",
+  "SdkDeviceType": "Cooler"
+ },
+ {
+  "package": "dev-nightsabre-wireless",
+  "name": "Nightsabre Wireless",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bb8",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-nightsword-rgb",
+  "name": "NIGHTSWORD RGB",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b5c",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-obsidian-1000d",
+  "name": "OBSIDIAN 1000D",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1d00",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "CommanderPro",
+  "EmulatedDeviceType": "CommanderPro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CompanionTriangle9Leds": 9,
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "Fan8LedSeries": 8,
+   "GpuBlock": 16,
+   "GpuBlock_x2": 0,
+   "HdFanHub": 12,
+   "HydroXComplex": 0,
+   "LlFanHub": 16,
+   "MasterTriangle9Leds": 9,
+   "MlFanHub": 4,
+   "ObsidianChassis": 0,
+   "ObsidianIoLeds": 18,
+   "ObsidianLogoLeds": 4,
+   "PumpResCombo": 10,
+   "PumpResCombo_x2": 0,
+   "QlRgbFanHub": 34,
+   "RgbPowerExtensionCable": 25,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49,
+   "Strip84Leds": 84,
+   "XD3PumpResCombo": 16,
+   "XD7PumpResCombo": 36
+  },
+  "channels": 3
+ },
+ {
+  "package": "dev-origin-oa",
+  "name": "ORIGIN OA",
+  "type": "led-controller",
+  "lister": null,
+  "ids": []
+ },
+ {
+  "package": "dev-origin-pc-chronos",
+  "name": "ORIGIN PC CHRONOS",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "220001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "ChronosPowerButton": 4,
+   "CompanionTriangle9Leds": 9,
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "Fan8LedSeries": 8,
+   "GpuBlock": 16,
+   "GpuBlock_x2": 0,
+   "HdFanHub": 12,
+   "HydroXComplex": 0,
+   "LlFanHub": 16,
+   "MasterTriangle9Leds": 9,
+   "MlFanHub": 4,
+   "PumpResCombo": 10,
+   "PumpResCombo_x2": 0,
+   "QlRgbFanHub": 34,
+   "RgbPowerExtensionCable": 25,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49,
+   "Strip84Leds": 84,
+   "XD3PumpResCombo": 16,
+   "XD7PumpResCombo": 36
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-origin-pc-prime",
+  "name": "ORIGIN PC PRIME",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "220002",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CompanionTriangle9Leds": 9,
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "Fan8LedSeries": 8,
+   "GpuBlock": 16,
+   "GpuBlock_x2": 0,
+   "HdFanHub": 12,
+   "HydroXComplex": 0,
+   "LlFanHub": 16,
+   "MasterTriangle9Leds": 9,
+   "MlFanHub": 4,
+   "OriginPcInternalLighting": 9,
+   "OriginPcLogo": 1,
+   "PumpResCombo": 10,
+   "PumpResCombo_x2": 0,
+   "QlRgbFanHub": 34,
+   "RgbPowerExtensionCable": 25,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49,
+   "Strip84Leds": 84,
+   "XD3PumpResCombo": 16,
+   "XD7PumpResCombo": 36
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-philips-hue",
+  "name": "PHILIPS HUE",
+  "type": "philips-hue",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-400",
+    "pid": "-400",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "PhilipsHue",
+  "HidProto": "PhilipsHue",
+  "DeviceType": "PhilipsHue",
+  "led_counts": {
+   "PhilipsHueComplex": 0,
+   "PhilipsHuePlaceholder": 0,
+   "PhilipsHueSingleLed": 1
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-qx-rgb",
+  "name": "iCUE LINK QX RGB",
+  "type": "fan",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "Fan",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-rm1000i",
+  "name": "RM1000i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c0d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-rm650i",
+  "name": "RM650i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c0a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-rm750i",
+  "name": "RM750i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c0b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-rm850i",
+  "name": "RM850i",
+  "type": "power-supply",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1c0c",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkPsu",
+  "DeviceType": "PSU",
+  "IsLinkDevice": true
+ },
+ {
+  "package": "dev-rx-fan",
+  "name": "iCUE LINK RX",
+  "type": "fan",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "Fan",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-rx-max-fan",
+  "name": "iCUE LINK RX MAX",
+  "type": "fan",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "Fan",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-rx-rgb-fan",
+  "name": "iCUE LINK RX RGB",
+  "type": "fan",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "Fan",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-rx-rgb-max-fan",
+  "name": "iCUE LINK RX RGB MAX",
+  "type": "fan",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "Fan",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-sabre-1",
+  "name": "SABRE RGB OPTICAL",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b14",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-sabre-2",
+  "name": "SABRE RGB LASER",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b19",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-sabre-pro",
+  "name": "SABRE PRO CHAMPION SERIES",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b7a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-sabre-rgb-pro-wireless",
+  "name": "SABRE RGB PRO WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b98",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-sabre-rgb-pro",
+  "name": "SABRE RGB PRO CHAMPION SERIES",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b79",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-sabre-rgb",
+  "name": "SABRE RGB",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b2f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-sabre",
+  "name": "SABRE",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b32",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-scimitar-elite-rgb-ss",
+  "name": "SCIMITAR RGB ELITE",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1be3",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-scimitar-elite-rgb-wireless-v2",
+  "name": "SCIMITAR ELITE WIRELESS SE",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b22",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-scimitar-elite-rgb-wireless",
+  "name": "SCIMITAR RGB ELITE WIRELESS",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bdb",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-scimitar-elite-rgb",
+  "name": "SCIMITAR RGB ELITE",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b8b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-scimitar-pro-rgb",
+  "name": "SCIMITAR PRO RGB",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b3e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-scimitar",
+  "name": "SCIMITAR",
+  "type": "mouse",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b1e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_mouse",
+  "DeviceType": "Mouse",
+  "SdkDeviceType": "Mouse"
+ },
+ {
+  "package": "dev-shugo-series-ddr5",
+  "name": "SHUGO SERIES DDR5",
+  "type": "dram",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "040c",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "MemoryModule",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Falcata",
+  "led_counts": {
+   "DramCooler": 0,
+   "DramModuleEmptySlot": 0,
+   "DramPro0_2": 0,
+   "DramPro0_4": 0,
+   "DramPro2_2": 0,
+   "DramPro4_4": 0,
+   "DramProModule": 10
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-skey-macro-bar",
+  "name": "S-Key Macro Bar",
+  "type": "touchscreen",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0d02",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Touchscreen",
+  "HidProto": "Touchscreen_bs010",
+  "DeviceType": "Touchscreen",
+  "SdkDeviceType": "Touchbar"
+ },
+ {
+  "package": "dev-skiff-100-plus",
+  "name": "SKIFF 100 PLUS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b3e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-skiff-100",
+  "name": "SKIFF 100",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b3d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-sledge",
+  "name": "K70 RGB TKL Champion Series",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bb9",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-slipstream-wireless-dongle-ss",
+  "name": "SLIPSTREAM WIRELESS USB Receiver",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bdc",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-slipstream-wireless-dongle-v2",
+  "name": "SLIPSTREAM WIRELESS USB Receiver",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b00",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle"
+ },
+ {
+  "package": "dev-slipstream-wireless-dongle-v3-ss",
+  "name": "SLIPSTREAM v2 WIRELESS USB Receiver",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b3c",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle"
+ },
+ {
+  "package": "dev-slipstream-wireless-dongle-v3",
+  "name": "SLIPSTREAM v2 WIRELESS USB Receiver",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b1b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle"
+ },
+ {
+  "package": "dev-slipstream-wireless-dongle",
+  "name": "SLIPSTREAM WIRELESS USB Receiver",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1ba6",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-spec-omega-rgb",
+  "name": "SPEC-OMEGA RGB",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1d04",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "CompanionTriangle9Leds": 9,
+   "CpuBlock": 16,
+   "CpuBlockXC5": 8,
+   "Fan8LedSeries": 8,
+   "GpuBlock": 16,
+   "GpuBlock_x2": 0,
+   "HdFanHub": 12,
+   "HydroXComplex": 0,
+   "LlFanHub": 16,
+   "MasterTriangle9Leds": 9,
+   "MlFanHub": 4,
+   "PumpResCombo": 10,
+   "PumpResCombo_x2": 0,
+   "QlRgbFanHub": 34,
+   "RgbPowerExtensionCable": 25,
+   "RgbStrip": 10,
+   "SpFanHub": 1,
+   "SpecOmegaStrip": 30,
+   "Strip15Leds": 15,
+   "Strip21Leds": 21,
+   "Strip27Leds": 27,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49,
+   "Strip84Leds": 84,
+   "XD3PumpResCombo": 16,
+   "XD7PumpResCombo": 36
+  },
+  "channels": 2
+ },
+ {
+  "package": "dev-st100-rgb",
+  "name": "ST100 RGB",
+  "type": "headset-stand",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a36",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset_stand",
+  "DeviceType": "HeadsetStand",
+  "SdkDeviceType": "HeadsetStand"
+ },
+ {
+  "package": "dev-strafe-1",
+  "name": "STRAFE",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b15",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-strafe-2",
+  "name": "STRAFE",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b44",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-strafe-rgb-mk-2",
+  "name": "STRAFE RGB MK.2",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b48",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-strafe-rgb",
+  "name": "STRAFE RGB",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b20",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Nxp2000_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-taiga-lcd",
+  "name": "NAUTILUS II LCD",
+  "type": "dashboardLCD",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "-001",
+    "pid": "-001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Edid",
+  "DeviceType": "DashboardLCD"
+ },
+ {
+  "package": "dev-vanguard-96-wireless",
+  "name": "VANGUARD 96 WIRELESS",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b0f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-vanguard-96",
+  "name": "VANGUARD 96",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b0d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-vanguard-air-99-wireless",
+  "name": "VANGUARD AIR 99",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b21",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-vanguard-pro-96-ss",
+  "name": "VANGUARD PRO 96",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b54",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-vanguard-pro-96",
+  "name": "VANGUARD PRO 96",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2b0e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-vengeance-ddr4-blank",
+  "name": "VENGEANCE DDR4 BLANK",
+  "type": "dram",
+  "lister": "llaccess-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "03ff",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "DramProtocolType": "Unsupported"
+ },
+ {
+  "package": "dev-vengeance-ddr5",
+  "name": "VENGEANCE DDR5",
+  "type": "dram",
+  "lister": "llaccess-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0409",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "Unknown",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Unsupported"
+ },
+ {
+  "package": "dev-vengeance-led",
+  "name": "VENGEANCE LED",
+  "type": "dram",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0401",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "IsLinkDevice": true,
+  "DramProtocolType": "SingleColor",
+  "led_counts": {
+   "DramModule": 10
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-vengeance-pc-bradbury",
+  "name": "VENGEANCE PC",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "210002",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "Fan8LedSeries": 8,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4,
+   "QlRgbFanHub": 34,
+   "SpFanHub": 1,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-vengeance-pc",
+  "name": "VENGEANCE PC",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "210001",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "CLink",
+  "HidProto": "ClinkLightingNode",
+  "DeviceType": "LightingNode",
+  "SdkDeviceType": "LightingNodePro",
+  "IsLinkDevice": true,
+  "led_counts": {
+   "Fan8LedSeries": 8,
+   "HdFanHub": 12,
+   "LlFanHub": 16,
+   "MlFanHub": 4,
+   "QlRgbFanHub": 34,
+   "SpFanHub": 1,
+   "Strip40Leds": 40,
+   "Strip49Leds": 49
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-vengeance-rgb-ddr5",
+  "name": "VENGEANCE RGB DDR5",
+  "type": "dram",
+  "lister": "llaccess-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "040a",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "MemoryModule",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Falcata",
+  "led_counts": {
+   "DramCooler": 0,
+   "DramModuleEmptySlot": 0,
+   "DramPro0_2": 0,
+   "DramPro0_4": 0,
+   "DramPro2_2": 0,
+   "DramPro4_4": 0,
+   "DramProModule": 10
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-vengeance-rgb-pro-sl",
+  "name": "VENGEANCE RGB PRO SL",
+  "type": "dram",
+  "lister": "llaccess-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0405",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "MemoryModule",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Falcata",
+  "led_counts": {
+   "DramCooler": 0,
+   "DramModuleEmptySlot": 0,
+   "DramPro0_2": 0,
+   "DramPro0_4": 0,
+   "DramPro2_2": 0,
+   "DramPro4_4": 0,
+   "DramProModule": 10
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-vengeance-rgb-pro",
+  "name": "VENGEANCE RGB PRO",
+  "type": "dram",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0403",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "MemoryModule",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Falcata",
+  "led_counts": {
+   "DramCooler": 0,
+   "DramModuleEmptySlot": 0,
+   "DramPro0_2": 0,
+   "DramPro0_4": 0,
+   "DramPro2_2": 0,
+   "DramPro4_4": 0,
+   "DramProModule": 10
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-vengeance-rgb-rs-ddr5",
+  "name": "VENGEANCE RGB RS DDR5",
+  "type": "dram",
+  "lister": "llaccess-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "040d",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "MemoryModule",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Falcata",
+  "led_counts": {
+   "DramCooler": 0,
+   "DramModuleEmptySlot": 0,
+   "DramPro0_2": 0,
+   "DramPro0_4": 0,
+   "DramPro2_2": 0,
+   "DramPro4_4": 0,
+   "DramProModule": 6
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-vengeance-rgb-rs",
+  "name": "VENGEANCE RGB RS",
+  "type": "dram",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0406",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "MemoryModule",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Falcata",
+  "led_counts": {
+   "DramCooler": 0,
+   "DramModuleEmptySlot": 0,
+   "DramPro0_2": 0,
+   "DramPro0_4": 0,
+   "DramPro2_2": 0,
+   "DramPro4_4": 0,
+   "DramProModule": 6
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-vengeance-rgb-rt",
+  "name": "VENGEANCE RGB RT",
+  "type": "dram",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0407",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "SdkDeviceType": "MemoryModule",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Falcata",
+  "led_counts": {
+   "DramCooler": 0,
+   "DramModuleEmptySlot": 0,
+   "DramPro0_2": 0,
+   "DramPro0_4": 0,
+   "DramPro2_2": 0,
+   "DramPro4_4": 0,
+   "DramProModule": 10
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-vengeance-rgb",
+  "name": "VENGEANCE RGB",
+  "type": "dram",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0402",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0006",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "LLAccess",
+  "HidProto": "Dram",
+  "DeviceType": "DRAM",
+  "IsLinkDevice": true,
+  "DramProtocolType": "Rgb",
+  "led_counts": {
+   "DramModule": 10
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-virtuoso-black-dongle",
+  "name": "VIRTUOSO WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a4a",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a42",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-virtuoso-black",
+  "name": "VIRTUOSO",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a41",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-virtuoso-max-wireless-dongle",
+  "name": "VIRTUOSO MAX WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a00",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a02",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-virtuoso-max-wireless-for-xbox-dongle",
+  "name": "VIRTUOSO MAX WIRELESS FOR XBOX RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a01",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a03",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a04",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-virtuoso-max-wireless-for-xbox",
+  "name": "VIRTUOSO MAX WIRELESS FOR XBOX",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a01",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a03",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a04",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-virtuoso-max-wireless-for-xbox",
+  "name": "VIRTUOSO MAX WIRELESS FOR XBOX",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a01",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a03",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a04",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-virtuoso-max-wireless",
+  "name": "VIRTUOSO MAX WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a00",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a02",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-virtuoso-pearl-dongle",
+  "name": "VIRTUOSO WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a67",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a5c",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-virtuoso-pearl",
+  "name": "VIRTUOSO",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a5a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-virtuoso-se-brown-dongle",
+  "name": "VIRTUOSO SE WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a48",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a40",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-virtuoso-se-brown",
+  "name": "VIRTUOSO SE",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a3f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-virtuoso-se-gunmetal-dongle",
+  "name": "VIRTUOSO SE WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a46",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a3e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-virtuoso-se-gunmetal",
+  "name": "VIRTUOSO SE",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a3d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-virtuoso-white-dongle",
+  "name": "VIRTUOSO WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a4c",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "0a44",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-virtuoso-white",
+  "name": "VIRTUOSO",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a43",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-virtuoso-xt-gunmetal-dongle",
+  "name": "VIRTUOSO XT WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a64",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-virtuoso-xt-gunmetal",
+  "name": "VIRTUOSO XT",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a62",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-virtuoso-xt-t-pain-dongle",
+  "name": "VIRTUOSO XT WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a78",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-virtuoso-xt-t-pain",
+  "name": "VIRTUOSO XT",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a76",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-elite-surround-carbon",
+  "name": "VOID ELITE SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a53",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-elite-surround-cherry",
+  "name": "VOID ELITE SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a57",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-elite-usb-carbon",
+  "name": "VOID ELITE USB",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a52",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-elite-usb-white",
+  "name": "VOID ELITE USB",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a56",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-elite-wireless-carbon",
+  "name": "VOID ELITE WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a51",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-elite-wireless-grey",
+  "name": "VOID ELITE WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a75",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-elite-wireless-white",
+  "name": "VOID ELITE WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a55",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-max-wireless-dongle",
+  "name": "VOID MAX WIRELESS RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a10",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a12",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-void-max-wireless-for-xbox-dongle",
+  "name": "VOID MAX WIRELESS FOR XBOX RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a05",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a06",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a07",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-void-max-wireless-for-xbox",
+  "name": "VOID MAX WIRELESS FOR XBOX",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a05",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a06",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a07",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Gip",
+  "DeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-max-wireless-for-xbox",
+  "name": "VOID MAX WIRELESS FOR XBOX",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a05",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a06",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a07",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Gip",
+  "DeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-max-wireless",
+  "name": "VOID MAX WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a12",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a10",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-pro-surround-carbon",
+  "name": "VOID PRO SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a18",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-pro-surround-cherry",
+  "name": "VOID PRO SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a1e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-pro-usb-carbon",
+  "name": "VOID PRO USB",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a17",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-pro-usb-ig",
+  "name": "VOID PRO USB IG",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a1f",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-pro-usb-white",
+  "name": "VOID PRO USB",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a1d",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-pro-wireless-carbon",
+  "name": "VOID PRO WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a14",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-pro-wireless-se-yellow",
+  "name": "VOID PRO WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a16",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-pro-wireless-white",
+  "name": "VOID PRO WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a1a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-surround-carbon",
+  "name": "VOID SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a31",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-surround-red",
+  "name": "VOID SURROUND",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a30",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-usb-black-2",
+  "name": "VOID USB",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b2a",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-usb-white",
+  "name": "VOID USB",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b29",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset"
+ },
+ {
+  "package": "dev-void-wireless-carbon",
+  "name": "VOID WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b27",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-wireless-v2-dongle",
+  "name": "VOID WIRELESS V2 RECEIVER",
+  "type": "dongle",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a08",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a09",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-void-wireless-v2",
+  "name": "VOID WIRELESS V2",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "2a08",
+    "cue_mid": null
+   },
+   {
+    "vid": "1b1c",
+    "pid": "2a09",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-wireless-white",
+  "name": "VOID WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0a2b",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-void-wireless-yellow",
+  "name": "VOID WIRELESS",
+  "type": "headset",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1b23",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Legacy",
+  "HidProto": "Headset",
+  "DeviceType": "Headset",
+  "SdkDeviceType": "Headset",
+  "IsWireless": true
+ },
+ {
+  "package": "dev-voyager-a1600-cooler",
+  "name": "VOYAGER A1600 COOLER",
+  "type": "cooler",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0d19",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Uniwill",
+  "HidProto": "Uniwill_cooler",
+  "DeviceType": "Cooler"
+ },
+ {
+  "package": "dev-voyager-a1600-keyboard",
+  "name": "VOYAGER A1600 KEYBOARD",
+  "type": "keyboard",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "1bd0",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_kbd",
+  "DeviceType": "Keyboard",
+  "SdkDeviceType": "Keyboard"
+ },
+ {
+  "package": "dev-voyager-a1600-slipstream-module",
+  "name": "VOYAGER A1600 SLIPSTREAM MODULE",
+  "type": "dongle",
+  "lister": "bragi-device-listing",
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0d01",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_dongle",
+  "DeviceType": "Dongle",
+  "SdkDeviceType": "Unknown"
+ },
+ {
+  "package": "dev-xc7-elite-lcd",
+  "name": "iCUE LINK XC7 ELITE LCD",
+  "type": "pump-display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c42",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Touchscreen",
+  "HidProto": "PumpDisplay_al021",
+  "DeviceType": "PumpDisplay",
+  "SdkDeviceType": "Cooler",
+  "led_counts": {
+   "CoolerScreen24Leds": 31
+  },
+  "channels": 1
+ },
+ {
+  "package": "dev-xc7-elite",
+  "name": "iCUE LINK XC7 ELITE",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-xd-elite-lcd-screen",
+  "name": "iCUE LINK XD ELITE LCD SCREEN",
+  "type": "pump-display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c43",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "Touchscreen",
+  "HidProto": "PumpDisplay",
+  "DeviceType": "PumpDisplay"
+ },
+ {
+  "package": "dev-xd-elite-lcd",
+  "name": "iCUE LINK XD ELITE LCD",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdeviceLcd"
+ },
+ {
+  "package": "dev-xd5-elite-lcd-screen",
+  "name": "iCUE LINK XD5 ELITE LCD SCREEN",
+  "type": "pump-display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0c43",
+    "cue_mid": null
+   }
+  ]
+ },
+ {
+  "package": "dev-xd5-elite-lcd",
+  "name": "iCUE LINK XD5 ELITE LCD",
+  "type": "led-controller",
+  "lister": null,
+  "ids": []
+ },
+ {
+  "package": "dev-xd5-elite",
+  "name": "iCUE LINK XD5 ELITE",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-xd6-elite",
+  "name": "iCUE LINK XD6 ELITE",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-xeneon-32qhd165",
+  "name": "XENEON 32QHD165",
+  "type": "display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "f10e",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "MccsUsb",
+  "HidProto": "MccsUsb",
+  "DeviceType": "Display"
+ },
+ {
+  "package": "dev-xeneon-32qhd240",
+  "name": "XENEON 32QHD240",
+  "type": "display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0d08",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "MccsUsb",
+  "HidProto": "MccsUsb",
+  "DeviceType": "Display"
+ },
+ {
+  "package": "dev-xeneon-32uhd144",
+  "name": "XENEON 32UHD144",
+  "type": "display",
+  "lister": null,
+  "ids": [
+   {
+    "vid": "1b1c",
+    "pid": "0d05",
+    "cue_mid": null
+   }
+  ],
+  "DeviceEnumerator": "MccsUsb",
+  "HidProto": "MccsUsb",
+  "DeviceType": "Display"
+ },
+ {
+  "package": "dev-xg3-hybrid",
+  "name": "iCUE LINK XG3 HYBRID",
+  "type": "fan",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "Fan",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ },
+ {
+  "package": "dev-xg7-rgb",
+  "name": "iCUE LINK GPU RGB",
+  "type": "led-controller",
+  "lister": null,
+  "ids": [],
+  "DeviceEnumerator": "Bragi",
+  "HidProto": "Bragi_link_ecosystem_subdevice",
+  "DeviceType": "LightingNode",
+  "EmulatedDeviceType": "LinkSystemSubdevice"
+ }
+]
