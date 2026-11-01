@@ -120,6 +120,29 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
 - **[test]** In hardware mode, the stored curves (0x6d60–0x6d62) do slow port 6. The old fallback curve took the pump
   down to ~760 rpm, which is too low for a pump, so coreglowd's fallback stores 100 % fixed for port 6.
 - **[test]** Hardware curves always use sensor 0 (probe 1). Other sensors (CPU) are only possible in software mode.
+- **[test] (2026-11-01, pump on port 6 of this build)** Whether the pump can be slowed, at 50 % or more:
+  | Test | Pump rpm |
+  |---|---|
+  | software mode, 0x18 duty 60 % for channel 5 | ~3050 (no change) |
+  | software mode, hardware fixed 60 % stored in 0x6d60/0x6d61 | ~3050 |
+  | hardware mode 25 s, fixed 60 % | ~3050 |
+  | hardware mode 25 s, curve at 60 % everywhere | ~3050 |
+  | hardware mode 25 s, fans fixed 100 % (control) | fans 835 → 1405 and 1380 → 2510 rpm: hardware settings work |
+
+  So between 50 and 100 % the pump runs at its own full speed; it most likely only reports its tachometer to
+  port 6. The ~760 rpm seen once came from a fallback curve below 50 %, not something coreglow should do.
+  Conclusion: no pump speed setting for this build's Core XT (the Commander CORE has its own pump port and
+  takes fixed speeds, per its manifest).
+- **[test]** In hardware mode the controller answers reads of 0x17 (rpm) and 0x21 (temperatures) with an
+  unexpected data type: they're only readable in software mode (liquidctl wakes the device to read them). Rpm read
+  right after a wake is reliable after a long hardware-mode stretch, but frequent wakes disturb it (halves and
+  quarters of the real value).
+- **[test] (2026-11-01, watched, several runs)** Writing the lighting buffer (0x22) in hardware mode is accepted
+  (no error) but not shown. After `01 03 00 01` the LEDs go dark at once or within ~2 s, whatever was shown
+  before (held 3 s, streamed, with or without the fallback cooling stored in the same or a separate session) and
+  whether or not frames keep coming in hardware mode. Two early runs seemed to keep the colour; the later,
+  more careful ones didn't. So a colour can't be left on for while coreglow isn't running: the controller's own
+  (hardware) lighting is dark here.
 
 ## 8. Behaviour notes
 
@@ -174,8 +197,10 @@ SpiralRainbow, …}; LED type enums under `hwp::DeviceLedType`.
 3. ~~LED counts per device type~~: answered by the device manifest (§8b). Previously: 06 = 34, 05 = 8, 0c = 13 came from frame sizes. A table of all types probably lives in
    `commander_core_xt.rcc` or a JSON in `predefined_data/`. Unpack the `.rcc` (Qt `rcc` format) to confirm, and to
    learn which real Corsair devices those types are.
-4. Can the pump be slowed in software mode at all (another file, or a 0x18 mode byte other than 00)? Not found yet.
-5. Hardware (stored) lighting: the enum names exist (`OnDeviceLighting`, `StaticColorLighting`…), but iCUE didn't use
+4. ~~Can the pump be slowed?~~ Not in the safe range (≥ 50 %), in either mode (§7, tests of 2026-11-01).
+   Untried: a 0x18 mode byte other than 00.
+5. Hardware (stored) lighting: switching to hardware mode turns the LEDs off (§7), so it would need the controller's
+   own stored lighting, which iCUE doesn't use for this device. The enum names exist (`OnDeviceLighting`, `StaticColorLighting`…), but iCUE didn't use
    them for this device. Maybe the firmware doesn't support it, or iCUE exposes it elsewhere.
 6. Brightness file 0x1f: is 0xd9 a 0–255 scale or 0–1000? It might allow hardware dimming instead of scaling RGB.
 
