@@ -1,0 +1,4 @@
+# Rust programs don't call glibc's _FORTIFY_SOURCE variants; there's nothing to fortify.
+coreglow: hardening-no-fortify-functions *
+# The interface texts include Slovak words, not misspelled English ones.
+coreglow: spelling-error-in-binary *
