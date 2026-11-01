@@ -36,7 +36,7 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lintian apt-utils >/dev/null
 
       - name: Lintian
-        run: lintian --info --display-info --fail-on error,warning --suppress-tags-from-file packaging/lintian-suppress target/debian/*.deb
+        run: lintian --info --display-info --fail-on error,warning,info --suppress-tags-from-file packaging/lintian-suppress target/debian/*.deb
 
       - name: apt repository check
         run: packaging/test-apt-repo.sh target/debian/*.deb

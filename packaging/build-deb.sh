@@ -15,6 +15,11 @@ install -Dm755 target/release/coreglowd      "$stage/usr/bin/coreglowd"
 install -Dm755 target/release/coreglowctl    "$stage/usr/bin/coreglowctl"
 install -Dm755 target/release/coreglow   "$stage/usr/bin/coreglow"
 install -Dm755 target/release/coreglow-tray "$stage/usr/bin/coreglow-tray"
+# the compiler's version notes (.comment) aren't needed at run time
+for b in "$stage"/usr/bin/*; do
+    objcopy --remove-section=.comment "$b"
+done
+install -Dm644 packaging/lintian-overrides "$stage/usr/share/lintian/overrides/$pkg"
 install -Dm644 packaging/coreglow-tray.desktop "$stage/etc/xdg/autostart/coreglow-tray.desktop"
 install -Dm644 packaging/coreglowd.service   "$stage/usr/lib/systemd/user/coreglowd.service"
 install -Dm644 packaging/70-coreglow.rules "$stage/usr/lib/udev/rules.d/70-coreglow.rules"
