@@ -1043,6 +1043,8 @@ fn lighting(app: &mut App, ui: &mut egui::Ui) -> bool {
             });
             ui.add_space(12.0);
             card(ui, |ui| changed |= night_ui(ui, &mut app.cfg.night, status.as_ref()));
+            ui.add_space(12.0);
+            card(ui, |ui| changed |= closed_ui(ui, &mut app.cfg.closed_lighting, &mut app.recent));
         });
         ui.vertical(|ui| {
             card(ui, |ui| match app.part.clone() {
@@ -1270,6 +1272,33 @@ fn layout_window(app: &mut App, ctx: &egui::Context) -> bool {
             zones::set_current(l);
         }
     }
+    changed
+}
+
+/// What the lights show while coreglow isn't running (stored in the controller).
+fn closed_ui(ui: &mut egui::Ui, closed: &mut Option<String>, recent: &mut Recent) -> bool {
+    let mut changed = false;
+    title(ui, tr("When Coreglow isn't running"));
+    if model() != Model::CoreXt {
+        ui.label(RichText::new(tr("Not available for this controller yet.")).weak());
+        return false;
+    }
+    let current = closed.clone();
+    let is_colour = current.as_deref().is_some_and(|c| c != "off" && c != "rainbow");
+    let mut choose = |label: &'static str, selected: bool, value: Option<&str>, ui: &mut egui::Ui| {
+        if ui.radio(selected, tr(label)).clicked() && !selected {
+            *closed = value.map(String::from);
+            changed = true;
+        }
+    };
+    choose("Leave as it is", current.is_none(), None, ui);
+    choose("Lights stay off", current.as_deref() == Some("off"), Some("off"), ui);
+    choose("One colour", is_colour, Some("404040"), ui);
+    choose("Rainbow", current.as_deref() == Some("rainbow"), Some("rainbow"), ui);
+    if let Some(hex) = closed.as_mut().filter(|c| c.as_str() != "off" && c.as_str() != "rainbow") {
+        changed |= color_choice(ui, hex, recent);
+    }
+    ui.label(RichText::new(tr("Stored in the controller, so it also shows at start-up and after shutdown, until Coreglow takes over.")).weak().small());
     changed
 }
 

@@ -54,8 +54,35 @@ const F_HW_FIXED: &[u8] = &[0x61, 0x6d];
 const T_HW_FIXED: [u8; 2] = [0x04, 0x00];
 const F_HW_CURVE: &[u8] = &[0x62, 0x6d];
 const T_HW_CURVE: [u8; 2] = [0x05, 0x00];
+// Stored (hardware) lighting, iCUE's "Device Memory Mode": what the Core XT shows by itself
+// in hardware mode. External port and RGB ports 1-6 (icue-reverse-engineering.md §7b).
+const F_HW_LIGHT_EXTERNAL: &[u8] = &[0x64, 0x6d];
+const F_HW_LIGHT_PORTS: &[u8] = &[0x65, 0x6d];
 const HW_FIXED_PERCENT: u8 = 0x00;
 const HW_CURVE_PERCENT: u8 = 0x02;
+
+/// Lighting the controller shows by itself while no software drives it.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum StoredLighting {
+    /// One colour (black = off).
+    Static([u8; 3]),
+    /// The controller's own rainbow, at iCUE's default speed.
+    Rainbow,
+}
+
+impl StoredLighting {
+    /// The two bytes in the data-type slot (they name the effect) and the data, for `ports`,
+    /// exactly as iCUE writes them.
+    pub fn encode(self, ports: &[u8]) -> ([u8; 2], Vec<u8>) {
+        let (id, mut data) = match self {
+            StoredLighting::Static([r, g, b]) => ([0x7e, 0x20], vec![0x09, 0, 0, 0, 1, 0xff, b, g, r]),
+            StoredLighting::Rainbow => ([0x02, 0xa4], vec![0x08, 0x04, 0, 0, 0]),
+        };
+        data.push(ports.len() as u8);
+        data.extend_from_slice(ports);
+        (id, data)
+    }
+}
 
 pub struct Device {
     file: File,
@@ -155,19 +182,28 @@ impl Device {
     }
 
     fn read_data(&mut self, file: &[u8], dtype: [u8; 2]) -> Result<Vec<u8>> {
+        let (t, data) = self.read_raw(file)?;
+        if t != dtype {
+            return Err(format!("file {file:02x?}: unexpected data type"));
+        }
+        Ok(data)
+    }
+
+    /// A whole file: its two data-type bytes and the data after them.
+    fn read_raw(&mut self, file: &[u8]) -> Result<([u8; 2], Vec<u8>)> {
         self.open_file(file)?;
         let first = self.send(&CMD_READ_INITIAL, &[]);
         let more = self.send(&CMD_READ_MORE, &[]);
         let last = self.send(&CMD_READ_FINAL, &[]);
         self.close_file()?;
         let (first, more, last) = (first?, more?, last?);
-        if first.len() < 5 || first[3..5] != dtype {
-            return Err(format!("file {file:02x?}: unexpected data type"));
+        if first.len() < 5 {
+            return Err(format!("file {file:02x?}: short reply"));
         }
         let mut out = first[5..].to_vec();
         out.extend_from_slice(&more[3..]);
         out.extend_from_slice(&last[3..]);
-        Ok(out)
+        Ok(([first[3], first[4]], out))
     }
 
     /// Write a whole file: length + data type in the first report, the rest in WRITE_MORE reports.
@@ -249,6 +285,24 @@ impl Device {
 
     // ---- hardware mode (fallback when no software is running) ----
 
+    /// Store the lighting the Core XT shows by itself, on every port. Only files that differ
+    /// are written (it's the controller's memory). Returns whether anything was written.
+    pub fn store_lighting(&mut self, lighting: StoredLighting) -> Result<bool> {
+        if self.model != Model::CoreXt {
+            return Err(format!("stored lighting isn't known for the {} yet", self.model.name()));
+        }
+        let mut wrote = false;
+        for (file, ports) in [(F_HW_LIGHT_EXTERNAL, &[0u8][..]), (F_HW_LIGHT_PORTS, &[1, 2, 3, 4, 5, 6][..])] {
+            let (id, data) = lighting.encode(ports);
+            if self.read_raw(file).is_ok_and(|(t, d)| t == id && d.starts_with(&data)) {
+                continue;
+            }
+            self.write_data(file, id, &data)?;
+            wrote = true;
+        }
+        Ok(wrote)
+    }
+
     /// Store a fan curve (driven by sensor 0: probe 1, or the Core's liquid) for `channels` and a fixed duty for
     /// `fixed` channels, used by the controller on its own in hardware mode.
     pub fn store_hardware_cooling(&mut self, channels: &[usize], curve: &[(f64, f64)], fixed: &[(usize, u8)]) -> Result<()> {
@@ -304,6 +358,20 @@ pub fn store_fallback(dev: &mut Device, curve: &[(f64, f64)]) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn stored_lighting_bytes_match_icue() {
+        // from captures/ccxt-icue-devmemory.txt (iCUE's Save Changes in Device Memory Mode)
+        let (id, data) = StoredLighting::Static([0x3c, 0x4b, 0xff]).encode(&[1, 2, 3, 4, 5, 6]);
+        assert_eq!(id, [0x7e, 0x20]);
+        assert_eq!(data, [0x09, 0, 0, 0, 0x01, 0xff, 0xff, 0x4b, 0x3c, 0x06, 1, 2, 3, 4, 5, 6]);
+        let (id, data) = StoredLighting::Static([0, 0, 0]).encode(&[0]);
+        assert_eq!(id, [0x7e, 0x20]);
+        assert_eq!(data, [0x09, 0, 0, 0, 0x01, 0xff, 0, 0, 0, 0x01, 0x00]);
+        let (id, data) = StoredLighting::Rainbow.encode(&[1, 2, 3, 4, 5, 6]);
+        assert_eq!(id, [0x02, 0xa4]);
+        assert_eq!(data, [0x08, 0x04, 0, 0, 0x00, 0x06, 1, 2, 3, 4, 5, 6]);
+    }
 
     #[test]
     fn models_from_uevent() {

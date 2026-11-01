@@ -14,8 +14,10 @@ The **Commander CORE** (the hub of the ELITE CAPELLIX and ELITE LCD coolers) is 
 - `coreglowd`: user service that drives the controller (lighting at ~30 fps, fan duties for fans 1 and 2).
   When it stops, it stores a backup curve in the controller (fans 1 and 2 follow probe 1, pump at 100 %);
   the curve is editable on the Fans page or as `[fallback]` in the config.
-- `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `auto [on|off]`, `motherboard [on|off]`, `night [off|FROM-TO [N]]`, `devices`, `test-fans`, `edit`, `fallback`, `gui`.
+- `coreglowctl`: command line: `status`, `list`, `set NAME`, `brightness NAME N`, `auto [on|off]`, `motherboard [on|off]`, `night [off|FROM-TO [N]]`, `closed [keep|off|rainbow|RRGGBB]`, `devices`, `test-fans`, `edit`, `fallback`, `gui`.
 - Night dimming: all lighting at a lower brightness between two times (Lighting page, or `[night]` in the config).
+- Lighting while Coreglow isn't running (at start-up, after shutdown): off, one colour or rainbow, stored in the
+  controller itself (Lighting page, `coreglowctl closed`, or `closed_lighting` in the config; Core XT only).
 - `coreglow`: window ("Coreglow" in the app menu) for profiles, effects, per-part lighting, fan curves,
   automatic profile switching (by temperature, running program, time of day or locked screen) and what's connected
   to each port (layout editor).

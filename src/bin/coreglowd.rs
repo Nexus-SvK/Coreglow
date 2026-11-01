@@ -164,6 +164,17 @@ impl MotherboardSync {
     }
 }
 
+/// Store the lighting for while coreglow isn't running, when the config sets one
+/// (only written when it differs from what the controller has).
+fn store_closed_lighting(dev: &mut Device, cfg: &Config) {
+    let Ok(Some(lighting)) = cfg.stored_lighting() else { return };
+    match dev.store_lighting(lighting) {
+        Ok(true) => log(format!("lighting while coreglow isn't running stored: {}", cfg.closed_lighting.as_deref().unwrap_or(""))),
+        Ok(false) => {}
+        Err(e) => log(format!("lighting while coreglow isn't running not stored: {e}")),
+    }
+}
+
 fn dimmed(v: u8, factor: f64) -> u8 {
     (v as f64 * factor).round() as u8
 }
@@ -230,6 +241,7 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool, hub: &Hub, requests:
     let model = dev.model;
     dev.wake()?;
     device::store_fallback(dev, &st.fallback)?;
+    store_closed_lighting(dev, &st.cfg);
     let found = dev.autodetected().unwrap_or_default();
     let (layout0, mut is_detected) = choose_layout(dev, &st.cfg, &found);
     zones::set_current(layout0);
@@ -279,6 +291,9 @@ fn run(dev: &mut Device, st: &mut State, stop: &AtomicBool, hub: &Hub, requests:
                     if new.fallback != st.fallback {
                         device::store_fallback(dev, &new.fallback)?;
                         log("backup curve stored in the controller");
+                    }
+                    if new.cfg.closed_lighting != st.cfg.closed_lighting {
+                        store_closed_lighting(dev, &new.cfg);
                     }
                     // keep the rule in charge until the next check, if it still exists
                     let rule = st.rule.filter(|i| *i < new.cfg.auto.rules.len() && new.cfg.auto.enabled);

@@ -280,6 +280,13 @@ static SK: &[(&str, &str)] = &[
     ("13-LED pump cap", "Kryt pumpy s 13 LED"),
     ("ELITE CAPELLIX pump (29 LEDs)", "Pumpa ELITE CAPELLIX (29 LED)"),
     ("ELITE LCD pump ring (24 LEDs)", "Prstenec pumpy ELITE LCD (24 LED)"),
+    // 0.11: stored lighting
+    ("When Coreglow isn't running", "Keď Coreglow nebeží"),
+    ("Not available for this controller yet.", "Pre tento ovládač zatiaľ nie je k dispozícii."),
+    ("Leave as it is", "Nechať tak"),
+    ("Lights stay off", "Svetlá ostanú zhasnuté"),
+    ("One colour", "Jedna farba"),
+    ("Stored in the controller, so it also shows at start-up and after shutdown, until Coreglow takes over.", "Uloží sa do ovládača, takže sa zobrazí aj pri štarte a po vypnutí, kým ho neprevezme Coreglow."),
 ];
 
 fn slovak() -> bool {
